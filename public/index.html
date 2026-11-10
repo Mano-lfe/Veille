@@ -14,6 +14,7 @@
     --text:#1f1b16; --text2:#5e554a; --muted:#7b7266;
     --line:rgba(31,27,22,.09); --accent:#c2410c;
     --ok:#16a34a; --bad:#dc2626;
+    --c-tech:#2a5bd7; --c-politique:#c2410c; --c-religion:#3f7a4e;
     --serif:'Newsreader', Georgia, 'Times New Roman', serif;
     --sans:'Instrument Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
     --mono:'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
@@ -25,8 +26,13 @@
       --text:#efe9de; --text2:#aaa398; --muted:#8a847a;
       --line:rgba(239,233,222,.08); --accent:#f0814f;
       --ok:#4cc38a; --bad:#e5484d;
+      --c-tech:#6c9cff; --c-politique:#f0814f; --c-religion:#6fc08a;
     }
   }
+  /* Chaque rubrique a sa couleur : elle teinte les liens, la courbe et les repères de la page */
+  body[data-cat=tech] { --accent:var(--c-tech); }
+  body[data-cat=politique] { --accent:var(--c-politique); }
+  body[data-cat=religion] { --accent:var(--c-religion); }
   * { box-sizing:border-box; }
   html { color-scheme:light dark; }
   body { margin:0; background:var(--bg); color:var(--text); font:400 15px/22px var(--sans); -webkit-font-smoothing:antialiased; }
@@ -39,7 +45,7 @@
   /* Sidebar */
   aside { position:sticky; top:0; height:100vh; overflow-y:auto; background:var(--side); border-right:1px solid var(--line); padding:24px 16px; display:flex; flex-direction:column; }
   .logo { font:500 18px/1 var(--serif); padding:0 8px; display:flex; align-items:center; gap:8px; height:32px; }
-  .logo b { width:8px; height:8px; border-radius:50%; background:var(--accent); }
+  .logo b { width:8px; height:8px; border-radius:50%; background:var(--c-politique); }
   .group-label { font:400 12px/16px var(--sans); color:var(--muted); padding:0 8px; margin:32px 0 8px; }
   .navlist { display:flex; flex-direction:column; gap:2px; }
   .row { display:flex; align-items:center; gap:10px; height:36px; padding:0 8px; border:1px solid transparent; border-radius:8px; background:none; width:100%; text-align:left; color:var(--text2); transition:background-color 150ms var(--ease), color 150ms var(--ease); }
@@ -56,6 +62,22 @@
   /* Main */
   main { padding:32px 40px 80px; max-width:1240px; width:100%; animation:enter 400ms var(--ease) both; }
   @keyframes enter { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  /* Boutons de rubriques */
+  .cats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-bottom:32px; }
+  .cat { --c:var(--accent); position:relative; display:flex; align-items:center; gap:16px; padding:16px; text-align:left; background:var(--card); border:1px solid var(--line); border-radius:16px; transition:background-color 150ms var(--ease), border-color 150ms var(--ease), transform 150ms var(--ease); }
+  .cat:hover { background:var(--raised); }
+  .cat:active { transform:scale(.98); }
+  .cat.active { border-color:var(--c); background:color-mix(in srgb, var(--c) 7%, var(--card)); }
+  .cat .tile { flex:none; display:grid; place-items:center; width:48px; height:48px; border-radius:12px; background:color-mix(in srgb, var(--c) 13%, transparent); color:var(--c); transition:background-color 150ms var(--ease), color 150ms var(--ease); }
+  .cat .tile svg { width:22px; height:22px; stroke-width:1.6; }
+  .cat.active .tile { background:var(--c); color:var(--bg); }
+  .cat .txt { min-width:0; }
+  .cat .name { display:block; font:500 17px/24px var(--sans); }
+  .cat .meta { display:flex; flex-wrap:wrap; gap:0 8px; font:400 12px/16px var(--mono); color:var(--muted); font-variant-numeric:tabular-nums; }
+  .cat .meta .new { color:var(--c); font-weight:500; }
+  .cat .meta .new::before { content:''; display:inline-block; width:6px; height:6px; margin-right:6px; border-radius:50%; background:var(--c); vertical-align:1px; }
+  .cat[data-k=tech] { --c:var(--c-tech); } .cat[data-k=politique] { --c:var(--c-politique); } .cat[data-k=religion] { --c:var(--c-religion); }
+  .desc { margin:8px 0 0; max-width:48ch; color:var(--text2); font-size:15px; line-height:22px; }
   .head { display:flex; align-items:flex-end; justify-content:space-between; gap:32px; flex-wrap:wrap; padding-bottom:24px; border-bottom:1px solid var(--line); }
   h1 { margin:0; font:400 40px/1.1 var(--serif); letter-spacing:-.02em; }
   .live { display:flex; align-items:center; gap:8px; margin-top:12px; font:400 12px/16px var(--mono); color:var(--muted); }
@@ -198,6 +220,12 @@
     aside { position:static; height:auto; display:grid; grid-template-columns:auto minmax(0,1fr); align-items:center; gap:8px; padding:12px 16px; overflow:visible; border-right:0; border-bottom:1px solid var(--line); }
     aside .group-label, aside .side-foot { display:none; }
     .logo { padding:0 4px; }
+    .cats { gap:8px; margin-bottom:24px; }
+    .cat { flex-direction:column; align-items:flex-start; gap:12px; padding:12px; border-radius:14px; }
+    .cat .tile { width:40px; height:40px; border-radius:10px; }
+    .cat .name { font-size:15px; line-height:20px; }
+    .desc { display:none; }
+    .cat .meta .u { display:none; }
     .navlist { flex-direction:row; overflow-x:auto; scrollbar-width:none; }
     .navlist::-webkit-scrollbar { display:none; }
     #sources { grid-column:1 / -1; }
@@ -219,11 +247,11 @@
   @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
 </style>
 </head>
-<body data-view="feed">
+<body data-view="feed" data-cat="tech">
 <div class="shell">
   <aside>
     <div class="logo"><b></b>Veille</div>
-    <div class="group-label">Rubriques</div>
+    <div class="group-label">Explorer</div>
     <nav class="navlist" id="tabs"></nav>
     <div class="group-label srclist">Sources</div>
     <div class="navlist srclist" id="sources"></div>
@@ -232,9 +260,11 @@
 
   <main>
     <div class="feedview">
+      <nav class="cats" id="cats" aria-label="Rubriques"></nav>
       <div class="head">
         <div>
           <h1 id="title"></h1>
+          <p class="desc" id="desc"></p>
           <div class="live"><span class="dot" id="dot"></span><span id="status">Connexion</span></div>
         </div>
         <div class="pulse">
@@ -253,7 +283,6 @@
       </div>
 
       <div id="lead"></div>
-      <div class="stage" id="stage"></div>
       <div class="count" id="count"></div>
       <div class="feed" id="list"></div>
     </div>
@@ -280,6 +309,11 @@ const SVG = {
   x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
 };
 const CATS = { tech:'IA & Tech', politique:'Politique', religion:'Religion' };
+const DESC = {
+  tech:'Intelligence artificielle, logiciels et nouvelles technologies, au fil de la journée.',
+  politique:'Vie politique en France et dans le monde, relayée par la presse.',
+  religion:'Actualité des religions, du Vatican aux communautés du monde entier.',
+};
 const SRC_CAT = {};
 const $ = (id) => document.getElementById(id);
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -758,7 +792,6 @@ function loop(t) {
   requestAnimationFrame(loop);
 }
 
-const smallGlobe = createGlobe($('stage'), { big:false, items: () => (view === 'globe' ? [] : data.items[view] || []) });
 let prevView = 'tech';
 const leaveGlobe = () => { view = prevView; render(); window.scrollTo({ top:0 }); };
 const bigGlobe = createGlobe($('bigstage'), { big:true, onBack: () => leaveGlobe(), items: () => Object.values(data.items).flat() });
@@ -798,15 +831,26 @@ function setLive(ok) {
 function render() {
   setLive(true);
   document.body.dataset.view = view === 'globe' ? 'globe' : 'feed';
+  document.body.dataset.cat = view;
+
+  const goTo = (k) => { view = k; srcFilter = ''; render(); window.scrollTo({ top:0 }); };
+  const cats = $('cats'); cats.textContent = '';
+  for (const [k, label] of Object.entries(CATS)) {
+    const list = data.items[k] || [], fresh = list.filter((i) => freshIds.has(i.id)).length;
+    const b = el('button', 'cat' + (k === view ? ' active' : '')); b.dataset.k = k;
+    b.title = `${label} (touche ${Object.keys(CATS).indexOf(k) + 1})`;
+    if (k === view) b.setAttribute('aria-current', 'page');
+    const tile = el('span', 'tile'); tile.append(icon(k));
+    const txt = el('span', 'txt'); const meta = el('span', 'meta');
+    const nb = el('span', null, String(list.length)); nb.append(el('span', 'u', ' articles')); meta.append(nb);
+    if (fresh) meta.append(el('span', 'new', `${fresh} nouveau${fresh > 1 ? 'x' : ''}`));
+    txt.append(el('span', 'name', label), meta);
+    b.append(tile, txt);
+    b.onclick = () => goTo(k);
+    cats.append(b);
+  }
 
   const tabs = $('tabs'); tabs.textContent = '';
-  for (const [k, label] of Object.entries(CATS)) {
-    const b = el('button', 'row' + (k === view ? ' active' : ''));
-    if (k === view) b.setAttribute('aria-current', 'page');
-    b.append(icon(k), el('span', 'label', label), el('span', 'n', (data.items[k] || []).length));
-    b.onclick = () => { view = k; srcFilter = ''; render(); window.scrollTo({ top:0 }); };
-    tabs.append(b);
-  }
   const gb = el('button', 'row' + (view === 'globe' ? ' active' : ''));
   gb.append(icon('globe'), el('span', 'label', 'Globe 3D'));
   gb.onclick = () => { if (view !== 'globe') prevView = view; view = 'globe'; render(); window.scrollTo({ top:0 }); };
@@ -815,7 +859,7 @@ function render() {
   if (view === 'globe') { bigGlobe.refresh(); return; }
   const cat = view, items = data.items[cat] || [];
   $('title').textContent = CATS[cat];
-  smallGlobe.resetKey(); smallGlobe.refresh();
+  $('desc').textContent = DESC[cat];
 
   const counts = {};
   items.forEach(i => counts[i.source] = (counts[i.source] || 0) + 1);
@@ -904,6 +948,8 @@ $('q').oninput = render;
 $('clear').onclick = () => { srcFilter = ''; render(); };
 document.addEventListener('keydown', (e) => {
   if (e.key === '/' && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); if (view !== 'globe') $('q').focus(); }
+  const num = Object.keys(CATS)[+e.key - 1];
+  if (num && document.activeElement.tagName !== 'INPUT' && !e.metaKey && !e.ctrlKey && !e.altKey) { view = num; srcFilter = ''; render(); window.scrollTo({ top:0 }); }
   if (e.key === 'Escape') {
     document.activeElement.blur();
     if (view === 'globe') { if ($('bigstage').classList.contains('has-panel')) bigGlobe.closePanel(); else leaveGlobe(); }
