@@ -22,3 +22,11 @@ Puis ouvrir http://localhost:3000. Les flux sont relus toutes les 3 minutes et l
 ## Ajouter une source
 
 Ajouter une entrée `{ name, url }` dans l'objet `SOURCES` de `server.js`.
+
+## Déployer sur Vercel
+
+Le dépôt est prêt pour Vercel : l'interface est dans `public/`, les routes `/api/*` sont des fonctions (`api/`) qui relisent les flux à la demande et sont mises en cache 2 minutes par le CDN.
+
+```bash
+npx vercel --prod
+```

@@ -875,14 +875,17 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-const es = new EventSource('/api/stream');
-es.addEventListener('update', load);
-es.onopen = () => setLive(true);
-es.onerror = () => setLive(false);
+// Temps réel : flux serveur en local ; en ligne (Vercel, sans connexion longue) on relit toutes les 2 minutes.
+if (['localhost', '127.0.0.1'].includes(location.hostname)) {
+  const es = new EventSource('/api/stream');
+  es.addEventListener('update', load);
+  es.onopen = () => setLive(true);
+  es.onerror = () => setLive(false);
+}
 
 load();
 setInterval(() => { if (view !== 'globe') render(); }, 60000);
-setInterval(load, 180000);
+setInterval(load, 120000);
 </script>
 </body>
 </html>

@@ -102,17 +102,18 @@ async function fetchSource(category, src) {
 }
 
 const clients = new Set();
+const ON_VERCEL = !!process.env.VERCEL; // fonctions sans état : cache côté CDN, pas de flux temps réel
 async function refresh() {
   const cutoff = Date.now() - MAX_AGE_DAYS * 86400e3;
   let newCount = 0;
-  for (const category of Object.keys(SOURCES)) {
+  await Promise.all(Object.keys(SOURCES).map(async (category) => {
     const lists = await Promise.all(SOURCES[category].map((s) => fetchSource(category, s)));
     const map = new Map();
     for (const it of lists.flat()) if (it.time >= cutoff) map.set(it.id, it);
     const prev = new Set((state.items[category] || []).map((i) => i.id));
     for (const id of map.keys()) if (!prev.has(id)) newCount++;
     state.items[category] = [...map.values()].sort((a, b) => b.time - a.time).slice(0, MAX_PER_CATEGORY);
-  }
+  }));
   state.updatedAt = Date.now();
   console.log(`[${new Date().toLocaleTimeString('fr-FR')}] actualisé — ${newCount} nouveaux articles`);
   for (const res of clients) res.write(`event: update\ndata: ${JSON.stringify({ updatedAt: state.updatedAt })}\n\n`);
@@ -180,10 +181,14 @@ async function countryNews(code, q, langs) {
   return data;
 }
 
-// ---------- Serveur HTTP ----------
-const server = http.createServer(async (req, res) => {
+// ---------- Gestionnaire HTTP (partagé : serveur local + fonctions Vercel) ----------
+let inflight = null;
+function ensureFresh() { return (inflight ||= refresh().finally(() => { inflight = null; })); }
+
+async function handle(req, res, forcedPath) {
   const url = new URL(req.url, 'http://x');
-  if (url.pathname === '/api/country-news') {
+  const pathname = forcedPath || url.pathname;
+  if (pathname === '/api/country-news') {
     const code = (url.searchParams.get('code') || '').toUpperCase(), q = (url.searchParams.get('q') || '').slice(0, 80);
     const langs = (url.searchParams.get('langs') || '').split(',').filter((l) => /^[a-z]{3}$/.test(l)).slice(0, 4);
     if (!/^[A-Z]{2}$/.test(code) || !q) { res.writeHead(400); return res.end('bad request'); }
@@ -193,38 +198,48 @@ const server = http.createServer(async (req, res) => {
       return res.end(JSON.stringify(d));
     } catch (e) { res.writeHead(502); return res.end('error'); }
   }
-  if (url.pathname === '/api/geo') {
+  if (pathname === '/api/geo') {
     try {
       const g = await loadGeo();
-      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=3600' });
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=3600, s-maxage=86400' });
       return res.end(JSON.stringify({ world: g.world, countries: g.countries }));
     } catch (e) {
       res.writeHead(502, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ error: String(e.message || e) }));
     }
   }
-  if (url.pathname === '/api/news') {
-    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+  if (pathname === '/api/news') {
+    // Sur Vercel il n'y a pas de timer : on relit les flux à la demande quand les données ont plus de 3 min.
+    if (!state.updatedAt || Date.now() - state.updatedAt > REFRESH_MS) await ensureFresh().catch(console.error);
+    res.writeHead(200, {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': ON_VERCEL ? 'public, s-maxage=120, stale-while-revalidate=300' : 'no-store',
+    });
     return res.end(JSON.stringify(state));
   }
-  if (url.pathname === '/api/stream') {
+  if (pathname === '/api/stream' && !ON_VERCEL) {
     res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', Connection: 'keep-alive' });
     res.write('retry: 5000\n\n');
     clients.add(res);
     req.on('close', () => clients.delete(res));
     return;
   }
-  if (url.pathname === '/' || url.pathname === '/index.html') {
+  if (pathname === '/' || pathname === '/index.html') {
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-    return res.end(fs.readFileSync(path.join(__dirname, 'index.html')));
+    return res.end(fs.readFileSync(path.join(__dirname, 'public', 'index.html')));
   }
   res.writeHead(404);
   res.end('Not found');
-});
-setInterval(() => clients.forEach((r) => r.write(': ping\n\n')), 25000);
+}
 
-server.listen(PORT, () => {
-  console.log(`Veille en ligne : http://localhost:${PORT}`);
-  refresh().catch(console.error);
-  setInterval(() => refresh().catch(console.error), REFRESH_MS);
-});
+module.exports = { handle };
+
+// Lancement local uniquement (node server.js). Sur Vercel, ce fichier est importé par api/*.js.
+if (require.main === module) {
+  http.createServer(handle).listen(PORT, () => {
+    console.log(`Veille en ligne : http://localhost:${PORT}`);
+    refresh().catch(console.error);
+    setInterval(() => refresh().catch(console.error), REFRESH_MS);
+    setInterval(() => clients.forEach((r) => r.write(': ping\n\n')), 25000);
+  });
+}

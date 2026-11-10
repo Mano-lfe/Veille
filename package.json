@@ -1,0 +1,8 @@
+{
+  "name": "veille",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Veille en direct : IA & Tech, Politique, Religion",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" }
+}
