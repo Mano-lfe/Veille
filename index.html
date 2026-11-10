@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Veille — IA & Tech · Politique · Religion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<style>
+  /* Direction : posé, éditorial, précis — salle de rédaction, papier et encre. Le globe est le moment riche. */
+  :root {
+    --bg:#f7f4ee; --side:#f1ede4; --card:#fdfbf7; --raised:#efe9df;
+    --text:#1f1b16; --text2:#5e554a; --muted:#7b7266;
+    --line:rgba(31,27,22,.09); --accent:#c2410c;
+    --ok:#16a34a; --bad:#dc2626;
+    --serif:'Newsreader', Georgia, 'Times New Roman', serif;
+    --sans:'Instrument Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --mono:'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:#161513; --side:#12110f; --card:#1c1a18; --raised:#262421;
+      --text:#efe9de; --text2:#aaa398; --muted:#8a847a;
+      --line:rgba(239,233,222,.08); --accent:#f0814f;
+      --ok:#4cc38a; --bad:#e5484d;
+    }
+  }
+  * { box-sizing:border-box; }
+  html { color-scheme:light dark; }
+  body { margin:0; background:var(--bg); color:var(--text); font:400 15px/22px var(--sans); -webkit-font-smoothing:antialiased; }
+  button { font:inherit; color:inherit; cursor:pointer; }
+  svg.i { width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; flex:none; }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
+
+  .shell { display:grid; grid-template-columns:256px minmax(0,1fr); min-height:100vh; }
+
+  /* Sidebar */
+  aside { position:sticky; top:0; height:100vh; overflow-y:auto; background:var(--side); border-right:1px solid var(--line); padding:24px 16px; display:flex; flex-direction:column; }
+  .logo { font:500 18px/1 var(--serif); padding:0 8px; display:flex; align-items:center; gap:8px; height:32px; }
+  .logo b { width:8px; height:8px; border-radius:50%; background:var(--accent); }
+  .group-label { font:400 12px/16px var(--sans); color:var(--muted); padding:0 8px; margin:32px 0 8px; }
+  .navlist { display:flex; flex-direction:column; gap:2px; }
+  .row { display:flex; align-items:center; gap:10px; height:36px; padding:0 8px; border:1px solid transparent; border-radius:8px; background:none; width:100%; text-align:left; color:var(--text2); transition:background-color 150ms var(--ease), color 150ms var(--ease); }
+  .row:hover { background:var(--raised); color:var(--text); }
+  .row.active { background:var(--raised); color:var(--text); border-color:var(--line); font-weight:500; }
+  .row .label { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .row .n { font:400 12px/16px var(--mono); color:var(--muted); font-variant-numeric:tabular-nums; }
+  .row.src { height:32px; font-size:14px; }
+  .sd { width:6px; height:6px; border-radius:50%; background:var(--ok); flex:none; margin:0 5px; }
+  .sd.bad { background:var(--bad); }
+  .side-foot { margin-top:auto; padding:32px 8px 0; font-size:12px; line-height:16px; color:var(--muted); }
+  body[data-view=globe] .srclist { display:none; }
+
+  /* Main */
+  main { padding:32px 40px 80px; max-width:1240px; width:100%; animation:enter 400ms var(--ease) both; }
+  @keyframes enter { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  .head { display:flex; align-items:flex-end; justify-content:space-between; gap:32px; flex-wrap:wrap; padding-bottom:24px; border-bottom:1px solid var(--line); }
+  h1 { margin:0; font:400 40px/1.1 var(--serif); letter-spacing:-.02em; }
+  .live { display:flex; align-items:center; gap:8px; margin-top:12px; font:400 12px/16px var(--mono); color:var(--muted); }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--ok); animation:pulse 2.4s ease-in-out infinite; }
+  .dot.off { background:var(--bad); animation:none; }
+  @keyframes pulse { 50% { opacity:.35; } }
+  .globeview { display:none; }
+  body[data-view=globe] .globeview { display:block; }
+  body[data-view=globe] .feedview { display:none; }
+
+  .pulse { width:288px; }
+  .pulse .cap { display:flex; justify-content:space-between; font:400 12px/16px var(--mono); color:var(--muted); margin-top:8px; }
+  .bars { display:flex; align-items:flex-end; gap:3px; height:48px; }
+  .bars i { flex:1; background:var(--raised); border-radius:2px; min-height:2px; transition:background-color 150ms var(--ease); }
+  .bars i:last-child { background:var(--accent); }
+  .bars i:hover { background:var(--text2); }
+
+  /* Globe terrestre */
+  .stage { position:relative; height:420px; margin-top:24px; background:radial-gradient(120% 120% at 50% 40%, #0f1b30 0%, #070c16 100%); border:1px solid var(--line); border-radius:16px; overflow:hidden; color:#e8ecf4; }
+  .stage.big { height:calc(100vh - 168px); min-height:520px; }
+  .stage canvas { position:absolute; inset:0; width:100%; height:100%; display:block; cursor:grab; touch-action:none; }
+  .stage canvas.drag { cursor:grabbing; }
+  .legend { position:absolute; left:16px; top:14px; display:flex; flex-wrap:wrap; gap:4px 16px; max-width:calc(100% - 32px); font:400 12px/16px var(--mono); color:rgba(232,236,244,.72); pointer-events:none; }
+  .legend span { display:inline-flex; align-items:center; gap:6px; }
+  .legend i { width:8px; height:8px; border-radius:50%; }
+  .hintline { position:absolute; left:16px; top:56px; font:400 12px/16px var(--mono); color:rgba(232,236,244,.5); pointer-events:none; }
+  .pick { position:absolute; right:16px; top:12px; z-index:3; }
+  .pick input { width:220px; height:36px; padding:0 12px; border-radius:10px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.07); color:#eef2fa; font:inherit; transition:border-color 150ms var(--ease); }
+  .pick input::placeholder { color:rgba(232,236,244,.5); }
+  .pick input:focus { outline:none; border-color:#ff7a45; }
+  .stage.big .pick { left:16px; right:auto; top:60px; }
+  .stage.big .hintline { top:108px; }
+  .stage.big .legend { display:none; }
+  /* Page Globe : plein écran, fond noir */
+  body[data-view=globe] { background:#000; overflow:hidden; }
+  body[data-view=globe] aside { display:none; }
+  body[data-view=globe] .shell { display:block; }
+  body[data-view=globe] main { padding:0; max-width:none; animation:none; }
+  body[data-view=globe] .globeview .head { display:none; }
+  body[data-view=globe] .stage.big { position:fixed; inset:0; height:100vh; min-height:0; margin:0; border:0; border-radius:0; background:#000; z-index:10; }
+  .back { position:absolute; left:16px; top:12px; z-index:5; display:inline-flex; align-items:center; gap:8px; height:36px; padding:0 14px 0 10px; border-radius:10px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.07); color:#eef2fa; transition:background-color 150ms var(--ease); }
+  .back:hover { background:rgba(255,255,255,.15); }
+  .back svg { transform:rotate(180deg); }
+  .stage.has-panel .pick { display:none; }
+  .gtip { position:absolute; z-index:2; padding:6px 10px; background:rgba(8,14,26,.94); border:1px solid rgba(255,255,255,.14); border-radius:8px; font:500 13px/20px var(--sans); pointer-events:none; opacity:0; transition:opacity 120ms var(--ease); white-space:nowrap; }
+  .gtip.show { opacity:1; }
+  .gtip small { font:400 12px/16px var(--mono); color:rgba(232,236,244,.6); margin-left:8px; }
+  .chips { position:absolute; left:12px; right:12px; bottom:12px; display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; z-index:1; }
+  .chips::-webkit-scrollbar { display:none; }
+  .stage.has-panel .chips { right:404px; }
+  .chip { display:inline-flex; align-items:center; gap:8px; height:32px; padding:0 12px 0 8px; border-radius:8px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.08); color:#eef2fa; white-space:nowrap; font-size:13px; transition:background-color 150ms var(--ease), border-color 150ms var(--ease); }
+  .chip:hover { background:rgba(255,255,255,.16); }
+  .chip.on { border-color:#ff7a45; background:rgba(255,122,69,.18); }
+  .chip img { width:18px; height:13px; object-fit:cover; border-radius:2px; }
+  .chip .n { font:400 12px/16px var(--mono); color:#ff9a6c; }
+  .chips .lbl { align-self:center; font:400 12px/16px var(--mono); color:rgba(232,236,244,.55); white-space:nowrap; padding-right:4px; }
+  .gmsg { position:absolute; inset:0; display:grid; place-items:center; color:rgba(232,236,244,.6); font:400 13px/20px var(--mono); pointer-events:none; }
+
+  .panel { position:absolute; z-index:4; top:12px; bottom:12px; right:12px; width:380px; display:flex; flex-direction:column; background:var(--card); color:var(--text); border:1px solid var(--line); border-radius:14px; overflow:hidden; padding:20px 20px 0; opacity:0; transform:translateX(16px); pointer-events:none; transition:opacity 300ms var(--ease), transform 300ms var(--ease); }
+  .stage.has-panel .panel { opacity:1; transform:none; pointer-events:auto; }
+  .panel .x { position:absolute; right:12px; top:12px; width:32px; height:32px; display:grid; place-items:center; border:0; border-radius:8px; background:none; color:var(--muted); }
+  .panel .x:hover { background:var(--raised); color:var(--text); }
+  .panel .flag { width:48px; height:34px; object-fit:cover; border-radius:4px; border:1px solid var(--line); }
+  .panel h2 { margin:12px 0 0; font:400 28px/1.15 var(--serif); letter-spacing:-.015em; padding-right:32px; }
+  .panel .off { margin:4px 0 0; font-size:13px; line-height:20px; color:var(--muted); }
+  .panel dl { margin:20px 0 0; display:grid; grid-template-columns:auto 1fr; gap:8px 16px; }
+  .panel dt { font:400 12px/20px var(--mono); color:var(--muted); }
+  .panel dd { margin:0; font-size:14px; line-height:20px; }
+  .panel h3 { margin:24px 0 4px; font:500 13px/20px var(--sans); color:var(--text2); }
+  .panel .news a { display:block; padding:12px 0; border-top:1px solid var(--line); text-decoration:none; color:inherit; }
+  .panel .news a:hover b { color:var(--accent); }
+  .panel .news small { display:block; font:400 12px/16px var(--mono); color:var(--muted); margin-bottom:4px; }
+  .panel .news b { font:500 14px/20px var(--sans); transition:color 150ms var(--ease); }
+  .panel .none { font-size:14px; color:var(--muted); padding:8px 0; }
+  .phead { display:flex; align-items:center; gap:16px; padding-right:32px; }
+  .phead h2 { margin:0; font:400 28px/1.15 var(--serif); letter-spacing:-.015em; padding:0; }
+  .phead .off { margin:2px 0 0; font-size:13px; line-height:20px; color:var(--muted); }
+  .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:16px; }
+  .stats > div { padding:10px 12px; background:var(--raised); border-radius:10px; }
+  .stats small { display:block; font:400 12px/16px var(--mono); color:var(--muted); }
+  .stats b { font:500 18px/24px var(--sans); font-variant-numeric:tabular-nums; }
+  .ptabs { display:flex; gap:4px; margin:16px -20px 0; padding:0 20px; border-bottom:1px solid var(--line); flex:none; }
+  .ptab { height:40px; padding:0 12px; border:0; border-bottom:2px solid transparent; background:none; color:var(--muted); font-weight:500; font-size:14px; transition:color 150ms var(--ease), border-color 150ms var(--ease); }
+  .ptab:hover { color:var(--text); }
+  .ptab.on { color:var(--text); border-bottom-color:var(--accent); }
+  .pbody { flex:1; overflow-y:auto; margin:0 -20px; padding:0 20px 20px; }
+  .pbody h3 { margin:20px 0 4px; font:500 12px/16px var(--mono); color:var(--muted); }
+  .nitem { display:block; padding:14px 0; border-top:1px solid var(--line); text-decoration:none; color:inherit; }
+  .nitem:hover b { color:var(--accent); }
+  .nitem small { display:block; font:400 12px/16px var(--mono); color:var(--muted); margin-bottom:4px; }
+  .nitem b { font:400 17px/24px var(--serif); transition:color 150ms var(--ease); }
+  .pbody .note { padding:12px 0 0; font-size:12px; line-height:16px; color:var(--muted); }
+  .panel .wiki { display:inline-flex; align-items:center; gap:4px; margin-top:16px; color:var(--accent); font-weight:500; font-size:14px; text-decoration:none; }
+
+  .tools { display:flex; gap:8px; padding:24px 0; }
+  .search { position:relative; flex:1; }
+  .search svg { position:absolute; left:12px; top:12px; color:var(--muted); }
+  .search input { width:100%; height:40px; padding:0 44px 0 36px; border:1px solid var(--line); border-radius:10px; background:var(--card); color:var(--text); font:inherit; transition:border-color 150ms var(--ease); }
+  .search input::placeholder { color:var(--muted); }
+  .search input:focus { outline:none; border-color:var(--accent); }
+  kbd { position:absolute; right:10px; top:9px; font:400 12px/20px var(--mono); color:var(--muted); border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; padding:0 6px; background:var(--raised); }
+  .clear { height:40px; padding:0 16px; border-radius:10px; border:1px solid var(--line); background:var(--raised); display:none; transition:background-color 150ms var(--ease); }
+  .clear.show { display:block; }
+
+  /* À la une */
+  .tiltwrap { perspective:1100px; }
+  .lead { display:block; text-decoration:none; color:inherit; padding:24px; background:var(--card); border:1px solid var(--line); border-radius:16px; margin-bottom:24px; transition:transform 200ms var(--ease), border-color 150ms var(--ease); will-change:transform; }
+  .lead:hover { border-color:var(--accent); }
+  .lead .kicker { display:flex; gap:12px; align-items:center; font:400 12px/16px var(--mono); color:var(--muted); margin-bottom:16px; }
+  .lead .kicker .tag { color:var(--accent); }
+  .lead h2 { margin:0; font:400 32px/1.2 var(--serif); letter-spacing:-.015em; max-width:34ch; text-wrap:balance; }
+  .lead p { margin:16px 0 0; color:var(--text2); font-size:16px; line-height:24px; max-width:64ch; }
+  .lead .go { display:inline-flex; align-items:center; gap:4px; margin-top:20px; font-weight:500; color:var(--accent); }
+
+  /* Fil */
+  .feed { display:flex; flex-direction:column; }
+  .item { display:grid; grid-template-columns:104px minmax(0,1fr); gap:16px; padding:20px 0; border-bottom:1px solid var(--line); text-decoration:none; color:inherit; }
+  .item .when { font:400 12px/20px var(--mono); color:var(--muted); font-variant-numeric:tabular-nums; padding-top:2px; }
+  .item .when .fresh-dot { display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--accent); margin-right:8px; vertical-align:1px; }
+  .item .src-name { display:block; font:500 13px/20px var(--sans); color:var(--text2); margin-bottom:4px; }
+  .item h3 { margin:0; font:500 17px/24px var(--sans); transition:color 150ms var(--ease); }
+  .item:hover h3 { color:var(--accent); }
+  .item p { margin:4px 0 0; color:var(--text2); font-size:14px; line-height:20px; max-width:72ch; }
+  .empty { padding:64px 0; color:var(--muted); text-align:center; }
+
+  @media (max-width: 880px) {
+    .shell { grid-template-columns:1fr; }
+    aside { position:static; height:auto; flex-direction:row; align-items:center; gap:8px; padding:12px 16px; overflow-x:auto; border-right:0; border-bottom:1px solid var(--line); }
+    aside .group-label, aside .srclist, aside .side-foot { display:none; }
+    .navlist { flex-direction:row; }
+    .row { width:auto; white-space:nowrap; }
+    main { padding:24px 16px 64px; }
+    h1 { font-size:32px; }
+    .pulse { width:100%; }
+    .stage { height:360px; }
+    .stage.big { height:calc(100vh - 200px); }
+    .panel { top:auto; left:8px; right:8px; bottom:8px; width:auto; max-height:62%; }
+    .stage.has-panel .chips { right:12px; display:none; }
+    .lead { padding:20px; } .lead h2 { font-size:26px; }
+    .item { grid-template-columns:1fr; gap:4px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body data-view="feed">
+<div class="shell">
+  <aside>
+    <div class="logo"><b></b>Veille</div>
+    <div class="group-label">Rubriques</div>
+    <nav class="navlist" id="tabs"></nav>
+    <div class="group-label srclist">Sources</div>
+    <div class="navlist srclist" id="sources"></div>
+    <div class="side-foot">Chaque titre renvoie vers l'article original du média. Rien n'est reformulé ni généré.</div>
+  </aside>
+
+  <main>
+    <div class="feedview">
+      <div class="head">
+        <div>
+          <h1 id="title"></h1>
+          <div class="live"><span class="dot" id="dot"></span><span id="status">Connexion</span></div>
+        </div>
+        <div class="pulse">
+          <div class="bars" id="bars"></div>
+          <div class="cap"><span>il y a 24 h</span><span id="pulsecap">articles par heure</span><span>maintenant</span></div>
+        </div>
+      </div>
+
+      <div class="stage" id="stage"></div>
+
+      <div class="tools">
+        <label class="search">
+          <svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="q" type="search" placeholder="Rechercher" aria-label="Rechercher">
+          <kbd>/</kbd>
+        </label>
+        <button class="clear" id="clear">Toutes les sources</button>
+      </div>
+
+      <div id="lead"></div>
+      <div class="feed" id="list"></div>
+    </div>
+
+    <div class="globeview">
+      <div class="head">
+        <div>
+          <h1>Globe 3D</h1>
+          <div class="live"><span class="dot"></span><span id="gsub">Chargement de la carte</span></div>
+        </div>
+      </div>
+      <div class="stage big" id="bigstage"></div>
+    </div>
+  </main>
+</div>
+
+<script>
+const SVG = {
+  tech:'<rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/>',
+  politique:'<line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/>',
+  religion:'<path d="m18 7 4 2v11a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9l4-2"/><path d="M14 22v-4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v4"/><path d="M18 22V5l-6-3-6 3v17"/><path d="M12 7v5"/><path d="M10 9h4"/>',
+  globe:'<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+  go:'<path d="M7 7h10v10"/><path d="M7 17 17 7"/>',
+  x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+};
+const CATS = { tech:'IA & Tech', politique:'Politique', religion:'Religion' };
+const SRC_CAT = {};
+const $ = (id) => document.getElementById(id);
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+let data = { items:{}, status:{}, updatedAt:null };
+let view = 'tech', srcFilter = '';
+let seen = new Set(JSON.parse(localStorage.getItem('seen') || '[]'));
+let freshIds = new Set();
+
+function icon(name) {
+  const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  s.setAttribute('class', 'i'); s.setAttribute('viewBox', '0 0 24 24'); s.innerHTML = SVG[name];
+  return s;
+}
+function ago(t) {
+  const s = Math.max(0, (Date.now() - t) / 1000);
+  if (s < 60) return "à l'instant";
+  if (s < 3600) return `il y a ${Math.floor(s/60)} min`;
+  if (s < 86400) return `il y a ${Math.floor(s/3600)} h`;
+  return `il y a ${Math.floor(s/86400)} j`;
+}
+function el(tagName, cls, text) {
+  const e = document.createElement(tagName);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+}
+const norm = (s) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+
+// =====================================================================
+//  Globe terrestre — projection 3D orthographique sur canvas
+// =====================================================================
+const REGION_FR = { Africa:'Afrique', Americas:'Amériques', Asia:'Asie', Europe:'Europe', Oceania:'Océanie', Antarctic:'Antarctique' };
+const REGION_HSL = { Africa:[38,68,56], Europe:[214,60,64], Asia:[12,66,62], Americas:[142,42,52], Oceania:[286,42,66], Antarctic:[210,26,88], None:[220,10,52] };
+const MARKER = '#ff7a45';
+// Système solaire autour du globe (rayons en px pour un globe de 322 px ; couleurs : clair, moyen, ombre)
+const PLANETS = [
+  { n:'Mercure', r:7,  sp:.36, ph:.6,  col:['#e0d6c8','#9a8e80','#2c2722'] },
+  { n:'Vénus',   r:12, sp:.27, ph:2.4, col:['#fbe6b0','#d9a85a','#4a3516'] },
+  { n:'Mars',    r:10, sp:.2,  ph:4.1, col:['#f0a070','#b8512e','#33150c'] },
+  { n:'Jupiter', r:27, sp:.13, ph:1.3, col:['#f3d9b0','#c9955f','#3a2616'], bands:['#8a5a36','#e8c99a','#a06a40','#f1d9b4'] },
+  { n:'Saturne', r:22, sp:.1,  ph:5.2, col:['#f5e6b8','#d3b676','#40351c'], ring:true },
+  { n:'Uranus',  r:15, sp:.075,ph:3.3, col:['#c8f1f2','#7ec8cc','#1d3d40'] },
+  { n:'Neptune', r:14, sp:.06, ph:.2,  col:['#9db4ff','#4a67d8','#101c4a'] },
+];
+const ALIASES = { US:['etats-unis','usa','united states'], GB:['royaume-uni','grande-bretagne','united kingdom'], RU:['russie','russia'], KR:['coree du sud','south korea'], KP:['coree du nord','north korea'], CD:['rdc','congo-kinshasa'], CZ:['tchequie','republique tcheque'], MM:['birmanie','myanmar'], PS:['gaza','cisjordanie','palestine'], TW:['taiwan'], AE:['emirats arabes unis'], VA:['vatican'], SA:['arabie saoudite'] };
+const STOP_EN = new Set(['turkey','georgia','jersey','chad','guinea','niger','china']); // noms anglais trop ambigus
+
+const SAND = new Set('EG LY DZ SA NE ML MR TD SD NA AU IQ OM YE AE QA KW MA TN SO TM AF IR BW JO SY'.split(' '));
+const JUNGLE = new Set('BR CD CG GA CM CO PE VE ID MY PG LA KH MM TH GN SL LR CI GH EC BO GY SR CF GQ'.split(' '));
+const BOREAL = new Set('RU CA FI SE NO'.split(' '));
+let WORLD = null;
+const globes = [];
+
+function toVec(lon, lat) { const l = lon * Math.PI / 180, p = lat * Math.PI / 180, c = Math.cos(p); return [c * Math.sin(l), Math.sin(p), c * Math.cos(l)]; }
+
+// Arc de grand cercle surélevé entre deux points de la sphère (effet « câble lumineux »)
+function arcPts(a, b, n = 16) {
+  const d = Math.max(-1, Math.min(1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2])), om = Math.acos(d), so = Math.sin(om) || 1, h = 0.03 + 0.16 * om / Math.PI;
+  const out = new Float32Array((n + 1) * 3);
+  for (let i = 0; i <= n; i++) {
+    const t = i / n, k1 = Math.sin((1 - t) * om) / so, k2 = Math.sin(t * om) / so, up = 1 + h * Math.sin(Math.PI * t);
+    out[i*3] = (a[0] * k1 + b[0] * k2) * up; out[i*3+1] = (a[1] * k1 + b[1] * k2) * up; out[i*3+2] = (a[2] * k1 + b[2] * k2) * up;
+  }
+  return out;
+}
+
+function buildWorld(g) {
+  const topo = g.world, [sx, sy] = topo.transform.scale, [tx, ty] = topo.transform.translate;
+  const arcs = topo.arcs.map((a) => { let x = 0, y = 0; return a.map((p) => { x += p[0]; y += p[1]; return [x * sx + tx, y * sy + ty]; }); });
+  const getRing = (idx) => { const pts = []; for (const i of idx) { const a = i < 0 ? arcs[~i].slice().reverse() : arcs[i]; for (let k = pts.length ? 1 : 0; k < a.length; k++) pts.push(a[k]); } return pts; };
+  const infoById = {}; g.countries.forEach((c) => { infoById[c.id] = c; });
+  const list = [];
+  for (const geom of topo.objects.countries.geometries) {
+    const polys = geom.type === 'Polygon' ? [geom.arcs] : geom.type === 'MultiPolygon' ? geom.arcs : [];
+    const info = infoById[geom.id] || null;
+    const hit = [], rings = [];
+    let big = null;
+    for (const poly of polys) {
+      const rs = poly.map(getRing);
+      hit.push(rs);
+      for (const r of rs) {
+        const v = new Float32Array(r.length * 3);
+        r.forEach((p, i) => { const q = toVec(p[0], p[1]); v[i*3] = q[0]; v[i*3+1] = q[1]; v[i*3+2] = q[2]; });
+        rings.push(v);
+      }
+      if (!big || rs[0].length > big.length) big = rs[0];
+    }
+    if (!big) continue;
+    let lo = 0, la = 0; big.forEach((p) => { lo += p[0]; la += p[1]; }); lo /= big.length; la /= big.length;
+    const hsl = REGION_HSL[info?.region] || REGION_HSL.None, j = ((+geom.id || 7) * 37) % 9 - 4;
+    const a2 = info?.a2; let rh;
+    if (a2 === 'GL' || a2 === 'AQ' || info?.region === 'Antarctic') rh = [200, 18, 90];
+    else if (SAND.has(a2)) rh = [38, 42, 54];
+    else if (JUNGLE.has(a2)) rh = [125, 38, 27];
+    else if (BOREAL.has(a2)) rh = [105, 22, 31];
+    else rh = ({ Europe:[95,30,36], Asia:[72,26,40], Africa:[62,36,40], Americas:[105,30,34], Oceania:[70,30,40] })[info?.region] || [220, 8, 40];
+    const gl = 10 + rh[2] * 0.45 + j / 2, gh = 36 + (rh[0] % 7); // or : clair pour déserts et glaces, bronze pour forêts
+    const c = {
+      rFill: `hsl(${gh} 62% ${gl}%)`, rHover: `hsl(${gh + 2} 78% ${gl + 12}%)`, rSel: `hsl(42 95% ${Math.min(gl + 28, 72)}%)`,
+      id: geom.id, info, name: info?.fr || geom.properties.name, rings, hit, lon: lo, lat: la, vec: toVec(lo, la),
+      fill: `hsl(${hsl[0]} ${hsl[1]}% ${hsl[2] + j}%)`, fillHover: `hsl(${hsl[0]} ${hsl[1]}% ${hsl[2] + j + 9}%)`, fillSel: `hsl(${hsl[0]} ${Math.min(hsl[1] + 10, 90)}% ${Math.min(hsl[2] + j + 18, 94)}%)`,
+    };
+    list.push(c);
+  }
+  // Détection des pays cités dans les articles (une seule regex)
+  const nameMap = new Map();
+  for (const c of list) {
+    const names = [c.name, c.info?.name, ...(ALIASES[c.info?.a2] || [])].filter(Boolean).map(norm);
+    for (const n of names) if (n.length >= 4 && !STOP_EN.has(n) && !nameMap.has(n)) nameMap.set(n, c);
+  }
+  const keys = [...nameMap.keys()].sort((a, b) => b.length - a.length).map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  const re = new RegExp(`(?<![a-z])(${keys.join('|')})(?![a-z])`, 'g');
+  // Réseau de fond : chaque pays relié à ses 3 voisins les plus proches
+  const seenE = new Set(), net = [];
+  list.forEach((c, i) => {
+    const near = list.map((o, j) => [j, j === i ? -2 : c.vec[0] * o.vec[0] + c.vec[1] * o.vec[1] + c.vec[2] * o.vec[2]]).sort((x, y) => y[1] - x[1]).slice(0, 3);
+    for (const [j] of near) { const k = i < j ? i + '-' + j : j + '-' + i; if (!seenE.has(k)) { seenE.add(k); net.push(arcPts(c.vec, list[j].vec, 10)); } }
+  });
+  return { list, net, byId: Object.fromEntries(list.map((c) => [c.id, c])), nameMap, re };
+}
+
+function countriesIn(item) {
+  if (!WORLD) return [];
+  if (item._c) return item._c;
+  const found = new Set(), text = norm(item.title + ' ' + (item.summary || ''));
+  WORLD.re.lastIndex = 0;
+  let m; while ((m = WORLD.re.exec(text))) found.add(WORLD.nameMap.get(m[1]));
+  return (item._c = [...found]);
+}
+
+function pointIn(lon, lat, ring) {
+  let ins = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const a = ring[i], b = ring[j];
+    if ((a[1] > lat) !== (b[1] > lat) && lon < (b[0] - a[0]) * (lat - a[1]) / (b[1] - a[1]) + a[0]) ins = !ins;
+  }
+  return ins;
+}
+function countryAt(lon, lat) {
+  for (const c of WORLD.list) for (const rs of c.hit) if (pointIn(lon, lat, rs[0]) && !rs.slice(1).some((h) => pointIn(lon, lat, h))) return c;
+  return null;
+}
+
+function createGlobe(mount, opts) {
+  const S = { lon: 0.3, lat: 0.35, vLon: 0, base: -0.0022, drag: null, hover: null, sel: null, focus: null, w: 0, h: 0, dpr: 1, cx: 0, mentions: [], links: [], mkey: '', moved: 0, stars: [] };
+  for (let i = 0; i < (opts.big ? 420 : 160); i++) S.stars.push({ x: Math.random(), y: Math.random(), r: Math.random() * 1.1 + .3, p: Math.random() * 6.28 });
+
+  const cv = el('canvas'); cv.setAttribute('aria-label', 'Globe terrestre interactif');
+  const legend = el('div', 'legend');
+  for (const k of ['Europe', 'Asia', 'Africa', 'Americas', 'Oceania', 'Antarctic']) {
+    const s = el('span'); const d = el('i'); d.style.background = `hsl(${REGION_HSL[k][0]} ${REGION_HSL[k][1]}% ${REGION_HSL[k][2]}%)`; s.append(d, REGION_FR[k]); legend.append(s);
+  }
+  const hint = el('div', 'hintline', 'Glisser pour tourner · cliquer un pays');
+  const tip = el('div', 'gtip');
+  const chips = el('div', 'chips');
+  const panel = el('div', 'panel');
+  const msg = el('div', 'gmsg', 'Chargement de la carte');
+  mount.append(cv, legend, hint, tip, chips, panel, msg);
+
+  let pickInput = null;
+  if (opts.big) {
+    const bk = el('button', 'back'); bk.append(icon('go'), 'Quitter le globe'); bk.onclick = () => opts.onBack && opts.onBack(); mount.append(bk);
+    const w = el('div', 'pick'); pickInput = el('input'); pickInput.placeholder = 'Aller à un pays'; pickInput.setAttribute('list', 'countrylist'); pickInput.setAttribute('aria-label', 'Aller à un pays');
+    w.append(pickInput); mount.append(w);
+    pickInput.addEventListener('change', () => { const c = (WORLD?.list || []).find((x) => norm(x.name) === norm(pickInput.value.trim())); if (c) { select(c); pickInput.value = ''; pickInput.blur(); } });
+  }
+
+  const ctx = cv.getContext('2d');
+  const resize = () => { const r = cv.getBoundingClientRect(); S.dpr = Math.min(devicePixelRatio || 1, 2); S.w = r.width; S.h = r.height; cv.width = r.width * S.dpr; cv.height = r.height * S.dpr; S.cx = targetCx(); };
+  const targetCx = () => (S.sel && window.innerWidth > 880 ? (S.w - 404) / 2 : S.w / 2);
+  new ResizeObserver(resize).observe(cv);
+
+  // --- projection
+  let cC, sC, cT, sT, R, CX, CY;
+  const rot = () => { cC = Math.cos(S.lon); sC = Math.sin(S.lon); cT = Math.cos(S.lat); sT = Math.sin(S.lat); R = Math.min(S.w, S.h) * 0.5 * (opts.big ? 0.62 : 0.82); CX = S.cx; CY = S.h / 2; };
+  const P = (x, y, z) => { const x1 = x * cC - z * sC, z1 = x * sC + z * cC; return [x1, y * cT - z1 * sT, y * sT + z1 * cT]; };
+
+  // Planètes en orbite : 'back' = derrière la Terre (masquées par elle), 'front' = devant
+  function drawPlanets(c, t, pass) {
+    const tt = REDUCED ? 0 : t / 1000, E = .34, sE = Math.sin(E), cE = Math.cos(E), roll = -.22, cr = Math.cos(roll), sr = Math.sin(roll);
+    const minA = R * 1.55, maxA = Math.min(S.w * .47, R * 4.6), unit = R / 322;
+    const at = (k) => minA + (maxA - minA) * k / (PLANETS.length - 1);
+    const place = (a, th, s = sE, cc = cE) => { const x = a * Math.cos(th), z = a * Math.sin(th), sy = z * s; return { x: CX + x * cr - sy * sr, y: CY + x * sr + sy * cr, d: z * cc }; };
+    // orbites
+    c.lineWidth = .8; c.strokeStyle = 'rgba(255,200,110,.13)';
+    PLANETS.forEach((_, k) => {
+      c.beginPath(); let pen = false;
+      for (let i = 0; i <= 120; i++) {
+        const p = place(at(k), i / 120 * 6.2832);
+        if ((pass === 'back') !== (p.d < 0)) { pen = false; continue; }
+        if (pen) c.lineTo(p.x, p.y); else { c.moveTo(p.x, p.y); pen = true; }
+      }
+      c.stroke();
+    });
+    const bodies = PLANETS.map((p, k) => ({ p, k, ...place(at(k), p.ph + tt * p.sp) }));
+    bodies.push({ p: { n:'Lune', r:6, col:['#f2f2f2','#a8a8a8','#2a2a2a'] }, k: -1, ...place(R * 1.3, 1.1 + tt * .6, Math.sin(.55), Math.cos(.55)) });
+    bodies.filter((b) => (pass === 'back') === (b.d < 0)).sort((a, b) => a.d - b.d).forEach((b) => {
+      const sc = 1 + .18 * b.d / maxA, rad = b.p.r * unit * sc;
+      if (!isFinite(rad + b.x + b.y) || rad <= 0) return; // taille du canvas pas encore connue
+      const g = c.createRadialGradient(b.x - rad * .38, b.y - rad * .42, rad * .08, b.x, b.y, rad);
+      g.addColorStop(0, b.p.col[0]); g.addColorStop(.55, b.p.col[1]); g.addColorStop(1, b.p.col[2]);
+      if (b.p.ring) { c.strokeStyle = 'rgba(235,205,140,.75)'; c.lineWidth = Math.max(2, rad * .28); c.beginPath(); c.ellipse(b.x, b.y, rad * 2, rad * .62, -.38, Math.PI, 6.2832); c.stroke(); }
+      c.save(); c.shadowColor = 'rgba(255,190,90,.35)'; c.shadowBlur = 12 * unit; c.fillStyle = g; c.beginPath(); c.arc(b.x, b.y, rad, 0, 6.2832); c.fill(); c.restore();
+      if (b.p.bands) { c.save(); c.beginPath(); c.arc(b.x, b.y, rad, 0, 6.2832); c.clip(); b.p.bands.forEach((col, i) => { c.globalAlpha = .28; c.fillStyle = col; c.fillRect(b.x - rad, b.y - rad + rad * (.28 + i * .36), rad * 2, rad * .2); }); c.restore(); }
+      const sh = c.createRadialGradient(b.x - rad * .45, b.y - rad * .5, rad * .1, b.x, b.y, rad * 1.05); sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(.6, 'rgba(0,0,0,.1)'); sh.addColorStop(1, 'rgba(0,0,0,.6)');
+      c.fillStyle = sh; c.beginPath(); c.arc(b.x, b.y, rad, 0, 6.2832); c.fill();
+      if (b.p.ring) { c.strokeStyle = 'rgba(245,220,160,.9)'; c.lineWidth = Math.max(2, rad * .28); c.beginPath(); c.ellipse(b.x, b.y, rad * 2, rad * .62, -.38, 0, Math.PI); c.stroke(); }
+      c.globalAlpha = .62; c.fillStyle = '#ffe9c2'; c.font = '11px "JetBrains Mono", ui-monospace, monospace'; c.fillText(b.p.n, b.x + rad * (b.p.ring ? 2.1 : 1) + 6, b.y + 4); c.globalAlpha = 1;
+    });
+  }
+
+  // Réseau doré : liens de proximité (fond) + liens d'actualité (pays cités ensemble), avec impulsions
+  function drawNetwork(c, t) {
+    c.save(); c.globalCompositeOperation = 'lighter'; c.lineCap = 'round'; c.lineJoin = 'round';
+    const trace = (pts) => {
+      const n = pts.length / 3; let pen = false;
+      for (let i = 0; i < n; i++) {
+        const q = P(pts[i*3], pts[i*3+1], pts[i*3+2]);
+        if (q[2] < 0) { pen = false; continue; }
+        const X = CX + q[0] * R, Y = CY - q[1] * R;
+        if (pen) c.lineTo(X, Y); else { c.moveTo(X, Y); pen = true; }
+      }
+    };
+    c.beginPath(); for (const a of WORLD.net) trace(a);
+    c.strokeStyle = 'rgba(255,190,90,.17)'; c.lineWidth = .7; c.stroke();
+    S.links.forEach((l, i) => {
+      const w = Math.min(1, .35 + l.n * .15);
+      c.beginPath(); trace(l.pts);
+      c.strokeStyle = `rgba(255,170,60,${.12 * w})`; c.lineWidth = 6; c.stroke();
+      c.strokeStyle = `rgba(255,218,150,${.5 + .4 * w})`; c.lineWidth = 1.1; c.stroke();
+      const a = l.pts, cnt = a.length / 3 - 1, idx = ((t / 2800 + i * .137) % 1) * cnt, i0 = Math.floor(idx), f = idx - i0, i1 = Math.min(i0 + 1, cnt);
+      const q = P(a[i0*3] * (1 - f) + a[i1*3] * f, a[i0*3+1] * (1 - f) + a[i1*3+1] * f, a[i0*3+2] * (1 - f) + a[i1*3+2] * f);
+      if (q[2] > 0) {
+        const X = CX + q[0] * R, Y = CY - q[1] * R, g = c.createRadialGradient(X, Y, 0, X, Y, 10);
+        g.addColorStop(0, 'rgba(255,246,210,.95)'); g.addColorStop(.35, 'rgba(255,190,80,.45)'); g.addColorStop(1, 'rgba(255,150,40,0)');
+        c.fillStyle = g; c.beginPath(); c.arc(X, Y, 10, 0, 6.2832); c.fill();
+      }
+    });
+    c.fillStyle = 'rgba(255,214,130,.9)';
+    for (const k of WORLD.list) { const q = P(...k.vec); if (q[2] > 0.05) { c.beginPath(); c.arc(CX + q[0] * R, CY - q[1] * R, 1.5, 0, 6.2832); c.fill(); } }
+    c.restore();
+  }
+
+  function draw(t) {
+    const c = ctx; c.setTransform(S.dpr, 0, 0, S.dpr, 0, 0); c.clearRect(0, 0, S.w, S.h);
+    rot();
+    for (const s of S.stars) { c.globalAlpha = .25 + .35 * (0.5 + 0.5 * Math.sin(t * .0015 + s.p)); c.fillStyle = '#fff'; c.fillRect(s.x * S.w, s.y * S.h, s.r, s.r); }
+    c.globalAlpha = 1;
+    const BIG = !!opts.big;
+    if (BIG) drawPlanets(c, t, 'back');
+    // atmosphère (halo extérieur)
+    const at = c.createRadialGradient(CX, CY, R * .98, CX, CY, R * 1.18);
+    if (BIG) { at.addColorStop(0, 'rgba(255,176,64,.38)'); at.addColorStop(.3, 'rgba(255,150,40,.12)'); at.addColorStop(1, 'rgba(255,130,20,0)'); }
+    else { at.addColorStop(0, 'rgba(80,150,255,.3)'); at.addColorStop(.35, 'rgba(60,120,230,.14)'); at.addColorStop(1, 'rgba(40,90,200,0)'); }
+    c.fillStyle = at; c.beginPath(); c.arc(CX, CY, R * 1.18, 0, 6.2832); c.fill();
+    // océan (noir profond en mode doré)
+    const oc = c.createRadialGradient(CX - R * .35, CY - R * .4, R * .1, CX, CY, R);
+    if (BIG) { oc.addColorStop(0, '#15120c'); oc.addColorStop(.6, '#0a0806'); oc.addColorStop(1, '#030201'); } else { oc.addColorStop(0, '#24508a'); oc.addColorStop(1, '#0b1d3b'); }
+    c.fillStyle = oc; c.beginPath(); c.arc(CX, CY, R, 0, 6.2832); c.fill();
+    // pays
+    c.save(); c.beginPath(); c.arc(CX, CY, R, 0, 6.2832); c.clip();
+    c.lineWidth = BIG ? .5 : .6; c.strokeStyle = BIG ? 'rgba(255,205,120,.55)' : 'rgba(8,18,36,.55)'; c.lineJoin = 'round';
+    for (const k of WORLD ? WORLD.list : []) {
+      c.beginPath(); let any = false;
+      for (const ring of k.rings) {
+        const n = ring.length / 3; let front = false; const xs = new Float32Array(n * 2);
+        for (let i = 0; i < n; i++) {
+          const q = P(ring[i*3], ring[i*3+1], ring[i*3+2]);
+          if (q[2] > 0) front = true;
+          let x = q[0], y = q[1]; if (q[2] < 0) { const l = Math.hypot(x, y) || 1; x /= l; y /= l; }
+          xs[i*2] = CX + x * R; xs[i*2+1] = CY - y * R;
+        }
+        if (!front) continue; any = true;
+        c.moveTo(xs[0], xs[1]); for (let i = 1; i < n; i++) c.lineTo(xs[i*2], xs[i*2+1]); c.closePath();
+      }
+      if (!any) continue;
+      c.fillStyle = BIG ? (S.sel === k ? k.rSel : S.hover === k ? k.rHover : k.rFill) : (S.sel === k ? k.fillSel : S.hover === k ? k.fillHover : k.fill);
+      c.fill('evenodd'); c.stroke();
+      if (S.sel === k) { c.save(); c.lineWidth = 1.8; c.strokeStyle = '#fff'; c.stroke(); c.restore(); }
+    }
+    // méridiens et parallèles (discrets)
+    if (BIG) {
+      c.strokeStyle = 'rgba(255,190,90,.10)'; c.lineWidth = .6;
+      const seg = (f) => { c.beginPath(); let pen = false; for (let i = 0; i <= 72; i++) { const [x, y, z] = f(i / 72); const q = P(x, y, z); if (q[2] <= 0) { pen = false; continue; } const X = CX + q[0] * R, Y = CY - q[1] * R; if (pen) c.lineTo(X, Y); else { c.moveTo(X, Y); pen = true; } } c.stroke(); };
+      for (let la = -60; la <= 60; la += 30) { const p = la * Math.PI / 180; seg((u) => [Math.cos(p) * Math.sin(u * 6.2832), Math.sin(p), Math.cos(p) * Math.cos(u * 6.2832)]); }
+      for (let lo = 0; lo < 180; lo += 30) { const l = lo * Math.PI / 180; seg((u) => { const p = u * 6.2832; return [Math.cos(p) * Math.sin(l), Math.sin(p), Math.cos(p) * Math.cos(l)]; }); }
+    }
+    c.restore();
+    // éclairage : soleil en haut à gauche, face nocturne en bas à droite
+    const li = c.createRadialGradient(CX - R * .45, CY - R * .5, R * .05, CX - R * .1, CY - R * .1, R * 1.25);
+    if (BIG) { li.addColorStop(0, 'rgba(255,226,170,.34)'); li.addColorStop(.35, 'rgba(255,200,120,0)'); li.addColorStop(.72, 'rgba(0,0,0,.55)'); li.addColorStop(1, 'rgba(0,0,0,.93)'); }
+    else { li.addColorStop(0, 'rgba(255,255,255,.22)'); li.addColorStop(.5, 'rgba(255,255,255,0)'); li.addColorStop(1, 'rgba(0,6,20,.62)'); }
+    c.fillStyle = li; c.beginPath(); c.arc(CX, CY, R, 0, 6.2832); c.fill();
+    if (BIG) { // liseré atmosphérique intérieur, plus marqué côté éclairé
+      const rim = c.createRadialGradient(CX, CY, R * .9, CX, CY, R); rim.addColorStop(0, 'rgba(255,180,70,0)'); rim.addColorStop(1, 'rgba(255,190,90,.42)');
+      c.fillStyle = rim; c.beginPath(); c.arc(CX, CY, R, 0, 6.2832); c.fill();
+    }
+    c.strokeStyle = BIG ? 'rgba(255,200,110,.5)' : 'rgba(150,200,255,.4)'; c.lineWidth = 1.2; c.beginPath(); c.arc(CX, CY, R, 0, 6.2832); c.stroke();
+    if (BIG && WORLD) drawNetwork(c, t);
+    // repères : pays cités dans l'actualité (pulsation)
+    const MK = BIG ? '#ffd27a' : MARKER;
+    for (const m of S.mentions) {
+      const q = P(...m.c.vec); if (q[2] < 0.12) continue;
+      const x = CX + q[0] * R, y = CY - q[1] * R, r = 3 + Math.min(m.n, 10) * 0.55, ph = ((((t / 1600) + m.c.lon * .01) % 1) + 1) % 1;
+      c.globalAlpha = (1 - ph) * .7; c.strokeStyle = MK; c.lineWidth = 1.5; c.beginPath(); c.arc(x, y, r + ph * 14, 0, 6.2832); c.stroke();
+      c.globalAlpha = Math.min(1, q[2] * 2 + .2); c.fillStyle = MK; c.beginPath(); c.arc(x, y, r, 0, 6.2832); c.fill();
+      c.strokeStyle = BIG ? '#fff6dc' : '#fff'; c.lineWidth = 1; c.stroke();
+    }
+    c.globalAlpha = 1;
+    if (BIG) drawPlanets(c, t, 'front');
+  }
+
+  let last = 0;
+  function tick(t) {
+    const f = Math.min(3, (t - last) / 16.7 || 1); last = t;
+    if (S.focus) {
+      const dl = ((S.focus.lon - S.lon + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
+      S.lon += dl * 0.08 * f; S.lat += (S.focus.lat - S.lat) * 0.08 * f;
+      if (Math.abs(dl) < 0.004 && Math.abs(S.focus.lat - S.lat) < 0.004) S.focus = null;
+    } else if (!S.drag) {
+      S.vLon += (S.base * (S.hover ? 0.35 : 1) - S.vLon) * 0.04 * f; // rotation permanente, ralentie au survol
+      if (!REDUCED) S.lon += S.vLon * f;
+    }
+    S.cx += (targetCx() - S.cx) * 0.12 * f;
+    if (WORLD) draw(t); else { ctx.setTransform(S.dpr, 0, 0, S.dpr, 0, 0); ctx.clearRect(0, 0, S.w, S.h); }
+  }
+
+  // --- interactions
+  function pickAt(ev) {
+    if (!WORLD) return null;
+    rot(); const r = cv.getBoundingClientRect(), u = (ev.clientX - r.left - CX) / R, v = (CY - (ev.clientY - r.top)) / R, d = u * u + v * v;
+    if (d > 1) return null;
+    const z2 = Math.sqrt(1 - d), y = v * cT + z2 * sT, z1 = -v * sT + z2 * cT, x = u * cC + z1 * sC, z = -u * sC + z1 * cC;
+    return countryAt(Math.atan2(x, z) * 180 / Math.PI, Math.asin(Math.max(-1, Math.min(1, y))) * 180 / Math.PI);
+  }
+  cv.addEventListener('pointerdown', (e) => { S.drag = { x: e.clientX, y: e.clientY }; S.moved = 0; S.focus = null; cv.classList.add('drag'); cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener('pointermove', (e) => {
+    if (S.drag) {
+      const dx = e.clientX - S.drag.x, dy = e.clientY - S.drag.y; S.moved += Math.abs(dx) + Math.abs(dy);
+      S.lon -= dx * 0.006; S.vLon = Math.max(-0.06, Math.min(0.06, -dx * 0.006)); S.lat = Math.max(-1.2, Math.min(1.2, S.lat + dy * 0.005)); S.drag = { x: e.clientX, y: e.clientY };
+      return;
+    }
+    const k = pickAt(e); S.hover = k; cv.style.cursor = k ? 'pointer' : 'grab';
+    if (k) {
+      const n = S.mentions.find((m) => m.c === k)?.n || 0;
+      tip.textContent = k.name; if (n) { const s = el('small', null, `${n} article${n > 1 ? 's' : ''}`); tip.append(s); }
+      const r = cv.getBoundingClientRect(); tip.style.left = Math.min(e.clientX - r.left + 14, S.w - 220) + 'px'; tip.style.top = Math.max(8, e.clientY - r.top - 36) + 'px'; tip.classList.add('show');
+    } else tip.classList.remove('show');
+  });
+  cv.addEventListener('pointerup', (e) => { S.drag = null; cv.classList.remove('drag'); if (S.moved < 6) { const k = pickAt(e); if (k) select(k); else close(); } });
+  cv.addEventListener('pointerleave', () => { S.hover = null; tip.classList.remove('show'); });
+
+  // --- fiche pays
+  function articlesFor(c) {
+    return Object.values(data.items).flat().filter((i) => countriesIn(i).includes(c)).sort((a, b) => b.time - a.time);
+  }
+  function dd(dl, k, v) { if (!v) return; dl.append(el('dt', null, k), el('dd', null, v)); }
+  // Nouvelles du pays : Google Actualités via le serveur (cache local par pays)
+  const newsMem = new Map(); let panelSeq = 0, tab = 'news';
+  const dn = (type, code) => { try { return new Intl.DisplayNames(['fr'], { type }).of(code); } catch { return code; } };
+  const compact = (n, unit) => new Intl.NumberFormat('fr-FR', { notation: 'compact', maximumFractionDigits: 1 }).format(n) + (unit || '');
+  function getNews(c) {
+    const info = c.info; if (!info) return Promise.resolve(null);
+    if (!newsMem.has(info.a2) || Date.now() - newsMem.get(info.a2).at > 300000) {
+      const p = fetch(`/api/country-news?code=${info.a2}&q=${encodeURIComponent(c.name)}&langs=${info.languages.join(',')}`).then((r) => r.ok ? r.json() : null).catch(() => null);
+      newsMem.set(info.a2, { at: Date.now(), p });
+    }
+    return newsMem.get(info.a2).p;
+  }
+  function nitem(a, meta) {
+    const l = el('a', 'nitem'); l.href = a.link; l.target = '_blank'; l.rel = 'noopener noreferrer';
+    l.append(el('small', null, meta), el('b', null, a.title)); return l;
+  }
+  function showPanel(c, keepScroll) {
+    const seq = ++panelSeq, info = c.info, prev = panel.scrollTop;
+    panel.textContent = '';
+    const x = el('button', 'x'); x.setAttribute('aria-label', 'Fermer'); x.append(icon('x')); x.onclick = close;
+    const head = el('div', 'phead');
+    if (info) { const f = el('img', 'flag'); f.src = `https://flagcdn.com/w160/${info.a2.toLowerCase()}.png`; f.alt = ''; head.append(f); }
+    const ht = el('div'); ht.append(el('h2', null, c.name));
+    ht.append(el('p', 'off', [info?.capital?.[0], info && (REGION_FR[info.region] || info.region)].filter(Boolean).join(' · ') || ' '));
+    head.append(ht);
+    const stats = el('div', 'stats');
+    const stat = (k, v) => { if (!v) return; const s = el('div'); s.append(el('small', null, k), el('b', null, v)); stats.append(s); };
+    if (info) { stat('Population', info.population ? compact(info.population) : ''); stat('Superficie', info.area ? compact(info.area, ' km²') : ''); stat('Voisins', info.borders ? String(info.borders) : ''); }
+    const tabs = el('div', 'ptabs'), body = el('div', 'pbody');
+    const defs = [['news', 'Nouvelles'], ['local', 'Presse locale'], ['facts', 'Fiche']];
+    const draw = (news) => {
+      body.textContent = '';
+      if (tab === 'news') {
+        const arts = articlesFor(c);
+        body.append(el('h3', null, `Dans notre veille${arts.length ? ' · ' + arts.length : ''}`));
+        if (!arts.length) body.append(el('div', 'none', 'Aucun article de nos 15 médias ne cite ce pays pour le moment'));
+        for (const a of arts.slice(0, 6)) body.append(nitem(a, `${a.source} · ${CATS[a.category]} · ${ago(a.time)}`));
+        body.append(el('h3', null, `Dans la presse · ${c.name}`));
+        if (news === undefined) body.append(el('div', 'none', 'Chargement des nouvelles'));
+        else if (!news || !news.fr.length) body.append(el('div', 'none', info ? 'Nouvelles indisponibles pour le moment' : 'Aucune source de nouvelles pour ce territoire'));
+        else for (const a of news.fr.slice(0, 10)) body.append(nitem(a, `${a.source} · ${ago(a.time)}`));
+      } else if (tab === 'local') {
+        if (news === undefined) body.append(el('div', 'none', 'Chargement de la presse locale'));
+        else if (!news || !news.local.length) body.append(el('div', 'none', 'Presse locale indisponible pour ce pays'));
+        else {
+          body.append(el('h3', null, `À la une dans le pays · ${dn('language', news.localLang)}`));
+          for (const a of news.local.slice(0, 12)) body.append(nitem(a, `${a.source} · ${ago(a.time)}`));
+          body.append(el('div', 'note', "Titres dans la langue d'origine du journal"));
+        }
+      } else {
+        const dl = el('dl');
+        if (info) {
+          dd(dl, 'Nom officiel', info.official);
+          dd(dl, 'Capitale', info.capital.join(', '));
+          dd(dl, 'Population', info.population ? `${info.population.toLocaleString('fr-FR')} (${info.popYear})` : '');
+          dd(dl, 'Superficie', info.area ? `${Math.round(info.area).toLocaleString('fr-FR')} km²` : '');
+          dd(dl, 'Région', REGION_FR[info.region] || info.region);
+          dd(dl, 'Langues', info.languages.map((l) => dn('language', l)).join(', '));
+          dd(dl, 'Monnaie', info.currencies.map((m) => `${dn('currency', m.code)}${m.symbol ? ' (' + m.symbol + ')' : ''}`).join(', '));
+          dd(dl, 'Frontières', info.borders ? `${info.borders} pays voisin${info.borders > 1 ? 's' : ''}` : info.landlocked ? '' : 'Aucun voisin terrestre');
+        } else dl.append(el('dd', null, 'Aucune fiche disponible'));
+        body.append(dl);
+        const w = el('a', 'wiki', 'Voir sur Wikipédia'); w.href = `https://fr.wikipedia.org/wiki/${encodeURIComponent(c.name.replace(/ /g, '_'))}`; w.target = '_blank'; w.rel = 'noopener noreferrer'; w.append(icon('go'));
+        body.append(w);
+      }
+    };
+    for (const [k, label] of defs) {
+      const b = el('button', 'ptab' + (k === tab ? ' on' : ''), label);
+      b.onclick = () => { tab = k; [...tabs.children].forEach((t, i) => t.classList.toggle('on', defs[i][0] === k)); draw(cur); body.scrollTop = 0; };
+      tabs.append(b);
+    }
+    let cur;
+    draw(undefined);
+    panel.append(x, head, stats, tabs, body);
+    getNews(c).then((n) => { if (seq !== panelSeq) return; cur = n; draw(n); });
+    panel.scrollTop = keepScroll ? prev : 0;
+  }
+  function select(c) {
+    S.sel = c; S.focus = { lon: c.lon * Math.PI / 180, lat: Math.max(-1.0, Math.min(1.0, c.lat * Math.PI / 180)) };
+    mount.classList.add('has-panel'); showPanel(c); drawChips();
+  }
+  function close() { if (!S.sel) return; S.sel = null; mount.classList.remove('has-panel'); drawChips(); }
+
+  // --- pays cités (boutons)
+  function drawChips() {
+    chips.textContent = '';
+    if (!S.mentions.length) return;
+    chips.append(el('span', 'lbl', 'Pays cités'));
+    for (const m of S.mentions.slice(0, 14)) {
+      const b = el('button', 'chip' + (S.sel === m.c ? ' on' : ''));
+      if (m.c.info) { const f = el('img'); f.src = `https://flagcdn.com/w40/${m.c.info.a2.toLowerCase()}.png`; f.alt = ''; f.loading = 'lazy'; b.append(f); }
+      b.append(m.c.name, el('span', 'n', m.n)); b.onclick = () => select(m.c); chips.append(b);
+    }
+  }
+  function refresh() {
+    if (!WORLD) return;
+    const items = opts.items();
+    const key = (data.updatedAt || 0) + ':' + items.length + ':' + (items[0]?.id || '');
+    if (key === S.mkey) return; S.mkey = key;
+    const cnt = new Map(); for (const it of items) for (const c of countriesIn(it)) cnt.set(c, (cnt.get(c) || 0) + 1);
+    S.mentions = [...cnt].map(([c, n]) => ({ c, n })).sort((a, b) => b.n - a.n);
+    if (opts.big) { // liens = pays cités dans un même article
+      const pc = new Map();
+      for (const it of items) { const cs = countriesIn(it); if (cs.length < 2 || cs.length > 8) continue; for (let i = 0; i < cs.length; i++) for (let j = i + 1; j < cs.length; j++) { const k = cs[i].id + '-' + cs[j].id; const e = pc.get(k) || { a: cs[i], b: cs[j], n: 0 }; e.n++; pc.set(k, e); } }
+      S.links = [...pc.values()].sort((x, y) => y.n - x.n).slice(0, 40).map((l) => ({ ...l, pts: arcPts(l.a.vec, l.b.vec, 28) }));
+    }
+    drawChips(); if (S.sel) showPanel(S.sel, true);
+  }
+  function setWorld() { msg.remove(); refresh(); if (pickInput) { let dl = $('countrylist'); if (!dl) { dl = document.createElement('datalist'); dl.id = 'countrylist'; document.body.append(dl); } dl.textContent = ''; [...WORLD.list].sort((a, b) => a.name.localeCompare(b.name, 'fr')).forEach((c) => { const o = document.createElement('option'); o.value = c.name; dl.append(o); }); } }
+
+  const api = { mount, tick, refresh, setWorld, closePanel: close, fail: () => { msg.textContent = 'Carte indisponible, nouvelle tentative'; }, visible: () => mount.getClientRects().length > 0, resetKey: () => { S.mkey = ''; } };
+  globes.push(api); return api;
+}
+
+function loop(t) {
+  for (const g of globes) if (g.visible()) { try { g.tick(t); } catch (e) { console.error(e); } }
+  requestAnimationFrame(loop);
+}
+
+const smallGlobe = createGlobe($('stage'), { big:false, items: () => (view === 'globe' ? [] : data.items[view] || []) });
+let prevView = 'tech';
+const leaveGlobe = () => { view = prevView; render(); window.scrollTo({ top:0 }); };
+const bigGlobe = createGlobe($('bigstage'), { big:true, onBack: () => leaveGlobe(), items: () => Object.values(data.items).flat() });
+requestAnimationFrame(loop);
+
+async function loadWorld() {
+  try {
+    const r = await fetch('/api/geo?v=2'); const g = await r.json(); if (g.error) throw new Error(g.error);
+    WORLD = buildWorld(g); $('gsub').textContent = `${WORLD.list.length} pays · rotation continue`;
+    globes.forEach((x) => { x.setWorld(); });
+  } catch { globes.forEach((x) => x.fail()); setTimeout(loadWorld, 15000); }
+}
+loadWorld();
+
+// =====================================================================
+//  Fil d'actualité
+// =====================================================================
+async function load() {
+  try {
+    const d = await (await fetch('/api/news')).json();
+    const all = Object.values(d.items).flat();
+    if (seen.size) freshIds = new Set(all.filter(i => !seen.has(i.id)).map(i => i.id));
+    data = d;
+    all.forEach(i => { seen.add(i.id); SRC_CAT[i.source] = i.category; });
+    localStorage.setItem('seen', JSON.stringify([...seen].slice(-3000)));
+    render();
+  } catch { setLive(false); }
+}
+
+function setLive(ok) {
+  $('dot').classList.toggle('off', !ok);
+  $('status').textContent = !ok ? 'Hors ligne, reconnexion'
+    : data.updatedAt ? `En direct · mis à jour à ${new Date(data.updatedAt).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}`
+    : 'Première collecte en cours';
+}
+
+function render() {
+  setLive(true);
+  document.body.dataset.view = view === 'globe' ? 'globe' : 'feed';
+
+  const tabs = $('tabs'); tabs.textContent = '';
+  for (const [k, label] of Object.entries(CATS)) {
+    const b = el('button', 'row' + (k === view ? ' active' : ''));
+    b.append(icon(k), el('span', 'label', label), el('span', 'n', (data.items[k] || []).length));
+    b.onclick = () => { view = k; srcFilter = ''; render(); window.scrollTo({ top:0 }); };
+    tabs.append(b);
+  }
+  const gb = el('button', 'row' + (view === 'globe' ? ' active' : ''));
+  gb.append(icon('globe'), el('span', 'label', 'Globe 3D'));
+  gb.onclick = () => { if (view !== 'globe') prevView = view; view = 'globe'; render(); window.scrollTo({ top:0 }); };
+  tabs.append(gb);
+
+  if (view === 'globe') { bigGlobe.refresh(); return; }
+  const cat = view, items = data.items[cat] || [];
+  $('title').textContent = CATS[cat];
+  smallGlobe.resetKey(); smallGlobe.refresh();
+
+  const counts = {};
+  items.forEach(i => counts[i.source] = (counts[i.source] || 0) + 1);
+  const names = Object.keys(data.status).filter(n => SRC_CAT[n] === cat || counts[n]);
+  const sl = $('sources'); sl.textContent = '';
+  names.forEach(n => {
+    const st = data.status[n] || {};
+    const b = el('button', 'row src' + (srcFilter === n ? ' active' : ''));
+    const d = el('span', 'sd' + (st.ok === false ? ' bad' : ''));
+    if (st.ok === false) d.title = 'Source indisponible';
+    b.append(d, el('span', 'label', n), el('span', 'n', counts[n] || 0));
+    b.onclick = () => { srcFilter = srcFilter === n ? '' : n; render(); };
+    sl.append(b);
+  });
+  $('clear').classList.toggle('show', !!srcFilter);
+
+  const buckets = new Array(24).fill(0);
+  items.forEach(i => { const h = Math.floor((Date.now() - i.time) / 3600e3); if (h >= 0 && h < 24) buckets[23 - h]++; });
+  const max = Math.max(1, ...buckets);
+  const bars = $('bars'); bars.textContent = '';
+  buckets.forEach((v) => {
+    const i = document.createElement('i');
+    i.style.height = Math.max(2, Math.round(v / max * 48)) + 'px';
+    i.title = `${v} article${v > 1 ? 's' : ''}`;
+    bars.append(i);
+  });
+  $('pulsecap').textContent = `${buckets.reduce((a, b) => a + b, 0)} en 24 h`;
+
+  const q = $('q').value.trim().toLowerCase();
+  const filtered = items.filter(i =>
+    (!srcFilter || i.source === srcFilter) &&
+    (!q || (i.title + ' ' + i.summary).toLowerCase().includes(q)));
+
+  const lead = $('lead'); lead.textContent = '';
+  const list = $('list'); list.textContent = '';
+  if (!data.updatedAt) { list.append(el('div', 'empty', 'Première collecte en cours')); return; }
+  if (!filtered.length) { list.append(el('div', 'empty', 'Aucun article')); return; }
+
+  const [top, ...rest] = filtered;
+  const a = el('a', 'lead'); a.href = top.link; a.target = '_blank'; a.rel = 'noopener noreferrer';
+  const k = el('div', 'kicker');
+  k.append(el('span', 'tag', 'À la une'), el('span', null, top.source), el('span', null, ago(top.time)));
+  a.append(k, el('h2', null, top.title));
+  if (top.summary) a.append(el('p', null, top.summary));
+  const go = el('span', 'go', "Lire l'article"); go.append(icon('go')); a.append(go);
+  lead.append(a);
+
+  for (const i of rest) {
+    const row = el('a', 'item'); row.href = i.link; row.target = '_blank'; row.rel = 'noopener noreferrer';
+    const w = el('div', 'when');
+    if (freshIds.has(i.id)) { const fd = el('span', 'fresh-dot'); fd.title = 'Nouveau'; w.append(fd); }
+    w.append(ago(i.time)); w.title = new Date(i.time).toLocaleString('fr-FR');
+    const body = el('div');
+    body.append(el('span', 'src-name', i.source), el('h3', null, i.title));
+    if (i.summary) body.append(el('p', null, i.summary));
+    row.append(w, body);
+    list.append(row);
+  }
+}
+
+// Inclinaison 3D de « À la une »
+$('lead').parentElement.classList.add('tiltwrap');
+$('lead').addEventListener('pointermove', (e) => {
+  if (REDUCED) return;
+  const a = $('lead').firstElementChild; if (!a) return;
+  const r = a.getBoundingClientRect(), px = (e.clientX - r.left) / r.width - .5, py = (e.clientY - r.top) / r.height - .5;
+  a.style.transform = `rotateY(${px * 5}deg) rotateX(${-py * 4}deg)`;
+});
+$('lead').addEventListener('pointerleave', () => { const a = $('lead').firstElementChild; if (a) a.style.transform = ''; });
+
+$('q').oninput = render;
+$('clear').onclick = () => { srcFilter = ''; render(); };
+document.addEventListener('keydown', (e) => {
+  if (e.key === '/' && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); if (view !== 'globe') $('q').focus(); }
+  if (e.key === 'Escape') {
+    document.activeElement.blur();
+    if (view === 'globe') { if ($('bigstage').classList.contains('has-panel')) bigGlobe.closePanel(); else leaveGlobe(); }
+  }
+});
+
+const es = new EventSource('/api/stream');
+es.addEventListener('update', load);
+es.onopen = () => setLive(true);
+es.onerror = () => setLive(false);
+
+load();
+setInterval(() => { if (view !== 'globe') render(); }, 60000);
+setInterval(load, 180000);
+</script>
+</body>
+</html>
