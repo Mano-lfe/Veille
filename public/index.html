@@ -144,7 +144,12 @@
   .gmsg { position:absolute; inset:0; display:grid; place-items:center; color:rgba(232,236,244,.6); font:400 13px/20px var(--mono); pointer-events:none; }
 
   .panel { position:absolute; z-index:4; top:12px; bottom:12px; right:12px; width:380px; display:flex; flex-direction:column; background:var(--card); color:var(--text); border:1px solid var(--line); border-radius:14px; overflow:hidden; padding:20px 20px 0; opacity:0; transform:translateX(16px); pointer-events:none; transition:opacity 300ms var(--ease), transform 300ms var(--ease); }
-  .stage.has-panel .panel { opacity:1; transform:none; pointer-events:auto; }
+  .stage.has-panel .panel:not(.ppanel), .stage.has-planet .ppanel { opacity:1; transform:none; pointer-events:auto; }
+  .ppanel .stats b { font-size:15px; line-height:24px; }
+  .ppanel .pfact { margin:0; font-size:14px; line-height:22px; color:var(--text2); }
+  .stage.has-planet .pick { display:none; }
+  .stage.has-planet .chips { right:404px; }
+  .stage.has-planet .legend, .stage.has-planet .hintline { display:none; }
   .panel .x { position:absolute; right:12px; top:12px; width:32px; height:32px; display:grid; place-items:center; border:0; border-radius:8px; background:none; color:var(--muted); }
   .panel .x:hover { background:var(--raised); color:var(--text); }
   .panel .flag { width:48px; height:34px; object-fit:cover; border-radius:4px; border:1px solid var(--line); }
@@ -373,6 +378,135 @@ const PLANETS = [
   { n:'Mercure', k:.17, fx:-.9,  fy:-.1,  col:['#e0d6c8','#9a8e80','#2c2722'] },
   { n:'Lune',    k:.14, fx:.9,   fy:.1,   col:['#f2f2f2','#a8a8a8','#2a2a2a'] },
 ];
+// Rotation propre (rad/s, négatif = rétrograde), inclinaison de l'axe (rad) et dérive douce de chaque planète
+const PX = { Jupiter:{ spin:.34, roll:.05 }, Saturne:{ spin:.3, roll:-.42 }, Uranus:{ spin:-.2, roll:1.6 }, Neptune:{ spin:.24, roll:.3 },
+  'Vénus':{ spin:-.05, roll:.1 }, Mars:{ spin:.2, roll:.42 }, Mercure:{ spin:.04, roll:0 }, Lune:{ spin:.06, roll:.1 } };
+PLANETS.forEach((p, i) => Object.assign(p, PX[p.n], { off:0, v:0, pitch:.3, dph:i * 1.7, dw:.11 + .03 * (i % 4), tex:null, gen:null, tbl:null }));
+
+// Fiches (chiffres arrondis, valeurs usuelles)
+const INFO = {
+  Mercure:{ kind:'Planète tellurique · la plus proche du Soleil', top:[['Diamètre','4 879 km'],['Distance au Soleil','57,9 M km'],['Lunes','0']], rows:[['Jour','58,6 jours terrestres'],['Année','88 jours terrestres'],['Température','−180 à 430 °C']], fact:"La plus petite planète du système solaire. Presque sans atmosphère, elle passe d'un froid glacial la nuit à une chaleur extrême le jour." },
+  'Vénus':{ kind:'Planète tellurique · la plus chaude', top:[['Diamètre','12 104 km'],['Distance au Soleil','108,2 M km'],['Lunes','0']], rows:[['Jour','243 jours terrestres (rétrograde)'],['Année','225 jours terrestres'],['Température','465 °C en moyenne']], fact:"Son atmosphère de gaz carbonique provoque un effet de serre extrême. Elle tourne à l'envers : le Soleil s'y lève à l'ouest, et son jour dure plus longtemps que son année." },
+  Mars:{ kind:'Planète tellurique · la planète rouge', top:[['Diamètre','6 779 km'],['Distance au Soleil','227,9 M km'],['Lunes','2']], rows:[['Jour','24 h 37'],['Année','687 jours terrestres'],['Température','−63 °C en moyenne'],['Lunes','Phobos et Déimos']], fact:"Sa couleur vient de l'oxyde de fer de son sol. Elle porte Olympus Mons, le plus haut volcan connu du système solaire, d'environ 22 km de haut." },
+  Jupiter:{ kind:'Géante gazeuse · la plus grosse planète', top:[['Diamètre','139 820 km'],['Distance au Soleil','778,5 M km'],['Lunes','plus de 90']], rows:[['Jour','9 h 56'],['Année','11,9 ans terrestres'],['Température',"−110 °C au sommet des nuages"]], fact:"Elle est plus massive que toutes les autres planètes réunies. Sa Grande Tache rouge est une tempête plus large que la Terre, observée depuis plus de 150 ans." },
+  Saturne:{ kind:'Géante gazeuse · la planète aux anneaux', top:[['Diamètre','116 460 km'],['Distance au Soleil','1 434 M km'],['Lunes','plus de 140']], rows:[['Jour','10 h 33'],['Année','29,4 ans terrestres'],['Température','−140 °C']], fact:"Ses anneaux, surtout faits de glace d'eau, s'étendent sur des centaines de milliers de kilomètres mais n'ont souvent que quelques dizaines de mètres d'épaisseur. Elle est moins dense que l'eau." },
+  Uranus:{ kind:'Géante de glaces', top:[['Diamètre','50 724 km'],['Distance au Soleil','2 871 M km'],['Lunes','28']], rows:[['Jour','17 h 14 (rétrograde)'],['Année','84 ans terrestres'],['Température','−195 °C']], fact:"Son axe est incliné de 98° : elle roule pour ainsi dire couchée sur son orbite, et ses pôles reçoivent tour à tour le Soleil pendant plus de 40 ans." },
+  Neptune:{ kind:'Géante de glaces · la plus lointaine', top:[['Diamètre','49 244 km'],['Distance au Soleil','4 495 M km'],['Lunes','16']], rows:[['Jour','16 h 6'],['Année','164,8 ans terrestres'],['Température','−200 °C']], fact:"On y mesure les vents les plus rapides du système solaire, au-delà de 2 000 km/h. Elle a été repérée par le calcul avant d'être vue au télescope, en 1846." },
+  Lune:{ kind:'Satellite naturel de la Terre', top:[['Diamètre','3 475 km'],['Distance à la Terre','384 400 km'],['Gravité',"1/6 de la Terre"]], rows:[['Jour','27,3 jours terrestres'],['Révolution','27,3 jours autour de la Terre'],['Température','−170 à 120 °C']], fact:"Elle montre toujours la même face à la Terre, car sa rotation et sa révolution durent autant. Ses mers sombres sont d'anciennes coulées de lave." },
+};
+
+// ---- Planètes en 3D : textures procédurales (bruit 3D, donc sans couture) et sphère rendue point par point
+const TW = 512, TH = 256, TWO = Math.PI * 2;
+const hash3 = (x, y, z) => { let h = Math.imul(x, 374761393) ^ Math.imul(y, 668265263) ^ Math.imul(z, 1440662683); h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
+function vnoise(x, y, z) {
+  const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z);
+  let fx = x - xi, fy = y - yi, fz = z - zi; fx = fx * fx * (3 - 2 * fx); fy = fy * fy * (3 - 2 * fy); fz = fz * fz * (3 - 2 * fz);
+  const l = (a, b, t) => a + (b - a) * t;
+  return l(l(l(hash3(xi, yi, zi), hash3(xi + 1, yi, zi), fx), l(hash3(xi, yi + 1, zi), hash3(xi + 1, yi + 1, zi), fx), fy),
+           l(l(hash3(xi, yi, zi + 1), hash3(xi + 1, yi, zi + 1), fx), l(hash3(xi, yi + 1, zi + 1), hash3(xi + 1, yi + 1, zi + 1), fx), fy), fz);
+}
+function fbm(x, y, z, oct) { let s = 0, a = .5, f = 1, n = 0; for (let i = 0; i < oct; i++) { s += a * vnoise(x * f, y * f, z * f); n += a; a *= .5; f *= 2.03; } return s / n; }
+const mixc = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+const sstep = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+const dlon = (lon, c) => ((lon - c + 9.4248) % 6.2832) - 3.1416;
+const TEXFN = {
+  Jupiter: (p) => {
+    const w = fbm(p.x * 2.4, p.y * 7, p.z * 2.4, 3), b = Math.sin(p.lat * 17 + w * 2.6 + fbm(p.x * 6, p.y * 16, p.z * 6, 2) * .8) * .5 + .5;
+    let c = mixc([158, 98, 62], [226, 188, 138], sstep(.2, .8, b)); c = mixc(c, [244, 226, 194], sstep(.82, 1, b) * .7);
+    const ex = dlon(p.lon, .7) / .34, ey = (p.lat + .38) / .13, d = ex * ex + ey * ey; // Grande Tache rouge
+    if (d < 1.4) c = mixc(c, d < .45 ? [200, 84, 54] : [222, 132, 96], Math.pow(1 - d / 1.4, .7) * .95);
+    return c;
+  },
+  Saturne: (p) => { const w = fbm(p.x * 2, p.y * 9, p.z * 2, 3), b = Math.sin(p.lat * 13 + w * 1.6) * .5 + .5; return mixc(mixc([196, 164, 106], [236, 214, 160], b), [220, 196, 150], sstep(1.1, 1.5, Math.abs(p.lat)) * .5); },
+  Uranus: (p) => { const b = Math.sin(p.lat * 9 + fbm(p.x * 2, p.y * 3, p.z * 2, 2) * .8) * .5 + .5; return mixc([126, 196, 206], [160, 222, 228], b * .7 + sstep(1, 1.5, Math.abs(p.lat)) * .3); },
+  Neptune: (p) => {
+    const w = fbm(p.x * 2.2, p.y * 6, p.z * 2.2, 3), b = Math.sin(p.lat * 11 + w * 2.2) * .5 + .5; let c = mixc([34, 62, 168], [66, 106, 224], b);
+    c = mixc(c, [170, 200, 255], sstep(.66, .8, fbm(p.x * 5, p.y * 11, p.z * 5, 3)) * .55);
+    const ex = dlon(p.lon, -.5) / .28, ey = (p.lat + .35) / .12, d = ex * ex + ey * ey; if (d < 1) c = mixc(c, [16, 30, 92], (1 - d) * .9);
+    return c;
+  },
+  Mars: (p) => { let c = mixc([126, 64, 42], [196, 100, 58], sstep(.3, .7, fbm(p.x * 2.6, p.y * 2.6, p.z * 2.6, 5))); c = mixc(c, [70, 42, 36], sstep(.52, .66, fbm(p.x * 1.4 + 7, p.y * 1.4, p.z * 1.4, 4)) * .8); return mixc(c, [240, 240, 244], sstep(1.25, 1.4, Math.abs(p.lat))); },
+  'Vénus': (p) => { const q = fbm(p.x * 2.8, p.y * 2.8, p.z * 2.8, 4), r = fbm(p.x * 2.8 + q * 1.9 + 3, p.y * 2.8 + q * 1.9, p.z * 2.8 + q * 1.9, 4); return mixc(mixc([196, 146, 80], [238, 208, 142], sstep(.3, .7, r)), [252, 238, 200], sstep(.62, .8, q) * .5); },
+  Mercure: (p) => { const g = 104 + fbm(p.x * 4, p.y * 4, p.z * 4, 5) * 90; return mixc([g, g * .94, g * .88], [g * .7, g * .68, g * .66], sstep(.5, .62, fbm(p.x * 1.5 + 2, p.y * 1.5, p.z * 1.5, 3))); },
+  Lune: (p) => { const g = 150 + fbm(p.x * 5, p.y * 5, p.z * 5, 5) * 80; return mixc([g, g, g * .98], [72, 72, 80], sstep(.5, .6, fbm(p.x * 1.7 + 4, p.y * 1.7, p.z * 1.7, 4)) * .85); },
+};
+const CRATERS = { Mercure:[170, 3, 14], Lune:[130, 3, 16], Mars:[45, 3, 10] };
+function addCraters(data, n, rmin, rmax, seed) {
+  let s = seed; const rnd = () => (s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 4294967296;
+  for (let k = 0; k < n; k++) {
+    const cx = rnd() * TW, cy = (.12 + rnd() * .76) * TH, r = rmin + rnd() ** 2 * (rmax - rmin), sx = Math.min(3, 1 / Math.max(.3, Math.cos((.5 - cy / TH) * Math.PI)));
+    for (let y = Math.max(0, Math.floor(cy - r)); y < Math.min(TH, Math.ceil(cy + r)); y++) for (let x = Math.floor(cx - r * sx); x < Math.ceil(cx + r * sx); x++) {
+      const d = Math.hypot((x - cx) / sx, y - cy) / r; if (d >= 1) continue;
+      const k2 = d > .82 ? 1.16 : .84 + .12 * d, xi = ((x % TW) + TW) % TW, i = y * TW + xi, px = data[i];
+      data[i] = (255 << 24) | (Math.min(255, ((px >> 16) & 255) * k2) << 16) | (Math.min(255, ((px >> 8) & 255) * k2) << 8) | Math.min(255, (px & 255) * k2);
+    }
+  }
+}
+// Génère les textures petit à petit (quelques ms par image) pour ne jamais figer l'écran
+function genTick(budget) {
+  const t0 = performance.now();
+  for (const p of PLANETS) {
+    if (p.tex) continue;
+    const g = p.gen || (p.gen = { row: 0, data: new Uint32Array(TW * TH) }), f = TEXFN[p.n];
+    while (g.row < TH && performance.now() - t0 < budget) {
+      const lat = (.5 - (g.row + .5) / TH) * Math.PI, cl = Math.cos(lat), sl = Math.sin(lat);
+      for (let col = 0; col < TW; col++) {
+        const lon = ((col + .5) / TW) * TWO - Math.PI, c = f({ x: cl * Math.sin(lon), y: sl, z: cl * Math.cos(lon), lat, lon });
+        g.data[g.row * TW + col] = (255 << 24) | ((Math.max(0, Math.min(255, c[2])) | 0) << 16) | ((Math.max(0, Math.min(255, c[1])) | 0) << 8) | (Math.max(0, Math.min(255, c[0])) | 0);
+      }
+      g.row++;
+    }
+    if (g.row >= TH) { const cr = CRATERS[p.n]; if (cr) addCraters(g.data, cr[0], cr[1], cr[2], p.n.length * 977); p.tex = g.data; p.gen = null; }
+    return; // une seule planète par image
+  }
+}
+// Préparation en arrière-plan dès le chargement de la page, pendant les temps morts du navigateur : les textures sont prêtes à l'ouverture du globe
+(function warm() {
+  if (PLANETS.every((p) => p.tex)) return;
+  if (window.requestIdleCallback) requestIdleCallback((d) => { genTick(Math.max(4, Math.min(12, d.timeRemaining() - 1))); warm(); }, { timeout: 300 });
+  else setTimeout(() => { genTick(6); warm(); }, 30);
+})();
+// Table de correspondance pixel de la sphère -> texel de la texture (dépend de la taille, de l'inclinaison et du point de vue)
+function buildTable(D, pitch, roll) {
+  const n = D * D, U = new Float32Array(n), V = new Float32Array(n), L = new Float32Array(n), A = new Uint8Array(n);
+  const cp = Math.cos(pitch), sp = Math.sin(pitch), cr = Math.cos(roll), sr = Math.sin(roll), half = D / 2, ll = Math.hypot(-.5, .5, .7), lx = -.5 / ll, ly = .5 / ll, lz = .7 / ll;
+  for (let j = 0; j < D; j++) {
+    const y = (half - (j + .5)) / half;
+    for (let i = 0; i < D; i++) {
+      const x = ((i + .5) - half) / half, d2 = x * x + y * y, k = j * D + i;
+      if (d2 >= 1) continue;
+      const z = Math.sqrt(1 - d2), a = Math.min(1, (1 - Math.sqrt(d2)) * half);
+      A[k] = Math.round(a * 255);
+      L[k] = .1 + .9 * Math.pow(Math.max(0, x * lx + y * ly + z * lz), .85);
+      const y1 = y * cp + z * sp, z1 = -y * sp + z * cp, xo = x * cr + y1 * sr, yo = -x * sr + y1 * cr;
+      U[k] = (Math.atan2(xo, z1) / TWO + .5) * TW; V[k] = (.5 - Math.asin(Math.max(-1, Math.min(1, yo))) / Math.PI) * TH - .5;
+    }
+  }
+  return { D, pitch, roll, U, V, L, A };
+}
+// Dessine la sphère dans un canvas (rotation = décalage de la texture en longitude)
+function renderSphere(p, tbl, phase) {
+  const D = tbl.D;
+  if (!p.cvs || p.cvs.width !== D) { p.cvs = document.createElement('canvas'); p.cvs.width = p.cvs.height = D; p.cctx = p.cvs.getContext('2d'); p.img = p.cctx.createImageData(D, D); p.u32 = new Uint32Array(p.img.data.buffer); }
+  const { U, V, L, A } = tbl, tex = p.tex, out = p.u32, off = ((phase % TWO) + TWO) % TWO / TWO * TW, n = D * D, bil = D > 340;
+  for (let i = 0; i < n; i++) {
+    const a = A[i]; if (!a) { out[i] = 0; continue; }
+    let tx = U[i] + off; if (tx >= TW) tx -= TW;
+    let r, g, b;
+    if (!bil) { const t = tex[(V[i] < 0 ? 0 : V[i] >= TH ? TH - 1 : V[i] | 0) * TW + (tx | 0)]; r = t & 255; g = (t >> 8) & 255; b = (t >> 16) & 255; }
+    else {
+      const x0 = tx | 0, x1 = (x0 + 1) % TW, vy = V[i] < 0 ? 0 : V[i] > TH - 1.001 ? TH - 1.001 : V[i], y0 = vy | 0, fx = tx - x0, fy = vy - y0, r0 = y0 * TW, r1 = (y0 + 1) * TW;
+      const t00 = tex[r0 + x0], t10 = tex[r0 + x1], t01 = tex[r1 + x0], t11 = tex[r1 + x1];
+      const w00 = (1 - fx) * (1 - fy), w10 = fx * (1 - fy), w01 = (1 - fx) * fy, w11 = fx * fy;
+      r = (t00 & 255) * w00 + (t10 & 255) * w10 + (t01 & 255) * w01 + (t11 & 255) * w11;
+      g = ((t00 >> 8) & 255) * w00 + ((t10 >> 8) & 255) * w10 + ((t01 >> 8) & 255) * w01 + ((t11 >> 8) & 255) * w11;
+      b = ((t00 >> 16) & 255) * w00 + ((t10 >> 16) & 255) * w10 + ((t01 >> 16) & 255) * w01 + ((t11 >> 16) & 255) * w11;
+    }
+    const f = L[i]; out[i] = (a << 24) | (((b * f) | 0) << 16) | (((g * f) | 0) << 8) | ((r * f) | 0);
+  }
+  p.cctx.putImageData(p.img, 0, 0);
+  return p.cvs;
+}
 const ALIASES = { US:['etats-unis','usa','united states'], GB:['royaume-uni','grande-bretagne','united kingdom'], RU:['russie','russia'], KR:['coree du sud','south korea'], KP:['coree du nord','north korea'], CD:['rdc','congo-kinshasa'], CZ:['tchequie','republique tcheque'], MM:['birmanie','myanmar'], PS:['gaza','cisjordanie','palestine'], TW:['taiwan'], AE:['emirats arabes unis'], VA:['vatican'], SA:['arabie saoudite'] };
 const STOP_EN = new Set(['turkey','georgia','jersey','chad','guinea','niger','china']); // noms anglais trop ambigus
 
@@ -473,8 +607,8 @@ function countryAt(lon, lat) {
 }
 
 function createGlobe(mount, opts) {
-  const S = { lon: 0.3, lat: 0.35, vLon: 0, base: -0.0022, drag: null, hover: null, sel: null, focus: null, w: 0, h: 0, dpr: 1, cx: 0, mentions: [], links: [], mkey: '', moved: 0, stars: [], zoom: 1, zoomT: 1, shoots: [], nextShoot: 1200, pt: 0 };
-  const ZMIN = .45, ZMAX = 6;
+  const S = { lon: 0.3, lat: 0.35, vLon: 0, base: -0.0022, drag: null, hover: null, sel: null, focus: null, w: 0, h: 0, dpr: 1, cx: 0, mentions: [], links: [], mkey: '', moved: 0, stars: [], zoom: 1, zoomT: 1, shoots: [], nextShoot: 1200, pt: 0, ox: 0, oy: 0, psel: null, t: 0 };
+  const ZMIN = .45, ZMAX = 6, ZPLANET = 9;
   // Ciel étoilé : beaucoup de petites étoiles, quelques grosses qui brillent, teintes blanches, chaudes ou froides
   const TINTS = ['#ffffff', '#ffffff', '#ffffff', '#ffe3b8', '#bcd4ff'];
   for (let i = 0; i < (opts.big ? 1100 : 160); i++) S.stars.push({ x: Math.random(), y: Math.random(), r: Math.random() ** 3 * 1.7 + .35, p: Math.random() * 6.28, sp: .6 + Math.random() * 1.6, b: .35 + Math.random() * .65, c: TINTS[(Math.random() * TINTS.length) | 0] });
@@ -484,12 +618,13 @@ function createGlobe(mount, opts) {
   for (const k of ['Europe', 'Asia', 'Africa', 'Americas', 'Oceania', 'Antarctic']) {
     const s = el('span'); const d = el('i'); d.style.background = `hsl(${REGION_HSL[k][0]} ${REGION_HSL[k][1]}% ${REGION_HSL[k][2]}%)`; s.append(d, REGION_FR[k]); legend.append(s);
   }
-  const hint = el('div', 'hintline', 'Glisser pour tourner · molette ou pincement pour zoomer · cliquer un pays');
+  const hint = el('div', 'hintline', 'Glisser pour tourner · molette ou pincement pour zoomer · cliquer un pays ou une planète');
   const tip = el('div', 'gtip');
   const chips = el('div', 'chips');
   const panel = el('div', 'panel');
+  const pp = el('div', 'panel ppanel'); // fiche d'une planète
   const msg = el('div', 'gmsg', 'Chargement de la carte');
-  mount.append(cv, legend, hint, tip, chips, panel, msg);
+  mount.append(cv, legend, hint, tip, chips, panel, pp, msg);
 
   let pickInput = null, zlabel = null;
   if (opts.big) {
@@ -511,7 +646,7 @@ function createGlobe(mount, opts) {
 
   // --- projection
   let cC, sC, cT, sT, R, R0, CX, CY;
-  const rot = () => { cC = Math.cos(S.lon); sC = Math.sin(S.lon); cT = Math.cos(S.lat); sT = Math.sin(S.lat); R0 = Math.min(S.w, S.h) * 0.5 * (opts.big ? 0.62 : 0.82); R = R0 * S.zoom; CX = S.cx; CY = S.h / 2; };
+  const rot = () => { cC = Math.cos(S.lon); sC = Math.sin(S.lon); cT = Math.cos(S.lat); sT = Math.sin(S.lat); R0 = Math.min(S.w, S.h) * 0.5 * (opts.big ? 0.62 : 0.82); R = R0 * S.zoom; CX = S.cx + S.ox; CY = S.h / 2 + S.oy; };
   const P = (x, y, z) => { const x1 = x * cC - z * sC, z1 = x * sC + z * cC; return [x1, y * cT - z1 * sT, y * sT + z1 * cT]; };
 
   // Planètes immobiles. Leur position est calculée à zoom 1 (sans chevauchement ni contact avec le globe), puis suit la caméra.
@@ -519,36 +654,61 @@ function createGlobe(mount, opts) {
   function layoutPlanets() {
     const hw = S.w / 2, hh = S.h / 2, key = S.w + ':' + S.h + ':' + Math.round(R0);
     if (key === layKey) return lay; layKey = key;
-    const bs = PLANETS.map((p) => { const rad = p.k * R0; return { p, rad, cr: rad * (p.ring ? 2.1 : 1), x: p.fx * hw, y: p.fy * hh }; });
+    const amp = R0 * .05; // amplitude de la dérive douce : on garde cette marge entre les corps
+    const bs = PLANETS.map((p) => { const rad = p.k * R0; return { p, rad, cr: rad * (p.ring ? 2.2 : 1), x: p.fx * hw, y: p.fy * hh }; });
     for (let it = 0; it < 60; it++) {
       for (const b of bs) { // jamais sur le globe
-        const d = Math.hypot(b.x, b.y) || 1, min = R0 * 1.3 + b.cr;
+        const d = Math.hypot(b.x, b.y) || 1, min = R0 * 1.3 + b.cr + amp;
         if (d < min) { b.x += b.x / d * (min - d); b.y += b.y / d * (min - d); }
       }
       for (let i = 0; i < bs.length; i++) for (let j = i + 1; j < bs.length; j++) { // jamais l'une sur l'autre
-        const a = bs[i], b = bs[j]; let dx = b.x - a.x, dy = b.y - a.y; const d = Math.hypot(dx, dy) || 1, need = a.cr + b.cr + 12;
+        const a = bs[i], b = bs[j]; let dx = b.x - a.x, dy = b.y - a.y; const d = Math.hypot(dx, dy) || 1, need = a.cr + b.cr + 12 + 2 * amp;
         if (d < need) { const m = (need - d) / 2; dx /= d; dy /= d; a.x -= dx * m; a.y -= dy * m; b.x += dx * m; b.y += dy * m; }
       }
       for (const b of bs) { b.x = Math.max(-hw + b.rad * .6, Math.min(hw - b.rad * .6, b.x)); b.y = Math.max(-hh + b.rad * .6 + (S.w < 600 ? 120 : 0), Math.min(hh - b.rad * .6 - 40, b.y)); } // 40 px libres en bas pour la barre des pays
     }
     return (lay = bs);
   }
-  function drawPlanets(c) {
+  // Position d'une planète (zoom 1, depuis le globe) avec sa dérive douce : un petit va-et-vient lent, sans gravitation
+  const planetPos = (b, t) => { const tt = REDUCED ? 0 : t / 1000, a = R0 * .05; return { x: b.x + a * Math.sin(tt * b.p.dw + b.p.dph), y: b.y + a * .7 * Math.cos(tt * b.p.dw * .8 + b.p.dph * 1.3) }; };
+  const planetScreen = (b, t) => { const q = planetPos(b, t); return { x: CX + q.x * S.zoom, y: CY + q.y * S.zoom, rad: b.rad * S.zoom }; };
+
+  // Anneaux de Saturne : plusieurs bandes, avec la division de Cassini ; moitié arrière avant la sphère, moitié avant après
+  function drawRing(c, x, y, rad, p, front) {
+    const ky = Math.max(.08, Math.abs(Math.sin(p.pitch))), a0 = front ? 0 : Math.PI, a1 = front ? Math.PI : TWO;
+    const band = (q) => q < 1.5 ? .35 : q < 1.62 ? .6 : q < 1.92 ? .88 : q < 2.0 ? .08 : q < 2.2 ? .6 : 0;
+    c.save(); c.lineWidth = Math.max(1.2, rad * .05);
+    for (let q = 1.3; q < 2.2; q += .04) {
+      const al = band(q); if (!al) continue;
+      c.strokeStyle = `rgba(${q < 1.62 ? '214,190,142' : '238,216,170'},${al * (front ? 1 : .85)})`;
+      c.beginPath(); c.ellipse(x, y, q * rad, q * rad * ky, p.roll, a0, a1); c.stroke();
+    }
+    c.restore();
+  }
+  function drawPlanets(c, t) {
     const z = S.zoom, unit = R / 322;
     for (const b of layoutPlanets()) {
-      const x = CX + b.x * z, y = CY + b.y * z, rad = b.rad * z, ext = b.cr * z;
+      const p = b.p, s = planetScreen(b, t), x = s.x, y = s.y, rad = s.rad, ext = b.cr * z, picked = S.psel === b;
       if (!isFinite(rad + x + y) || rad <= 0) continue; // taille du canvas pas encore connue
       if (x + ext < -24 || x - ext > S.w + 24 || y + ext < -24 || y - ext > S.h + 24) continue; // hors champ
-      const g = c.createRadialGradient(x - rad * .38, y - rad * .42, rad * .08, x, y, rad);
-      g.addColorStop(0, b.p.col[0]); g.addColorStop(.55, b.p.col[1]); g.addColorStop(1, b.p.col[2]);
-      if (b.p.ring) { c.strokeStyle = 'rgba(235,205,140,.75)'; c.lineWidth = Math.max(2, rad * .28); c.beginPath(); c.ellipse(x, y, rad * 2, rad * .62, -.38, Math.PI, 6.2832); c.stroke(); }
-      c.save(); c.shadowColor = 'rgba(255,190,90,.35)'; c.shadowBlur = 12 * unit; c.fillStyle = g; c.beginPath(); c.arc(x, y, rad, 0, 6.2832); c.fill(); c.restore();
-      if (b.p.bands) { c.save(); c.beginPath(); c.arc(x, y, rad, 0, 6.2832); c.clip(); b.p.bands.forEach((col, i) => { c.globalAlpha = .28; c.fillStyle = col; c.fillRect(x - rad, y - rad + rad * (.28 + i * .36), rad * 2, rad * .2); }); c.restore(); }
-      const sh = c.createRadialGradient(x - rad * .45, y - rad * .5, rad * .1, x, y, rad * 1.05); sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(.6, 'rgba(0,0,0,.1)'); sh.addColorStop(1, 'rgba(0,0,0,.6)');
-      c.fillStyle = sh; c.beginPath(); c.arc(x, y, rad, 0, 6.2832); c.fill();
-      if (b.p.ring) { c.strokeStyle = 'rgba(245,220,160,.9)'; c.lineWidth = Math.max(2, rad * .28); c.beginPath(); c.ellipse(x, y, rad * 2, rad * .62, -.38, 0, Math.PI); c.stroke(); }
-      c.globalAlpha = .62; c.fillStyle = '#ffe9c2'; c.font = '11px "JetBrains Mono", ui-monospace, monospace'; c.textAlign = 'center';
-      c.fillText(b.p.n, x, y + rad * (b.p.ring ? 1.4 : 1) + 16); c.textAlign = 'left'; c.globalAlpha = 1;
+      // halo discret
+      const hg = c.createRadialGradient(x, y, rad * .95, x, y, rad * 1.22); hg.addColorStop(0, 'rgba(255,190,90,.16)'); hg.addColorStop(1, 'rgba(255,190,90,0)');
+      c.fillStyle = hg; c.beginPath(); c.arc(x, y, rad * 1.22, 0, TWO); c.fill();
+      if (p.ring) drawRing(c, x, y, rad, p, false);
+      if (p.tex) {
+        // taille du tampon : proche de celle affichée, réutilisée tant qu'elle reste dans [0,75 ; 1,5] x la taille voulue
+        let want = Math.max(32, Math.min(picked ? (S.drag ? 320 : 460) : 300, Math.round(2 * rad * S.dpr / 8) * 8));
+        const tb = p.tbl;
+        if (!tb || Math.abs(tb.pitch - p.pitch) > .002 || tb.roll !== p.roll || tb.D < want * .75 || tb.D > want * 1.5) p.tbl = buildTable(want, p.pitch, p.roll);
+        const ph = REDUCED ? p.off : t / 1000 * p.spin + p.off;
+        c.drawImage(renderSphere(p, p.tbl, ph), x - rad, y - rad, rad * 2, rad * 2);
+      } else { // texture pas encore prête : sphère lisse en attendant
+        const g = c.createRadialGradient(x - rad * .38, y - rad * .42, rad * .08, x, y, rad);
+        g.addColorStop(0, p.col[0]); g.addColorStop(.55, p.col[1]); g.addColorStop(1, p.col[2]);
+        c.fillStyle = g; c.beginPath(); c.arc(x, y, rad, 0, TWO); c.fill();
+      }
+      if (p.ring) drawRing(c, x, y, rad, p, true);
+      if (!picked) { c.globalAlpha = .62; c.fillStyle = '#ffe9c2'; c.font = '11px "JetBrains Mono", ui-monospace, monospace'; c.textAlign = 'center'; c.fillText(p.n, x, y + rad * (p.ring ? 1.4 : 1) + 16); c.textAlign = 'left'; c.globalAlpha = 1; }
     }
   }
 
@@ -598,7 +758,7 @@ function createGlobe(mount, opts) {
     c.globalAlpha = 1;
     drawShooting(c, t);
     const BIG = !!opts.big;
-    if (BIG) drawPlanets(c);
+    if (BIG) drawPlanets(c, t);
     // atmosphère (halo extérieur)
     const at = c.createRadialGradient(CX, CY, R * .98, CX, CY, R * 1.18);
     if (BIG) { at.addColorStop(0, 'rgba(255,176,64,.38)'); at.addColorStop(.3, 'rgba(255,150,40,.12)'); at.addColorStop(1, 'rgba(255,130,20,0)'); }
@@ -698,6 +858,19 @@ function createGlobe(mount, opts) {
       if (!REDUCED) S.lon += S.vLon * f;
     }
     S.cx += (targetCx() - S.cx) * 0.12 * f;
+    S.t = t;
+    if (opts.big) {
+      genTick(5);
+      for (const p of PLANETS) if (!S.drag || S.psel?.p !== p) { p.off += p.v * f; p.v *= Math.pow(.94, f); } // inertie après un lancer à la main
+      // vol de caméra : la planète choisie se place au centre de la zone visible, quel que soit le zoom
+      let oxT = 0, oyT = 0;
+      if (S.psel) {
+        const q = planetPos(S.psel, t), wide = window.innerWidth > 880;
+        oxT = (wide ? (S.w - 404) / 2 : S.w / 2) - S.cx - q.x * S.zoom; oyT = (wide ? S.h / 2 : S.h * .33) - S.h / 2 - q.y * S.zoom;
+      }
+      S.ox += (oxT - S.ox) * .14 * f; S.oy += (oyT - S.oy) * .14 * f;
+      if (Math.abs(oxT - S.ox) < .05) S.ox = oxT; if (Math.abs(oyT - S.oy) < .05) S.oy = oyT;
+    }
     S.zoom = REDUCED || Math.abs(S.zoomT - S.zoom) < .001 ? S.zoomT : S.zoom + (S.zoomT - S.zoom) * Math.min(1, .18 * f); // zoom adouci
     if (WORLD) draw(t); else { ctx.setTransform(S.dpr, 0, 0, S.dpr, 0, 0); ctx.clearRect(0, 0, S.w, S.h); }
   }
@@ -711,7 +884,7 @@ function createGlobe(mount, opts) {
     return countryAt(Math.atan2(x, z) * 180 / Math.PI, Math.asin(Math.max(-1, Math.min(1, y))) * 180 / Math.PI);
   }
   // --- zoom : molette (ou pincement du pavé tactile), pincement à deux doigts, boutons et touches + / - / 0
-  const zoomTo = (z) => { S.zoomT = Math.max(ZMIN, Math.min(ZMAX, z)); if (zlabel) zlabel.textContent = S.zoomT.toFixed(1).replace('.', ',') + '×'; };
+  const zoomTo = (z) => { S.zoomT = Math.max(ZMIN, Math.min(S.psel ? ZPLANET : ZMAX, z)); if (zlabel) zlabel.textContent = S.zoomT.toFixed(1).replace('.', ',') + '×'; };
   cv.addEventListener('wheel', (e) => {
     e.preventDefault();
     const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
@@ -729,18 +902,43 @@ function createGlobe(mount, opts) {
     if (pinch && ptrs.size === 2) { zoomTo(pinch.z * pdist() / pinch.d); return; }
     if (S.drag) {
       const dx = e.clientX - S.drag.x, dy = e.clientY - S.drag.y, zs = Math.max(1, S.zoom); S.moved += Math.abs(dx) + Math.abs(dy);
+      if (S.psel) { // on fait tourner la planète : à gauche/droite elle tourne sur elle-même, en haut/bas on la penche
+        const p = S.psel.p, k = 1 / Math.max(.6, S.zoom * S.psel.rad / 160);
+        p.off -= dx * .012 * k; p.v = -dx * .012 * k; p.pitch = Math.max(-1.3, Math.min(1.3, p.pitch + dy * .006)); S.drag = { x: e.clientX, y: e.clientY };
+        return;
+      }
       S.lon -= dx * 0.006 / zs; S.vLon = Math.max(-0.06, Math.min(0.06, -dx * 0.006 / zs)); S.lat = Math.max(-1.2, Math.min(1.2, S.lat + dy * 0.005 / zs)); S.drag = { x: e.clientX, y: e.clientY };
       return;
     }
-    const k = pickAt(e); S.hover = k; cv.style.cursor = k ? 'pointer' : 'grab';
-    if (k) {
+    const k = S.psel ? null : pickAt(e); S.hover = k;
+    const pb = k || S.psel ? null : pickPlanet(e);
+    cv.style.cursor = k || pb ? 'pointer' : 'grab';
+    if (pb) {
+      tip.textContent = pb.p.n; const r = cv.getBoundingClientRect(); tip.style.left = Math.min(e.clientX - r.left + 14, S.w - 220) + 'px'; tip.style.top = Math.max(8, e.clientY - r.top - 36) + 'px'; tip.classList.add('show');
+    } else if (k) {
       const n = S.mentions.find((m) => m.c === k)?.n || 0;
       tip.textContent = k.name; if (n) { const s = el('small', null, `${n} article${n > 1 ? 's' : ''}`); tip.append(s); }
       const r = cv.getBoundingClientRect(); tip.style.left = Math.min(e.clientX - r.left + 14, S.w - 220) + 'px'; tip.style.top = Math.max(8, e.clientY - r.top - 36) + 'px'; tip.classList.add('show');
     } else tip.classList.remove('show');
   });
   const release = (e) => { ptrs.delete(e.pointerId); if (ptrs.size < 2) pinch = null; };
-  cv.addEventListener('pointerup', (e) => { release(e); S.drag = null; cv.classList.remove('drag'); if (S.moved < 6) { const k = pickAt(e); if (k) select(k); else close(); } });
+  // clic sur une planète (le globe passe avant : il est au centre)
+  function pickPlanet(ev) {
+    if (!WORLD) return null; rot();
+    const r = cv.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top; let best = null, bd = 1e9;
+    for (const b of layoutPlanets()) {
+      const s = planetScreen(b, S.t), d = Math.hypot(mx - s.x, my - s.y);
+      if (d <= s.rad * (b.p.ring ? 1.3 : 1.05) && d < bd) { best = b; bd = d; }
+    }
+    return best;
+  }
+  cv.addEventListener('pointerup', (e) => {
+    release(e); S.drag = null; cv.classList.remove('drag');
+    if (S.moved >= 6) return;
+    if (S.psel) { const pb = pickPlanet(e); if (!pb) closePlanet(); else if (pb !== S.psel) selectPlanet(pb); return; }
+    const k = pickAt(e); if (k) { select(k); return; }
+    const pb = pickPlanet(e); if (pb) selectPlanet(pb); else close();
+  });
   cv.addEventListener('pointercancel', (e) => { release(e); S.drag = null; cv.classList.remove('drag'); });
   cv.addEventListener('pointerleave', () => { S.hover = null; tip.classList.remove('show'); });
 
@@ -826,7 +1024,25 @@ function createGlobe(mount, opts) {
     getNews(c).then((n) => { if (seq !== panelSeq) return; cur = n; draw(n); });
     panel.scrollTop = keepScroll ? prev : 0;
   }
+  // --- exploration d'une planète : la caméra vole vers elle, on la fait tourner à la main, la fiche s'ouvre à droite
+  function showPlanet(b) {
+    const I = INFO[b.p.n]; pp.textContent = '';
+    const x = el('button', 'x'); x.setAttribute('aria-label', 'Fermer'); x.append(icon('x')); x.onclick = closePlanet;
+    const head = el('div'); head.append(el('h2', null, b.p.n), el('p', 'off', I.kind));
+    const stats = el('div', 'stats'); for (const [k, v] of I.top) { const s = el('div'); s.append(el('small', null, k), el('b', null, v)); stats.append(s); }
+    const dl = el('dl'); for (const [k, v] of I.rows) dd(dl, k, v);
+    const body = el('div', 'pbody'); body.append(dl, el('h3', null, 'À savoir'), el('p', 'pfact', I.fact), el('div', 'note', 'Glisser pour faire tourner et pencher · molette pour zoomer · Échap pour revenir'));
+    pp.append(x, head, stats, body);
+  }
+  function selectPlanet(b) {
+    if (S.sel) { S.sel = null; mount.classList.remove('has-panel'); drawChips(); }
+    S.psel = b; mount.classList.add('has-planet'); S.focus = null; tip.classList.remove('show');
+    zoomTo(Math.min(ZPLANET, Math.min(S.w, S.h) * (window.innerWidth > 880 ? .3 : .24) / (b.p.ring ? b.rad * 1.5 : b.rad))); // Saturne : on recule pour garder l'anneau à l'écran
+    showPlanet(b);
+  }
+  function closePlanet() { if (!S.psel) return; S.psel = null; mount.classList.remove('has-planet'); zoomTo(1); }
   function select(c) {
+    if (S.psel) closePlanet();
     S.sel = c; S.focus = { lon: c.lon * Math.PI / 180, lat: Math.max(-1.0, Math.min(1.0, c.lat * Math.PI / 180)) };
     mount.classList.add('has-panel'); showPanel(c); drawChips();
   }
@@ -859,7 +1075,7 @@ function createGlobe(mount, opts) {
   }
   function setWorld() { msg.remove(); refresh(); if (pickInput) { let dl = $('countrylist'); if (!dl) { dl = document.createElement('datalist'); dl.id = 'countrylist'; document.body.append(dl); } dl.textContent = ''; [...WORLD.list].sort((a, b) => a.name.localeCompare(b.name, 'fr')).forEach((c) => { const o = document.createElement('option'); o.value = c.name; dl.append(o); }); } }
 
-  const api = { mount, tick, zoomBy: (f) => zoomTo(S.zoomT * f), zoomReset: () => zoomTo(1), refresh, setWorld, closePanel: close, fail: () => { msg.textContent = 'Carte indisponible, nouvelle tentative'; }, visible: () => mount.getClientRects().length > 0, resetKey: () => { S.mkey = ''; } };
+  const api = { mount, tick, zoomBy: (f) => zoomTo(S.zoomT * f), zoomReset: () => { if (S.psel) closePlanet(); else zoomTo(1); }, refresh, setWorld, closePanel: () => { close(); closePlanet(); }, fail: () => { msg.textContent = 'Carte indisponible, nouvelle tentative'; }, visible: () => mount.getClientRects().length > 0, resetKey: () => { S.mkey = ''; } };
   globes.push(api); return api;
 }
 
@@ -1033,7 +1249,7 @@ document.addEventListener('keydown', (e) => {
   if (num && document.activeElement.tagName !== 'INPUT' && !e.metaKey && !e.ctrlKey && !e.altKey) { view = num; srcFilter = ''; render(); window.scrollTo({ top:0 }); }
   if (e.key === 'Escape') {
     document.activeElement.blur();
-    if (view === 'globe') { if ($('bigstage').classList.contains('has-panel')) bigGlobe.closePanel(); else leaveGlobe(); }
+    if (view === 'globe') { if ($('bigstage').classList.contains('has-panel') || $('bigstage').classList.contains('has-planet')) bigGlobe.closePanel(); else leaveGlobe(); }
   }
 });
 
