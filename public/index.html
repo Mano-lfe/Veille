@@ -121,6 +121,12 @@
   body[data-view=globe] .stage.big { position:fixed; inset:0; height:100vh; min-height:0; margin:0; border:0; border-radius:0; background:#000; z-index:10; }
   .back { position:absolute; left:16px; top:12px; z-index:5; display:inline-flex; align-items:center; gap:8px; height:36px; padding:0 14px 0 10px; border-radius:10px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.07); color:#eef2fa; transition:background-color 150ms var(--ease); }
   .back:hover { background:rgba(255,255,255,.15); }
+  .zoomctl { position:absolute; left:16px; bottom:64px; z-index:3; display:flex; flex-direction:column; gap:8px; }
+  .zbtn { width:40px; height:40px; display:grid; place-items:center; border-radius:10px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.07); color:#eef2fa; transition:background-color 150ms var(--ease), transform 150ms var(--ease); }
+  .zbtn:hover { background:rgba(255,255,255,.15); }
+  .zbtn:active { transform:scale(.97); }
+  .zbtn svg { width:18px; height:18px; }
+  .zlevel { font:400 12px/16px var(--mono); }
   .back svg { transform:rotate(180deg); }
   .stage.has-panel .pick { display:none; }
   .gtip { position:absolute; z-index:2; padding:6px 10px; background:rgba(8,14,26,.94); border:1px solid rgba(255,255,255,.14); border-radius:8px; font:500 13px/20px var(--sans); pointer-events:none; opacity:0; transition:opacity 120ms var(--ease); white-space:nowrap; }
@@ -225,6 +231,8 @@
     .cat .tile { width:40px; height:40px; border-radius:10px; }
     .cat .name { font-size:15px; line-height:20px; }
     .desc { display:none; }
+    .zoomctl { left:auto; right:16px; }
+    .hintline { max-width:calc(100% - 32px); }
     .cat .meta .u { display:none; }
     .navlist { flex-direction:row; overflow-x:auto; scrollbar-width:none; }
     .navlist::-webkit-scrollbar { display:none; }
@@ -307,6 +315,8 @@ const SVG = {
   globe:'<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
   go:'<path d="M7 7h10v10"/><path d="M7 17 17 7"/>',
   x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  plus:'<path d="M5 12h14"/><path d="M12 5v14"/>',
+  minus:'<path d="M5 12h14"/>',
 };
 const CATS = { tech:'IA & Tech', politique:'Politique', religion:'Religion' };
 const DESC = {
@@ -350,15 +360,18 @@ const norm = (s) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
 const REGION_FR = { Africa:'Afrique', Americas:'Amériques', Asia:'Asie', Europe:'Europe', Oceania:'Océanie', Antarctic:'Antarctique' };
 const REGION_HSL = { Africa:[38,68,56], Europe:[214,60,64], Asia:[12,66,62], Americas:[142,42,52], Oceania:[286,42,66], Antarctic:[210,26,88], None:[220,10,52] };
 const MARKER = '#ff7a45';
-// Système solaire autour du globe (rayons en px pour un globe de 322 px ; couleurs : clair, moyen, ombre)
+// Planètes immobiles, éparpillées sur le fond noir.
+// k = rayon en fraction de celui du globe (toujours < 1) ; fx, fy = position de départ en fraction de la demi-largeur / demi-hauteur, depuis le globe.
+// Couleurs : clair, moyen, ombre.
 const PLANETS = [
-  { n:'Mercure', r:7,  sp:.36, ph:.6,  col:['#e0d6c8','#9a8e80','#2c2722'] },
-  { n:'Vénus',   r:12, sp:.27, ph:2.4, col:['#fbe6b0','#d9a85a','#4a3516'] },
-  { n:'Mars',    r:10, sp:.2,  ph:4.1, col:['#f0a070','#b8512e','#33150c'] },
-  { n:'Jupiter', r:27, sp:.13, ph:1.3, col:['#f3d9b0','#c9955f','#3a2616'], bands:['#8a5a36','#e8c99a','#a06a40','#f1d9b4'] },
-  { n:'Saturne', r:22, sp:.1,  ph:5.2, col:['#f5e6b8','#d3b676','#40351c'], ring:true },
-  { n:'Uranus',  r:15, sp:.075,ph:3.3, col:['#c8f1f2','#7ec8cc','#1d3d40'] },
-  { n:'Neptune', r:14, sp:.06, ph:.2,  col:['#9db4ff','#4a67d8','#101c4a'] },
+  { n:'Jupiter', k:.58, fx:-.78, fy:.5,   col:['#f3d9b0','#c9955f','#3a2616'], bands:['#8a5a36','#e8c99a','#a06a40','#f1d9b4'] },
+  { n:'Saturne', k:.44, fx:.78,  fy:-.5,  col:['#f5e6b8','#d3b676','#40351c'], ring:true },
+  { n:'Uranus',  k:.34, fx:.72,  fy:.62,  col:['#c8f1f2','#7ec8cc','#1d3d40'] },
+  { n:'Neptune', k:.32, fx:-.62, fy:-.62, col:['#9db4ff','#4a67d8','#101c4a'] },
+  { n:'Vénus',   k:.28, fx:.28,  fy:-.82, col:['#fbe6b0','#d9a85a','#4a3516'] },
+  { n:'Mars',    k:.22, fx:-.25, fy:.8,   col:['#f0a070','#b8512e','#33150c'] },
+  { n:'Mercure', k:.17, fx:-.9,  fy:-.1,  col:['#e0d6c8','#9a8e80','#2c2722'] },
+  { n:'Lune',    k:.14, fx:.9,   fy:.1,   col:['#f2f2f2','#a8a8a8','#2a2a2a'] },
 ];
 const ALIASES = { US:['etats-unis','usa','united states'], GB:['royaume-uni','grande-bretagne','united kingdom'], RU:['russie','russia'], KR:['coree du sud','south korea'], KP:['coree du nord','north korea'], CD:['rdc','congo-kinshasa'], CZ:['tchequie','republique tcheque'], MM:['birmanie','myanmar'], PS:['gaza','cisjordanie','palestine'], TW:['taiwan'], AE:['emirats arabes unis'], VA:['vatican'], SA:['arabie saoudite'] };
 const STOP_EN = new Set(['turkey','georgia','jersey','chad','guinea','niger','china']); // noms anglais trop ambigus
@@ -460,23 +473,31 @@ function countryAt(lon, lat) {
 }
 
 function createGlobe(mount, opts) {
-  const S = { lon: 0.3, lat: 0.35, vLon: 0, base: -0.0022, drag: null, hover: null, sel: null, focus: null, w: 0, h: 0, dpr: 1, cx: 0, mentions: [], links: [], mkey: '', moved: 0, stars: [] };
-  for (let i = 0; i < (opts.big ? 420 : 160); i++) S.stars.push({ x: Math.random(), y: Math.random(), r: Math.random() * 1.1 + .3, p: Math.random() * 6.28 });
+  const S = { lon: 0.3, lat: 0.35, vLon: 0, base: -0.0022, drag: null, hover: null, sel: null, focus: null, w: 0, h: 0, dpr: 1, cx: 0, mentions: [], links: [], mkey: '', moved: 0, stars: [], zoom: 1, zoomT: 1, shoots: [], nextShoot: 1200, pt: 0 };
+  const ZMIN = .45, ZMAX = 6;
+  // Ciel étoilé : beaucoup de petites étoiles, quelques grosses qui brillent, teintes blanches, chaudes ou froides
+  const TINTS = ['#ffffff', '#ffffff', '#ffffff', '#ffe3b8', '#bcd4ff'];
+  for (let i = 0; i < (opts.big ? 1100 : 160); i++) S.stars.push({ x: Math.random(), y: Math.random(), r: Math.random() ** 3 * 1.7 + .35, p: Math.random() * 6.28, sp: .6 + Math.random() * 1.6, b: .35 + Math.random() * .65, c: TINTS[(Math.random() * TINTS.length) | 0] });
 
   const cv = el('canvas'); cv.setAttribute('aria-label', 'Globe terrestre interactif');
   const legend = el('div', 'legend');
   for (const k of ['Europe', 'Asia', 'Africa', 'Americas', 'Oceania', 'Antarctic']) {
     const s = el('span'); const d = el('i'); d.style.background = `hsl(${REGION_HSL[k][0]} ${REGION_HSL[k][1]}% ${REGION_HSL[k][2]}%)`; s.append(d, REGION_FR[k]); legend.append(s);
   }
-  const hint = el('div', 'hintline', 'Glisser pour tourner · cliquer un pays');
+  const hint = el('div', 'hintline', 'Glisser pour tourner · molette ou pincement pour zoomer · cliquer un pays');
   const tip = el('div', 'gtip');
   const chips = el('div', 'chips');
   const panel = el('div', 'panel');
   const msg = el('div', 'gmsg', 'Chargement de la carte');
   mount.append(cv, legend, hint, tip, chips, panel, msg);
 
-  let pickInput = null;
+  let pickInput = null, zlabel = null;
   if (opts.big) {
+    const zc = el('div', 'zoomctl');
+    const zb = (label, ic, fn) => { const b = el('button', 'zbtn'); b.title = label; b.setAttribute('aria-label', label); b.append(icon(ic)); b.onclick = fn; return b; };
+    zlabel = el('button', 'zbtn zlevel', '1,0×'); zlabel.title = 'Réinitialiser le zoom'; zlabel.onclick = () => zoomTo(1);
+    zc.append(zb('Zoomer', 'plus', () => zoomTo(S.zoomT * 1.3)), zlabel, zb('Dézoomer', 'minus', () => zoomTo(S.zoomT / 1.3)));
+    mount.append(zc);
     const bk = el('button', 'back'); bk.append(icon('go'), 'Quitter le globe'); bk.onclick = () => opts.onBack && opts.onBack(); mount.append(bk);
     const w = el('div', 'pick'); pickInput = el('input'); pickInput.placeholder = 'Aller à un pays'; pickInput.setAttribute('list', 'countrylist'); pickInput.setAttribute('aria-label', 'Aller à un pays');
     w.append(pickInput); mount.append(w);
@@ -489,42 +510,46 @@ function createGlobe(mount, opts) {
   new ResizeObserver(resize).observe(cv);
 
   // --- projection
-  let cC, sC, cT, sT, R, CX, CY;
-  const rot = () => { cC = Math.cos(S.lon); sC = Math.sin(S.lon); cT = Math.cos(S.lat); sT = Math.sin(S.lat); R = Math.min(S.w, S.h) * 0.5 * (opts.big ? 0.62 : 0.82); CX = S.cx; CY = S.h / 2; };
+  let cC, sC, cT, sT, R, R0, CX, CY;
+  const rot = () => { cC = Math.cos(S.lon); sC = Math.sin(S.lon); cT = Math.cos(S.lat); sT = Math.sin(S.lat); R0 = Math.min(S.w, S.h) * 0.5 * (opts.big ? 0.62 : 0.82); R = R0 * S.zoom; CX = S.cx; CY = S.h / 2; };
   const P = (x, y, z) => { const x1 = x * cC - z * sC, z1 = x * sC + z * cC; return [x1, y * cT - z1 * sT, y * sT + z1 * cT]; };
 
-  // Planètes en orbite : 'back' = derrière la Terre (masquées par elle), 'front' = devant
-  function drawPlanets(c, t, pass) {
-    const tt = REDUCED ? 0 : t / 1000, E = .34, sE = Math.sin(E), cE = Math.cos(E), roll = -.22, cr = Math.cos(roll), sr = Math.sin(roll);
-    const minA = R * 1.55, maxA = Math.min(S.w * .47, R * 4.6), unit = R / 322;
-    const at = (k) => minA + (maxA - minA) * k / (PLANETS.length - 1);
-    const place = (a, th, s = sE, cc = cE) => { const x = a * Math.cos(th), z = a * Math.sin(th), sy = z * s; return { x: CX + x * cr - sy * sr, y: CY + x * sr + sy * cr, d: z * cc }; };
-    // orbites
-    c.lineWidth = .8; c.strokeStyle = 'rgba(255,200,110,.13)';
-    PLANETS.forEach((_, k) => {
-      c.beginPath(); let pen = false;
-      for (let i = 0; i <= 120; i++) {
-        const p = place(at(k), i / 120 * 6.2832);
-        if ((pass === 'back') !== (p.d < 0)) { pen = false; continue; }
-        if (pen) c.lineTo(p.x, p.y); else { c.moveTo(p.x, p.y); pen = true; }
+  // Planètes immobiles. Leur position est calculée à zoom 1 (sans chevauchement ni contact avec le globe), puis suit la caméra.
+  let lay = [], layKey = '';
+  function layoutPlanets() {
+    const hw = S.w / 2, hh = S.h / 2, key = S.w + ':' + S.h + ':' + Math.round(R0);
+    if (key === layKey) return lay; layKey = key;
+    const bs = PLANETS.map((p) => { const rad = p.k * R0; return { p, rad, cr: rad * (p.ring ? 2.1 : 1), x: p.fx * hw, y: p.fy * hh }; });
+    for (let it = 0; it < 60; it++) {
+      for (const b of bs) { // jamais sur le globe
+        const d = Math.hypot(b.x, b.y) || 1, min = R0 * 1.3 + b.cr;
+        if (d < min) { b.x += b.x / d * (min - d); b.y += b.y / d * (min - d); }
       }
-      c.stroke();
-    });
-    const bodies = PLANETS.map((p, k) => ({ p, k, ...place(at(k), p.ph + tt * p.sp) }));
-    bodies.push({ p: { n:'Lune', r:6, col:['#f2f2f2','#a8a8a8','#2a2a2a'] }, k: -1, ...place(R * 1.3, 1.1 + tt * .6, Math.sin(.55), Math.cos(.55)) });
-    bodies.filter((b) => (pass === 'back') === (b.d < 0)).sort((a, b) => a.d - b.d).forEach((b) => {
-      const sc = 1 + .18 * b.d / maxA, rad = b.p.r * unit * sc;
-      if (!isFinite(rad + b.x + b.y) || rad <= 0) return; // taille du canvas pas encore connue
-      const g = c.createRadialGradient(b.x - rad * .38, b.y - rad * .42, rad * .08, b.x, b.y, rad);
+      for (let i = 0; i < bs.length; i++) for (let j = i + 1; j < bs.length; j++) { // jamais l'une sur l'autre
+        const a = bs[i], b = bs[j]; let dx = b.x - a.x, dy = b.y - a.y; const d = Math.hypot(dx, dy) || 1, need = a.cr + b.cr + 12;
+        if (d < need) { const m = (need - d) / 2; dx /= d; dy /= d; a.x -= dx * m; a.y -= dy * m; b.x += dx * m; b.y += dy * m; }
+      }
+      for (const b of bs) { b.x = Math.max(-hw + b.rad * .6, Math.min(hw - b.rad * .6, b.x)); b.y = Math.max(-hh + b.rad * .6 + (S.w < 600 ? 120 : 0), Math.min(hh - b.rad * .6 - 40, b.y)); } // 40 px libres en bas pour la barre des pays
+    }
+    return (lay = bs);
+  }
+  function drawPlanets(c) {
+    const z = S.zoom, unit = R / 322;
+    for (const b of layoutPlanets()) {
+      const x = CX + b.x * z, y = CY + b.y * z, rad = b.rad * z, ext = b.cr * z;
+      if (!isFinite(rad + x + y) || rad <= 0) continue; // taille du canvas pas encore connue
+      if (x + ext < -24 || x - ext > S.w + 24 || y + ext < -24 || y - ext > S.h + 24) continue; // hors champ
+      const g = c.createRadialGradient(x - rad * .38, y - rad * .42, rad * .08, x, y, rad);
       g.addColorStop(0, b.p.col[0]); g.addColorStop(.55, b.p.col[1]); g.addColorStop(1, b.p.col[2]);
-      if (b.p.ring) { c.strokeStyle = 'rgba(235,205,140,.75)'; c.lineWidth = Math.max(2, rad * .28); c.beginPath(); c.ellipse(b.x, b.y, rad * 2, rad * .62, -.38, Math.PI, 6.2832); c.stroke(); }
-      c.save(); c.shadowColor = 'rgba(255,190,90,.35)'; c.shadowBlur = 12 * unit; c.fillStyle = g; c.beginPath(); c.arc(b.x, b.y, rad, 0, 6.2832); c.fill(); c.restore();
-      if (b.p.bands) { c.save(); c.beginPath(); c.arc(b.x, b.y, rad, 0, 6.2832); c.clip(); b.p.bands.forEach((col, i) => { c.globalAlpha = .28; c.fillStyle = col; c.fillRect(b.x - rad, b.y - rad + rad * (.28 + i * .36), rad * 2, rad * .2); }); c.restore(); }
-      const sh = c.createRadialGradient(b.x - rad * .45, b.y - rad * .5, rad * .1, b.x, b.y, rad * 1.05); sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(.6, 'rgba(0,0,0,.1)'); sh.addColorStop(1, 'rgba(0,0,0,.6)');
-      c.fillStyle = sh; c.beginPath(); c.arc(b.x, b.y, rad, 0, 6.2832); c.fill();
-      if (b.p.ring) { c.strokeStyle = 'rgba(245,220,160,.9)'; c.lineWidth = Math.max(2, rad * .28); c.beginPath(); c.ellipse(b.x, b.y, rad * 2, rad * .62, -.38, 0, Math.PI); c.stroke(); }
-      c.globalAlpha = .62; c.fillStyle = '#ffe9c2'; c.font = '11px "JetBrains Mono", ui-monospace, monospace'; c.fillText(b.p.n, b.x + rad * (b.p.ring ? 2.1 : 1) + 6, b.y + 4); c.globalAlpha = 1;
-    });
+      if (b.p.ring) { c.strokeStyle = 'rgba(235,205,140,.75)'; c.lineWidth = Math.max(2, rad * .28); c.beginPath(); c.ellipse(x, y, rad * 2, rad * .62, -.38, Math.PI, 6.2832); c.stroke(); }
+      c.save(); c.shadowColor = 'rgba(255,190,90,.35)'; c.shadowBlur = 12 * unit; c.fillStyle = g; c.beginPath(); c.arc(x, y, rad, 0, 6.2832); c.fill(); c.restore();
+      if (b.p.bands) { c.save(); c.beginPath(); c.arc(x, y, rad, 0, 6.2832); c.clip(); b.p.bands.forEach((col, i) => { c.globalAlpha = .28; c.fillStyle = col; c.fillRect(x - rad, y - rad + rad * (.28 + i * .36), rad * 2, rad * .2); }); c.restore(); }
+      const sh = c.createRadialGradient(x - rad * .45, y - rad * .5, rad * .1, x, y, rad * 1.05); sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(.6, 'rgba(0,0,0,.1)'); sh.addColorStop(1, 'rgba(0,0,0,.6)');
+      c.fillStyle = sh; c.beginPath(); c.arc(x, y, rad, 0, 6.2832); c.fill();
+      if (b.p.ring) { c.strokeStyle = 'rgba(245,220,160,.9)'; c.lineWidth = Math.max(2, rad * .28); c.beginPath(); c.ellipse(x, y, rad * 2, rad * .62, -.38, 0, Math.PI); c.stroke(); }
+      c.globalAlpha = .62; c.fillStyle = '#ffe9c2'; c.font = '11px "JetBrains Mono", ui-monospace, monospace'; c.textAlign = 'center';
+      c.fillText(b.p.n, x, y + rad * (b.p.ring ? 1.4 : 1) + 16); c.textAlign = 'left'; c.globalAlpha = 1;
+    }
   }
 
   // Réseau doré : liens de proximité (fond) + liens d'actualité (pays cités ensemble), avec impulsions
@@ -562,10 +587,18 @@ function createGlobe(mount, opts) {
   function draw(t) {
     const c = ctx; c.setTransform(S.dpr, 0, 0, S.dpr, 0, 0); c.clearRect(0, 0, S.w, S.h);
     rot();
-    for (const s of S.stars) { c.globalAlpha = .25 + .35 * (0.5 + 0.5 * Math.sin(t * .0015 + s.p)); c.fillStyle = '#fff'; c.fillRect(s.x * S.w, s.y * S.h, s.r, s.r); }
+    // étoiles (léger effet de profondeur quand on zoome)
+    const par = 1 + Math.max(0, S.zoom - 1) * .08, hx = S.w / 2, hy = S.h / 2;
+    for (const s of S.stars) {
+      const x = hx + (s.x * S.w - hx) * par, y = hy + (s.y * S.h - hy) * par;
+      c.globalAlpha = s.b * (REDUCED ? .8 : .55 + .45 * Math.sin(t * .0012 * s.sp + s.p)); c.fillStyle = s.c;
+      if (s.r > 1.5) { c.beginPath(); c.arc(x, y, s.r, 0, 6.2832); c.fill(); c.globalAlpha *= .22; c.beginPath(); c.arc(x, y, s.r * 2.8, 0, 6.2832); c.fill(); }
+      else c.fillRect(x, y, s.r, s.r);
+    }
     c.globalAlpha = 1;
+    drawShooting(c, t);
     const BIG = !!opts.big;
-    if (BIG) drawPlanets(c, t, 'back');
+    if (BIG) drawPlanets(c);
     // atmosphère (halo extérieur)
     const at = c.createRadialGradient(CX, CY, R * .98, CX, CY, R * 1.18);
     if (BIG) { at.addColorStop(0, 'rgba(255,176,64,.38)'); at.addColorStop(.3, 'rgba(255,150,40,.12)'); at.addColorStop(1, 'rgba(255,130,20,0)'); }
@@ -625,7 +658,32 @@ function createGlobe(mount, opts) {
       c.strokeStyle = BIG ? '#fff6dc' : '#fff'; c.lineWidth = 1; c.stroke();
     }
     c.globalAlpha = 1;
-    if (BIG) drawPlanets(c, t, 'front');
+  }
+
+  // Étoiles filantes : une toutes les 1,5 à 4,5 s environ, parfois deux d'affilée
+  function drawShooting(c, t) {
+    const dt = Math.min(.05, (t - S.pt) / 1000 || 0); S.pt = t;
+    if (REDUCED || !S.w) return;
+    if (t > S.nextShoot) {
+      const n = Math.random() < .25 ? 2 : 1;
+      for (let i = 0; i < n; i++) {
+        const dir = Math.random() < .5 ? 1 : -1, ang = .18 + Math.random() * .4, sp = 650 + Math.random() * 600;
+        S.shoots.push({ x: (.1 + Math.random() * .8) * S.w, y: Math.random() * S.h * .55, ux: dir * Math.cos(ang), uy: Math.sin(ang), sp, age: -i * .18, max: .7 + Math.random() * .6, len: 110 + Math.random() * 130 });
+      }
+      S.nextShoot = t + 1500 + Math.random() * 3000;
+    }
+    c.save(); c.globalCompositeOperation = 'lighter'; c.lineCap = 'round';
+    S.shoots = S.shoots.filter((s) => {
+      s.age += dt; if (s.age >= s.max) return false; if (s.age < 0) return true;
+      s.x += s.ux * s.sp * dt; s.y += s.uy * s.sp * dt;
+      const a = Math.sin(Math.PI * s.age / s.max), tx = s.x - s.ux * s.len, ty = s.y - s.uy * s.len;
+      const g = c.createLinearGradient(tx, ty, s.x, s.y); g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(1, `rgba(255,244,222,${.95 * a})`);
+      c.strokeStyle = g; c.lineWidth = 1.8; c.beginPath(); c.moveTo(tx, ty); c.lineTo(s.x, s.y); c.stroke();
+      const h = c.createRadialGradient(s.x, s.y, 0, s.x, s.y, 9); h.addColorStop(0, `rgba(255,250,235,${a})`); h.addColorStop(1, 'rgba(255,230,180,0)');
+      c.fillStyle = h; c.beginPath(); c.arc(s.x, s.y, 9, 0, 6.2832); c.fill();
+      return true;
+    });
+    c.restore();
   }
 
   let last = 0;
@@ -640,6 +698,7 @@ function createGlobe(mount, opts) {
       if (!REDUCED) S.lon += S.vLon * f;
     }
     S.cx += (targetCx() - S.cx) * 0.12 * f;
+    S.zoom = REDUCED || Math.abs(S.zoomT - S.zoom) < .001 ? S.zoomT : S.zoom + (S.zoomT - S.zoom) * Math.min(1, .18 * f); // zoom adouci
     if (WORLD) draw(t); else { ctx.setTransform(S.dpr, 0, 0, S.dpr, 0, 0); ctx.clearRect(0, 0, S.w, S.h); }
   }
 
@@ -651,11 +710,26 @@ function createGlobe(mount, opts) {
     const z2 = Math.sqrt(1 - d), y = v * cT + z2 * sT, z1 = -v * sT + z2 * cT, x = u * cC + z1 * sC, z = -u * sC + z1 * cC;
     return countryAt(Math.atan2(x, z) * 180 / Math.PI, Math.asin(Math.max(-1, Math.min(1, y))) * 180 / Math.PI);
   }
-  cv.addEventListener('pointerdown', (e) => { S.drag = { x: e.clientX, y: e.clientY }; S.moved = 0; S.focus = null; cv.classList.add('drag'); cv.setPointerCapture(e.pointerId); });
+  // --- zoom : molette (ou pincement du pavé tactile), pincement à deux doigts, boutons et touches + / - / 0
+  const zoomTo = (z) => { S.zoomT = Math.max(ZMIN, Math.min(ZMAX, z)); if (zlabel) zlabel.textContent = S.zoomT.toFixed(1).replace('.', ',') + '×'; };
+  cv.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+    zoomTo(S.zoomT * Math.exp(-dy * (e.ctrlKey ? .01 : .0016)));
+  }, { passive: false });
+  const ptrs = new Map(); let pinch = null;
+  const pdist = () => { const [a, b] = [...ptrs.values()]; return Math.hypot(a.x - b.x, a.y - b.y) || 1; };
+  cv.addEventListener('pointerdown', (e) => {
+    ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY }); cv.setPointerCapture(e.pointerId);
+    if (ptrs.size === 2) { pinch = { d: pdist(), z: S.zoomT }; S.drag = null; S.moved = 999; return; }
+    S.drag = { x: e.clientX, y: e.clientY }; S.moved = 0; S.focus = null; cv.classList.add('drag');
+  });
   cv.addEventListener('pointermove', (e) => {
+    if (ptrs.has(e.pointerId)) ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pinch && ptrs.size === 2) { zoomTo(pinch.z * pdist() / pinch.d); return; }
     if (S.drag) {
-      const dx = e.clientX - S.drag.x, dy = e.clientY - S.drag.y; S.moved += Math.abs(dx) + Math.abs(dy);
-      S.lon -= dx * 0.006; S.vLon = Math.max(-0.06, Math.min(0.06, -dx * 0.006)); S.lat = Math.max(-1.2, Math.min(1.2, S.lat + dy * 0.005)); S.drag = { x: e.clientX, y: e.clientY };
+      const dx = e.clientX - S.drag.x, dy = e.clientY - S.drag.y, zs = Math.max(1, S.zoom); S.moved += Math.abs(dx) + Math.abs(dy);
+      S.lon -= dx * 0.006 / zs; S.vLon = Math.max(-0.06, Math.min(0.06, -dx * 0.006 / zs)); S.lat = Math.max(-1.2, Math.min(1.2, S.lat + dy * 0.005 / zs)); S.drag = { x: e.clientX, y: e.clientY };
       return;
     }
     const k = pickAt(e); S.hover = k; cv.style.cursor = k ? 'pointer' : 'grab';
@@ -665,7 +739,9 @@ function createGlobe(mount, opts) {
       const r = cv.getBoundingClientRect(); tip.style.left = Math.min(e.clientX - r.left + 14, S.w - 220) + 'px'; tip.style.top = Math.max(8, e.clientY - r.top - 36) + 'px'; tip.classList.add('show');
     } else tip.classList.remove('show');
   });
-  cv.addEventListener('pointerup', (e) => { S.drag = null; cv.classList.remove('drag'); if (S.moved < 6) { const k = pickAt(e); if (k) select(k); else close(); } });
+  const release = (e) => { ptrs.delete(e.pointerId); if (ptrs.size < 2) pinch = null; };
+  cv.addEventListener('pointerup', (e) => { release(e); S.drag = null; cv.classList.remove('drag'); if (S.moved < 6) { const k = pickAt(e); if (k) select(k); else close(); } });
+  cv.addEventListener('pointercancel', (e) => { release(e); S.drag = null; cv.classList.remove('drag'); });
   cv.addEventListener('pointerleave', () => { S.hover = null; tip.classList.remove('show'); });
 
   // --- fiche pays
@@ -783,7 +859,7 @@ function createGlobe(mount, opts) {
   }
   function setWorld() { msg.remove(); refresh(); if (pickInput) { let dl = $('countrylist'); if (!dl) { dl = document.createElement('datalist'); dl.id = 'countrylist'; document.body.append(dl); } dl.textContent = ''; [...WORLD.list].sort((a, b) => a.name.localeCompare(b.name, 'fr')).forEach((c) => { const o = document.createElement('option'); o.value = c.name; dl.append(o); }); } }
 
-  const api = { mount, tick, refresh, setWorld, closePanel: close, fail: () => { msg.textContent = 'Carte indisponible, nouvelle tentative'; }, visible: () => mount.getClientRects().length > 0, resetKey: () => { S.mkey = ''; } };
+  const api = { mount, tick, zoomBy: (f) => zoomTo(S.zoomT * f), zoomReset: () => zoomTo(1), refresh, setWorld, closePanel: close, fail: () => { msg.textContent = 'Carte indisponible, nouvelle tentative'; }, visible: () => mount.getClientRects().length > 0, resetKey: () => { S.mkey = ''; } };
   globes.push(api); return api;
 }
 
@@ -948,6 +1024,11 @@ $('q').oninput = render;
 $('clear').onclick = () => { srcFilter = ''; render(); };
 document.addEventListener('keydown', (e) => {
   if (e.key === '/' && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); if (view !== 'globe') $('q').focus(); }
+  if (view === 'globe' && document.activeElement.tagName !== 'INPUT') {
+    if (e.key === '+' || e.key === '=') bigGlobe.zoomBy(1.3);
+    else if (e.key === '-' || e.key === '_') bigGlobe.zoomBy(1 / 1.3);
+    else if (e.key === '0') bigGlobe.zoomReset();
+  }
   const num = Object.keys(CATS)[+e.key - 1];
   if (num && document.activeElement.tagName !== 'INPUT' && !e.metaKey && !e.ctrlKey && !e.altKey) { view = num; srcFilter = ''; render(); window.scrollTo({ top:0 }); }
   if (e.key === 'Escape') {
