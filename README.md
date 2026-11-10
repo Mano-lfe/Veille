@@ -9,19 +9,19 @@ Les articles viennent uniquement des flux RSS de médias identifiés (Numerama, 
 Node 18 ou plus récent, aucune dépendance à installer.
 
 ```bash
-node server.js
+node lib/server.js
 ```
 
 Puis ouvrir http://localhost:3000. Les flux sont relus toutes les 3 minutes et la page se met à jour toute seule.
 
 ## Fichiers
 
-- `server.js` : collecte des flux RSS, API `/api/news`, flux temps réel `/api/stream`
-- `index.html` : interface (rubriques, à la une, fil, recherche, filtre par source)
+- `lib/server.js` : collecte des flux RSS, API `/api/news`, flux temps réel `/api/stream`
+- `public/index.html` : interface (rubriques, à la une, fil, recherche, filtre par source)
 
 ## Ajouter une source
 
-Ajouter une entrée `{ name, url }` dans l'objet `SOURCES` de `server.js`.
+Ajouter une entrée `{ name, url }` dans l'objet `SOURCES` de `lib/server.js`.
 
 ## Déployer sur Vercel
 
