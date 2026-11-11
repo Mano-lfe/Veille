@@ -1082,8 +1082,19 @@ function createGlobe(mount, opts) {
     showPlanet(b);
   }
   function closePlanet() { if (!S.psel) return; S.psel = null; mount.classList.remove('has-planet'); zoomTo(1); }
-  function select(c) {
+  // --- immersion : pour les pays qui ont une visite aérienne guidée, le clic ouvre la visite (le globe plonge d'abord vers le pays)
+  function enterImmersion(c) {
+    if (S.sel) { S.sel = null; mount.classList.remove('has-panel'); drawChips(); }
+    tip.classList.remove('show');
+    S.focus = { lon: c.lon * Math.PI / 180, lat: Math.max(-1.0, Math.min(1.0, c.lat * Math.PI / 180)) };
+    zoomTo(3.6);
+    const back = () => { zoomTo(1); select(c, { plain: true }); }; // au retour : fiche du pays comme avant
+    Promise.all([loadImmersion(), new Promise((r) => setTimeout(r, REDUCED ? 0 : 1100))])
+      .then(() => window.Immersion.start(c.info.a2, { onExit: back })).catch(back);
+  }
+  function select(c, o) {
     if (S.psel) closePlanet();
+    if (!(o && o.plain) && c.info && IMMERSION_CODES.includes(c.info.a2)) { enterImmersion(c); return; }
     S.sel = c; S.focus = { lon: c.lon * Math.PI / 180, lat: Math.max(-1.0, Math.min(1.0, c.lat * Math.PI / 180)) };
     mount.classList.add('has-panel'); showPanel(c); drawChips();
   }
@@ -1121,8 +1132,21 @@ function createGlobe(mount, opts) {
 }
 
 function loop(t) {
-  for (const g of globes) if (g.visible()) { try { g.tick(t); } catch (e) { console.error(e); } }
+  // pendant une visite aérienne, le globe est masqué : inutile de le redessiner
+  if (!document.body.classList.contains('immersed')) for (const g of globes) if (g.visible()) { try { g.tick(t); } catch (e) { console.error(e); } }
   requestAnimationFrame(loop);
+}
+
+// Visites aériennes guidées (module chargé à la demande : carte 3D, imagerie satellite, relief)
+const IMMERSION_CODES = ['DO']; // République dominicaine
+let immersionPromise = null;
+function loadImmersion() {
+  if (window.Immersion) return Promise.resolve();
+  if (immersionPromise) return immersionPromise;
+  return (immersionPromise = new Promise((res, rej) => {
+    const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = '/immersion.css'; document.head.append(css);
+    const s = document.createElement('script'); s.src = '/immersion.js'; s.onload = res; s.onerror = () => { immersionPromise = null; rej(new Error('immersion')); }; document.head.append(s);
+  }));
 }
 
 let prevView = 'tech';
