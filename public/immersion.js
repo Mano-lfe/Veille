@@ -184,6 +184,90 @@
     },
   };
 
+  // English version
+  const TOURS_EN = {
+    DO: {
+      name: 'Dominican Republic', tag: 'Guided tour', lang: 'en', topoId: '214',
+      start: { center: [-70.2, 21.6], zoom: 4.8 },
+      stops: [
+        { title: "The Dominican Republic from above", place: "Overview", pin: false,
+          text: "It covers the eastern two thirds of the island of Hispaniola, which it shares with Haiti. In a short distance, this country of about 48,700 km² brings together Caribbean beaches, mountains over 3,000 metres high, salt lakes and tropical forests. Follow the flight: nine stops to discover it.",
+          say: "Welcome to the Dominican Republic! Look at the island of Hispaniola from above: the country covers the eastern two thirds, and the rest belongs to Haiti. Almost forty-nine thousand square kilometres, and yet it has everything! Dream beaches, mountains over three thousand metres high, salt lakes, tropical forests. So hold on tight: we take off for nine stops!",
+          facts: [["Capital", "Santo Domingo"], ["Language", "Spanish"], ["Population", "≈ 11 million"]],
+          center: [-70.25, 18.95], zoom: 7.2, pitch: 35, bearing: 15, orbit: 25, fly: 6500 },
+        { title: "Santo Domingo, the Colonial Zone", place: "South coast", pin: true,
+          text: "Founded in 1496 by Bartholomew Columbus, Santo Domingo is the oldest permanent European city in the Americas. Its Colonial Zone, a UNESCO World Heritage Site since 1990, brings together cobbled streets, fortresses, the first cathedral and the first hospitals and convents of the New World.",
+          intro: "First stop: Santo Domingo! Founded in fourteen ninety-six by Bartholomew Columbus, it is the oldest European city in the Americas. Look: the Ozama river, the port, and in the heart of the city, the Colonial Zone, a UNESCO World Heritage Site since nineteen ninety. Come on, let's go down into its streets!",
+          facts: [["Founded", "1496"], ["UNESCO since", "1990"]],
+          photos: [
+            { f: "File:Calle El Conde CCSD 03 2019 5088.jpg", cap: "Calle El Conde, the main pedestrian street of the Colonial Zone", say: "This is Calle El Conde, the main pedestrian street of the Colonial Zone. The terraces, the atmosphere, the people strolling by... this is where the heart of the neighbourhood beats." },
+            { f: "File:DOM Santo Domingo, Ciudad Colonial, Calle El Conde 0037.jpg", cap: "The shops of Calle El Conde", say: "A little further on, its shops and colourful facades, where you wander from window to window." },
+            { f: "File:Calle las Damas, Santo Domingo, Zona Colonial.jpg", cap: "Calle Las Damas, a historic street of the Colonial Zone", say: "And this is Calle Las Damas, one of the oldest streets in the New World, lined with stone houses." },
+            { f: "File:Catedral Primada CCSD 09 2018 1234.jpg", cap: "The Primate Cathedral of the Americas", say: "Finally, the Primate Cathedral of the Americas: the first cathedral in the Americas. Here the history of the New World was written, stone by stone." }],
+          center: [-69.883, 18.473], zoom: 14.2, pitch: 62, bearing: -25, orbit: 55, fly: 8500 },
+        { title: "Saona Island", place: "Del Este National Park", pin: true,
+          text: "In the south-east, Saona Island is part of Del Este National Park. White sand beaches, palm trees, turquoise waters and mangroves are protected there. You get there by boat from the village of Bayahibe.",
+          intro: "Heading south-east, towards Saona Island! Everything here is protected: this is Del Este National Park. You get there by boat from the little village of Bayahibe. Come on, let's step ashore!",
+          facts: [["Protection", "national park"], ["Access", "boat from Bayahibe"]],
+          photos: [
+            { f: "File:SAONA PLAYA.jpg", cap: "A beach on Saona Island", say: "Look at this beach: the pale sand, the palm trees leaning over the water, the turquoise sea." },
+            { f: "File:Saona Island Beach.jpg", cap: "White sand and turquoise water", say: "Sun loungers, a calm warm sea: the perfect setting to do nothing at all!" },
+            { f: "File:Saona Beach (60473824).jpeg", cap: "Palm trees by the beach", say: "And coconut palms everywhere as far as the eye can see. A postcard, without any retouching!" }],
+          center: [-68.7, 18.15], zoom: 11.3, pitch: 58, bearing: 35, orbit: 50, fly: 8000 },
+        { title: "Punta Cana", place: "East coast", pin: true,
+          text: "On the east coast, Punta Cana lines up dozens of kilometres of beaches fringed with coconut palms, between the Caribbean Sea and the Atlantic Ocean. It is the country's top tourist destination, with its own international airport.",
+          intro: "And here is Punta Cana, on the east coast! Dozens of kilometres of beaches fringed with coconut palms, the Caribbean Sea on one side, the Atlantic Ocean on the other. It is the country's top tourist destination, with its own international airport.",
+          facts: [["Beaches", "white sand, coconut palms"], ["Airport", "international"]],
+          photos: [
+            { f: "File:Playa Bavaro 142.jpg", cap: "Bávaro beach", say: "On Bávaro beach you can watch the sailboats heading out on excursions at sea." },
+            { f: "File:Bavaro Beach 045.jpg", cap: "Coconut palms and huts at Bávaro", say: "Coconut palms, beach huts, fine sand: everything is made for relaxing." },
+            { f: "File:2024 - Bávaro Beach - 44.jpg", cap: "The turquoise waters of Bávaro", say: "And this turquoise water... Doesn't it make you want to put down your bags?" }],
+          center: [-68.4, 18.57], zoom: 12.1, pitch: 60, bearing: -40, orbit: -55, fly: 7500 },
+        { title: "The Samaná Peninsula", place: "North-east", pin: true,
+          text: "In the north-east, the Samaná Peninsula is covered with hills, coconut groves and waterfalls such as Salto El Limón. From January to March, many humpback whales come to breed in its bay.",
+          intro: "Heading north-east, the Samaná Peninsula! Green hills, coconut groves and, from January to March, many humpback whales that come to breed in the bay!",
+          facts: [["Humpback whales", "January – March"], ["Waterfall", "Salto El Limón"]],
+          photos: [
+            { f: "File:El Limon.JPG", cap: "The Salto El Limón waterfall", say: "This is the Salto El Limón waterfall, which drops into a pool in the heart of the forest." },
+            { f: "File:Salto el Limón (14503942108).jpg", cap: "On the Salto El Limón trail", say: "You get there on horseback or on foot, along a path through the vegetation." },
+            { f: "File:DOM Las Terrenas, Playa Las Terrenas 0054.jpg", cap: "Las Terrenas beach", say: "And to finish, Las Terrenas beach, with its fishing boats pulled up on the sand." }],
+          center: [-69.45, 19.22], zoom: 10.4, pitch: 58, bearing: 20, orbit: 55, fly: 8000 },
+        { title: "Cabarete and the north coast", place: "Puerto Plata", pin: true,
+          text: "On the north coast, the steady wind makes Cabarete one of the world capitals of kitesurfing. Further west, a cable car climbs from Puerto Plata to Mount Isabel de Torres, at about 800 metres, with a view over the whole bay.",
+          intro: "On the north coast, here is Cabarete! The wind is steady, which makes it one of the world capitals of kitesurfing and windsurfing. A little further west, a cable car climbs from Puerto Plata up to Mount Isabel de Torres, at about eight hundred metres.",
+          facts: [["Sport", "kitesurfing, windsurfing"], ["Isabel de Torres", "≈ 800 m"]],
+          photos: [
+            { f: "File:The Surfboards (8422914814).jpg", cap: "Surfboards at Cabarete", say: "Surfboards lined up: here life follows the rhythm of the wind and the waves." },
+            { f: "File:Cabarete, Dominican Republic (8644953576).jpg", cap: "Cabarete beach", say: "Cabarete beach, with its palm trees and its crystal-clear blue sea." },
+            { f: "File:Доминиканская Республика - panoramio (4).jpg", cap: "A beach hut on the north coast", say: "And a hut at the water's edge, for a break between two sessions." }],
+          center: [-70.41, 19.755], zoom: 12.3, pitch: 62, bearing: 150, orbit: -50, fly: 8000 },
+        { title: "Pico Duarte", place: "Cordillera Central", pin: true,
+          text: "In the heart of the country, the Cordillera Central peaks at Pico Duarte, at 3,098 metres: the highest summit in the Caribbean. Pine forests, waterfalls and cool valleys contrast with the heat of the coast, around Jarabacoa and Constanza.",
+          intro: "Now we climb into the heart of the country, the Cordillera Central! This is Pico Duarte: three thousand and ninety-eight metres, the highest summit in the Caribbean! Pine forests, waterfalls, cool valleys, around Jarabacoa and Constanza.",
+          facts: [["Altitude", "3,098 m"], ["Record", "highest summit in the Caribbean"]],
+          photos: [
+            { f: "File:Pinus occidentalis on Pico Duarte.jpg", cap: "Pines on the slopes of Pico Duarte", say: "Look at these pines: we are far from the heat of the coast." },
+            { f: "File:Compartición 2010 - panoramio.jpg", cap: "The Compartición pine forest, on the Pico Duarte trail", say: "This is Compartición, on the trail that leads to the summit, in the middle of the pine forest." },
+            { f: "File:Celestus marcanoi habitat.jpg", cap: "A mountain landscape in the Cordillera Central", say: "And further on, wide high-altitude meadows, where the air is cool and the silence is total." }],
+          center: [-70.9986, 19.0236], zoom: 10.3, pitch: 62, bearing: 200, orbit: 60, fly: 8500 },
+        { title: "Lake Enriquillo", place: "South-west", pin: true,
+          text: "In the south-west, Lake Enriquillo is a salt lake below sea level: the lowest point in the Caribbean. It is home to American crocodiles, flamingos and Cabritos Island, in the middle of a semi-desert landscape.",
+          intro: "Last big stop, in the south-west: Lake Enriquillo! A salt lake below sea level, about forty metres below it: the lowest point in the Caribbean!",
+          facts: [["Altitude", "≈ −40 m"], ["Wildlife", "crocodiles, flamingos"]],
+          photos: [
+            { f: "File:Lago Enriquillo.jpg", cap: "Lake Enriquillo at the end of the day", say: "The lake at dusk: the light on the water, and the mountains in the distance." },
+            { f: "File:Mirador Lago Enriquillo.jpg", cap: "The Lake Enriquillo viewpoint", say: "From this viewpoint, the view stretches as far as the eye can see, over an almost desert landscape." },
+            { f: "File:Cabritos 2011 12 13Feb 221.JPG", cap: "An iguana on Cabritos Island", say: "And on Cabritos Island, in the middle of the lake, live iguanas, American crocodiles and flamingos. A world apart." }],
+          center: [-71.58, 18.47], zoom: 10.2, pitch: 56, bearing: 60, orbit: 55, fly: 8000 },
+        { title: "End of the tour", place: "Overview", pin: false,
+          text: "From the coast to the peaks, you go from the Caribbean Sea to over 3,000 metres of altitude in a few hours by road. You can now explore the map freely, replay the tour or go back to the globe.",
+          say: "And that's the end of our flight! In a few minutes we went from the Caribbean Sea to over three thousand metres of altitude, from colonial streets to beaches and salt lakes. You can now explore the map freely, replay the tour, or go back to the globe. Thank you for travelling with us!",
+          facts: [],
+          center: [-70.25, 18.95], zoom: 7.4, pitch: 22, bearing: 0, orbit: 0, fly: 8000, dwell: 9000 },
+      ],
+    },
+  };
+
   const ICON = {
     back: '<path d="m15 18-6-6 6-6"/>', next: '<path d="m9 18 6-6-6-6"/>',
     play: '<polygon points="7 4 20 12 7 20 7 4" fill="currentColor" stroke="none"/>',
@@ -270,9 +354,31 @@
     'Couper la narration vocale': 'Silenciar la narración', 'Activer la narration vocale': 'Activar la narración',
     "Aller à l'étape": 'Ir a la etapa', 'Impossible de charger la carte 3D. Vérifiez la connexion.': 'No se pudo cargar el mapa 3D. Comprueba la conexión.',
     'Votre navigateur ne gère pas la carte 3D (WebGL requis).': 'Tu navegador no admite el mapa 3D (se requiere WebGL).',
-    'Visite guidée': 'Visita guiada',
+    'Visite guidée': 'Visita guiada', 'Texte : ': 'Texto: ',
+    'Annuler': 'Cancelar', 'Préparation de la visite': 'Preparando la visita',
+    'Impossible de préparer la visite': 'No se pudo preparar la visita', 'Vérifiez la connexion.': 'Comprueba la conexión.',
   };
-  const tr = (t) => (LANG === 'es' && ES[t]) || t;
+  const EN = {
+    'Quitter la visite': 'Leave the tour', 'Étape précédente (←)': 'Previous stop (←)', 'Étape précédente': 'Previous stop',
+    'Étape suivante (→)': 'Next stop (→)', 'Étape suivante': 'Next stop', 'Réglages de la voix': 'Voice settings',
+    'Narration vocale (V)': 'Voice narration (V)', 'Voix': 'Voice', 'Rythme': 'Pace', 'Écouter un extrait': 'Play a sample',
+    'Glissez pour explorer · molette pour zoomer · Espace : pause · Échap : quitter': 'Drag to explore · scroll to zoom · Space: pause · Esc: leave',
+    'Chargement de l’imagerie satellite': 'Loading satellite imagery', 'Retour au globe': 'Back to the globe',
+    'Voici le ton de la visite. Prêt à décoller ?': 'This is the tone of the tour. Ready for take-off?',
+    'Aucune voix française trouvée': 'No English voice found', 'recommandée': 'recommended',
+    'Voir la photo sur Wikimedia Commons': 'See the photo on Wikimedia Commons', 'Photo : ': 'Photo: ', 'Auteur inconnu': 'Unknown author', 'Licence libre': 'Free licence',
+    'Étape': 'Stop', 'Rejouer': 'Replay', 'Pause': 'Pause', 'Lecture': 'Play',
+    'Rejouer la visite': 'Replay the tour', 'Mettre la visite en pause': 'Pause the tour', 'Reprendre la visite': 'Resume the tour',
+    'Couper la narration vocale': 'Mute the narration', 'Activer la narration vocale': 'Turn on the narration',
+    "Aller à l'étape": 'Go to stop', 'Impossible de charger la carte 3D. Vérifiez la connexion.': 'Could not load the 3D map. Check your connection.',
+    'Votre navigateur ne gère pas la carte 3D (WebGL requis).': 'Your browser does not support the 3D map (WebGL required).',
+    'Visite guidée': 'Guided tour', 'Texte : ': 'Text: ',
+    'Annuler': 'Cancel', 'Préparation de la visite': 'Preparing the tour',
+    'Impossible de préparer la visite': 'Could not prepare the tour', 'Vérifiez la connexion.': 'Check your connection.',
+  };
+  const tr = (t) => (LANG === 'es' ? ES[t] : LANG === 'en' ? EN[t] : null) || t;
+  const LANG_CODE = { fr: 'fr-FR', es: 'es-ES', en: 'en-US' };
+  const voiceKey = () => (LANG === 'fr' ? 'veille.voice' : 'veille.voice.' + LANG);
   const canSpeak = 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
   const frVoices = () => (canSpeak ? speechSynthesis.getVoices().filter((v) => new RegExp('^' + LANG, 'i').test(v.lang)) : []);
   // les voix « naturelles » (Edge, Chrome, macOS premium) sont bien plus expressives que les voix locales de base
@@ -283,6 +389,7 @@
     if (/premium|enhanced|améliorée|siri/i.test(n)) s += 55;
     if (/denise|henri|eloise|vivienne|remy|brigitte|thomas|amélie|audrey|aurélie|marie|julie/i.test(n)) s += 20;
     if (/^fr[-_]FR/i.test(v.lang)) s += 10;
+    if (LANG === 'en') { if (/en[-_](GB|US)/i.test(v.lang)) s += 8; if (/aria|jenny|guy|sonia|ryan|libby|samantha|daniel|karen|zira|davis/i.test(n)) s += 20; }
     if (LANG === 'es') { if (/es[-_]DO/i.test(v.lang)) s += 14; else if (/es[-_](MX|US|419)/i.test(v.lang)) s += 9; else if (/es[-_]ES/i.test(v.lang)) s += 6; if (/paola|dalia|jorge|elvira|alvaro|sabina|helena|laura|monica|paulina|diego|juan|alex/i.test(n)) s += 20; }
     if (v.localService === false) s += 5;
     return s;
@@ -295,11 +402,11 @@
 
   // Pays sans visite écrite à la main : on la génère à partir de Wikidata / Wikipédia / Commons (voir tourgen.js), avec un écran d'attente
   async function prepare(code, opts) {
-    const c = opts.country, name = c.fr || c.name;
+    const c = opts.country, name = LANG === 'fr' ? (c.fr || c.name) : (c.name || c.fr);
     const pre = el('div', 'imm');
     const box = el('div', 'imm-load', '<div class="bar"></div><div class="msg"></div>');
-    const stop = el('button', 'imm-btn main', 'Annuler'); stop.type = 'button'; box.append(stop); pre.append(box);
-    const msg = box.querySelector('.msg'); msg.textContent = `Préparation de la visite · ${name}`;
+    const stop = el('button', 'imm-btn main', tr('Annuler')); stop.type = 'button'; box.append(stop); pre.append(box);
+    const msg = box.querySelector('.msg'); msg.textContent = `${tr('Préparation de la visite')} · ${name}`;
     let cancelled = false; const cancel = () => { cancelled = true; };
     stop.onclick = cancel;
     const key = (e) => { e.stopPropagation(); if (e.key === 'Escape') { e.preventDefault(); cancel(); } };
@@ -309,14 +416,14 @@
     try {
       let polys = null; try { polys = await loadBoundary(c.id); } catch (e) {}
       const tour = await Promise.race([
-        window.TourGen.build(c, { polys, fallbackCenter: opts.center, onProgress: (m) => { msg.textContent = `${m} · ${name}`; } }),
+        window.TourGen.build(c, { polys, lang: LANG, fallbackCenter: opts.center, onProgress: (m) => { msg.textContent = `${m} · ${name}`; } }),
         new Promise((_, rej) => { const t = setInterval(() => { if (cancelled) { clearInterval(t); rej(new Error('annulé')); } }, 200); }),
       ]);
       if (cancelled) { done(); return null; }
       done(); return tour;
     } catch (e) {
       if (cancelled) { done(); return null; }
-      msg.textContent = `Impossible de préparer la visite de ${name}. Vérifiez la connexion.`; box.classList.add('err'); stop.textContent = 'Retour au globe';
+      msg.textContent = `${tr('Impossible de préparer la visite')} · ${name}. ${tr('Vérifiez la connexion.')}`; box.classList.add('err'); stop.textContent = tr('Retour au globe');
       await new Promise((res) => { stop.onclick = res; const k2 = (ev) => { if (ev.key === 'Escape') res(); }; window.addEventListener('keydown', k2, true); });
       done(); return null;
     }
@@ -324,10 +431,12 @@
 
   async function start(code, opts = {}) {
     if (active) return;
-    let tour = opts.planet ? (window.PLANET_TOURS || {})[code] : TOURS[code];
-    const hasEs = !opts.planet && !!(TOURS_ES[code] && TOURS[code]); // visite proposée en deux langues
-    if (hasEs && store.get('veille.tourLang', 'fr') === 'es') tour = TOURS_ES[code];
-    LANG = (tour && tour.lang) || 'fr';
+    const want = opts.planet ? 'fr' : store.get('veille.tourLang', 'fr'); // fr, en ou es (les planètes restent en français)
+    const curated = { fr: TOURS, es: TOURS_ES, en: TOURS_EN }[want] || TOURS;
+    let tour = opts.planet ? (window.PLANET_TOURS || {})[code] : (curated[code] || (TOURS[code] && !opts.country ? TOURS[code] : null));
+    if (!opts.planet && !tour && TOURS[code] && !(opts.country && window.TourGen)) tour = TOURS[code];
+    const hasLangs = !opts.planet && !!(TOURS[code] || (opts.country && window.TourGen)); // visite proposée en plusieurs langues
+    LANG = (tour && tour.lang) || (opts.planet ? 'fr' : want);
     if (!tour && !(opts.country && window.TourGen)) return;
     active = true;
     document.body.classList.add(tour && tour.planet ? 'planeting' : 'immersed');
@@ -339,7 +448,7 @@
     currentTour = tour;
     const stops = tour.stops, last = stops.length - 1;
     let map = null, cur = -1, seq = 0, playing = true, finished = false, timer = null, safety = null, began = false;
-    let voiceOn = canSpeak && store.get('veille.voiceOn', true), rate = store.get('veille.rate', 1.08), voiceName = store.get(LANG === 'es' ? 'veille.voice.es' : 'veille.voice', null);
+    let voiceOn = canSpeak && store.get('veille.voiceOn', true), rate = store.get('veille.rate', 1.08), voiceName = store.get(voiceKey(), null);
     let speechToken = 0, gapTimer = null, fieldTimer = null;
     const markers = [];
 
@@ -359,10 +468,15 @@
     const bNext = el('button', 'imm-btn', svg('next')); bNext.type = 'button'; bNext.title = tr('Étape suivante (→)'); bNext.setAttribute('aria-label', tr('Étape suivante'));
     const bSet = el('button', 'imm-btn', svg('sliders')); bSet.type = 'button'; bSet.title = tr('Réglages de la voix'); bSet.setAttribute('aria-label', tr('Réglages de la voix')); bSet.setAttribute('aria-expanded', 'false');
     const bVoice = el('button', 'imm-btn', svg('mute')); bVoice.type = 'button'; bVoice.title = tr('Narration vocale (V)');
-    const bLang = el('button', 'imm-btn lang', LANG === 'es' ? 'FR' : 'ES'); bLang.type = 'button';
-    bLang.title = LANG === 'es' ? 'Voir la visite en français' : 'Ver la visita en español'; bLang.setAttribute('aria-label', bLang.title);
+    const langs = el('div', 'imm-langs'); langs.setAttribute('role', 'group'); langs.setAttribute('aria-label', 'Langue de la visite');
+    const LNAME = { fr: 'Français', en: 'English', es: 'Español' };
+    ['fr', 'en', 'es'].forEach((l) => {
+      const b = el('button', 'imm-btn lang' + (l === LANG ? ' on' : ''), l.toUpperCase()); b.type = 'button'; b.title = LNAME[l]; b.setAttribute('aria-label', LNAME[l]); b.setAttribute('aria-pressed', String(l === LANG));
+      b.onclick = () => { if (l === LANG) return; store.set('veille.tourLang', l); quit(() => start(code, opts)); };
+      langs.append(b);
+    });
     ctl.append(bPrev, bPlay, bNext, el('span', 'sp'));
-    if (hasEs) ctl.append(bLang);
+    if (hasLangs) ctl.append(langs);
     if (canSpeak) ctl.append(bSet, bVoice);
     const hint = el('div', 'imm-hint', tr('Glissez pour explorer · molette pour zoomer · Espace : pause · Échap : quitter'));
 
@@ -405,7 +519,7 @@
         if (my !== speechToken) return;
         if (i >= parts.length) return onEnd && onEnd();
         const p = parts[i], excl = /!/.test(p), ques = /\?/.test(p), first = i === 0, u = new SpeechSynthesisUtterance(p);
-        u.lang = v ? v.lang : LANG === 'es' ? 'es-ES' : 'fr-FR'; if (v) u.voice = v;
+        u.lang = v ? v.lang : LANG_CODE[LANG] || 'fr-FR'; if (v) u.voice = v;
         u.rate = Math.max(.7, Math.min(1.6, rate * (excl ? 1.04 : 1) * (first ? 1.03 : 1)));
         u.pitch = Math.max(.6, Math.min(1.8, 1.04 + (excl ? .14 : 0) + (ques ? .1 : 0) + (first ? .06 : 0) + (i % 2 ? -.02 : .03)));
         u.onend = () => { if (my !== speechToken) return; i++; gapTimer = setTimeout(next, excl || ques ? 150 : 260); };
@@ -431,7 +545,7 @@
     }
     if (canSpeak) { fillVoiceList(); speechSynthesis.onvoiceschanged = fillVoiceList; }
     rngRate.value = String(rate); rateOut.textContent = `× ${rate.toFixed(2).replace('.', ',')}`;
-    selVoice.onchange = () => { voiceName = selVoice.value || null; store.set(LANG === 'es' ? 'veille.voice.es' : 'veille.voice', voiceName); };
+    selVoice.onchange = () => { voiceName = selVoice.value || null; store.set(voiceKey(), voiceName); };
     rngRate.oninput = () => { rate = +rngRate.value; rateOut.textContent = `× ${rate.toFixed(2).replace('.', ',')}`; store.set('veille.rate', rate); };
     bTest.onclick = () => speak(tr('Voici le ton de la visite. Prêt à décoller ?'), null, null);
     bSet.onclick = () => { pop.hidden = !pop.hidden; bSet.setAttribute('aria-expanded', String(!pop.hidden)); bSet.classList.toggle('on', !pop.hidden); };
@@ -477,7 +591,7 @@
       const s = stops[cur];
       step.innerHTML = `<span><b>${pad(cur + 1)}</b> / ${pad(stops.length)} · ${esc(s.place)}</span>` + (isPlanet ? '' : `<span>${Math.abs(s.center[1]).toFixed(2)}° N · ${Math.abs(s.center[0]).toFixed(2)}° O</span>`);
       title.textContent = s.title; text.textContent = s.text;
-      if (s.source && /^https:\/\/fr\.wikipedia\.org\//.test(s.source.url)) { srcEl.hidden = false; srcEl.href = s.source.url; srcEl.textContent = `Texte : ${s.source.label} (CC BY-SA)`; } else srcEl.hidden = true;
+      if (s.source && /^https:\/\/(fr|en|es)\.wikipedia\.org\//.test(s.source.url)) { srcEl.hidden = false; srcEl.href = s.source.url; srcEl.textContent = `${tr('Texte : ')}${s.source.label} (CC BY-SA)`; } else srcEl.hidden = true;
       facts.innerHTML = s.facts.map(([k, v]) => `<li><b>${esc(k)}</b> ${esc(v)}</li>`).join('');
       facts.style.display = s.facts.length ? '' : 'none';
       segs.forEach((b, i) => { b.classList.toggle('done', i < cur); b.classList.remove('on'); });
@@ -569,7 +683,6 @@
       if (playing && cur >= 0 && !finished) { clearTimer(); phEls.forEach((_, i) => unfocusPhoto(i)); setTimeout(() => dwell(seq), 120); }
     }
 
-    bLang.onclick = () => { store.set('veille.tourLang', LANG === 'es' ? 'fr' : 'es'); quit(() => start(code, opts)); };
     bPlay.onclick = togglePlay; bNext.onclick = () => goTo(cur + 1); bPrev.onclick = () => goTo(cur - 1); bVoice.onclick = toggleVoice; back.onclick = () => quit();
 
     const onKey = (e) => {

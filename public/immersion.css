@@ -134,3 +134,6 @@ body.immersed { overflow:hidden; }
 body.planeting .ppanel, body.planeting #planetPanel { display:none !important; }
 
 .imm-btn.lang { width:auto; min-width:40px; padding:0 10px; font:700 11px/1 var(--mono, 'IBM Plex Mono', monospace); letter-spacing:.08em; }
+
+.imm-langs { display:inline-flex; gap:4px; }
+.imm-langs .imm-btn.lang { width:auto; min-width:34px; padding:0 8px; }

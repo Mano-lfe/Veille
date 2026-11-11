@@ -50,4 +50,4 @@ Cliquer sur un pays du globe (ou sur « Visite » dans son panneau) lance une vi
 
 Les huit astres (Mercure, Vénus, Lune, Mars, Jupiter, Saturne, Uranus, Neptune) ont une visite rédigée à la main (`public/planettours.js`), avec des photos de la NASA/ESA hébergées sur Wikimedia Commons. La visite d'un pays ou d'une planète ne démarre qu'avec le bouton « Visite ».
 
-La visite de la République dominicaine existe en français et en espagnol (bouton FR / ES dans la visite, choix mémorisé) : textes, interface et voix changent de langue.
+Les visites existent en français, anglais et espagnol (boutons FR / EN / ES dans la visite, choix mémorisé) : interface, voix et textes changent de langue. La République dominicaine est traduite à la main ; pour les autres pays, les textes viennent de l'article Wikipédia de la langue choisie (si l'article existe dans cette langue). Les planètes restent en français.
