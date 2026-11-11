@@ -132,3 +132,5 @@ body.immersed { overflow:hidden; }
 .imm.planet { background:transparent; pointer-events:none; }
 .imm.planet .imm-card, .imm.planet .imm-top > *, .imm.planet .imm-ph { pointer-events:auto; }
 body.planeting .ppanel, body.planeting #planetPanel { display:none !important; }
+
+.imm-btn.lang { width:auto; min-width:40px; padding:0 10px; font:700 11px/1 var(--mono, 'IBM Plex Mono', monospace); letter-spacing:.08em; }

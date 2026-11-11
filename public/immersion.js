@@ -100,6 +100,90 @@
     },
   };
 
+  // Version espagnole (option de langue dans la visite)
+  const TOURS_ES = {
+    DO: {
+      name: 'República Dominicana', tag: 'Visita guiada', lang: 'es', topoId: '214',
+      start: { center: [-70.2, 21.6], zoom: 4.8 },
+      stops: [
+        { title: "La República Dominicana vista desde el cielo", place: "Vista general", pin: false,
+          text: "Ocupa los dos tercios orientales de la isla de La Española, que comparte con Haití. En poca distancia, este país de unos 48 700 km² reúne playas del Caribe, montañas de más de 3 000 metros, lagos salados y bosques tropicales. Sigue el vuelo: nueve etapas para descubrirlo.",
+          say: "¡Bienvenidos a la República Dominicana! Miren esta isla de La Española desde arriba: el país ocupa los dos tercios orientales, y el resto pertenece a Haití. Casi cuarenta y nueve mil kilómetros cuadrados, y sin embargo, ¡aquí hay de todo! Playas de ensueño, montañas de más de tres mil metros, lagos salados, selvas tropicales. ¡Agárrense, despegamos para nueve etapas!",
+          facts: [["Capital", "Santo Domingo"], ["Idioma", "español"], ["Habitantes", "≈ 11 millones"]],
+          center: [-70.25, 18.95], zoom: 7.2, pitch: 35, bearing: 15, orbit: 25, fly: 6500 },
+        { title: "Santo Domingo, la Zona Colonial", place: "Costa sur", pin: true,
+          text: "Fundada en 1496 por Bartolomé Colón, Santo Domingo es la ciudad europea permanente más antigua de las Américas. Su Zona Colonial, Patrimonio de la UNESCO desde 1990, reúne calles empedradas, fortalezas, la primera catedral y los primeros hospitales y conventos del Nuevo Mundo.",
+          intro: "¡Primera escala: Santo Domingo! Fundada en mil cuatrocientos noventa y seis por Bartolomé Colón, es la ciudad europea más antigua de las Américas. Miren: el río Ozama, el puerto y, en el corazón de la ciudad, la Zona Colonial, declarada Patrimonio de la UNESCO desde mil novecientos noventa. ¡Vamos, bajemos a sus calles!",
+          facts: [["Fundada en", "1496"], ["UNESCO desde", "1990"]],
+          photos: [
+            { f: "File:Calle El Conde CCSD 03 2019 5088.jpg", cap: "La calle El Conde, la gran calle peatonal de la Zona Colonial", say: "Esta es la calle El Conde, la gran calle peatonal de la Zona Colonial. Las terrazas, el ambiente, la gente que pasea... aquí late el corazón del barrio." },
+            { f: "File:DOM Santo Domingo, Ciudad Colonial, Calle El Conde 0037.jpg", cap: "Las tiendas de la calle El Conde", say: "Un poco más allá, sus tiendas y sus fachadas de colores, donde se pasea de escaparate en escaparate." },
+            { f: "File:Calle las Damas, Santo Domingo, Zona Colonial.jpg", cap: "La calle Las Damas, calle histórica de la Zona Colonial", say: "Y esta es la calle Las Damas, una de las calles más antiguas del Nuevo Mundo, bordeada de casas de piedra." },
+            { f: "File:Catedral Primada CCSD 09 2018 1234.jpg", cap: "La Catedral Primada de América", say: "Por último, la Catedral Primada de América: la primera catedral de las Américas. Aquí se escribió la historia del Nuevo Mundo, piedra a piedra." }],
+          center: [-69.883, 18.473], zoom: 14.2, pitch: 62, bearing: -25, orbit: 55, fly: 8500 },
+        { title: "La isla Saona", place: "Parque Nacional del Este", pin: true,
+          text: "Al sureste, la isla Saona forma parte del Parque Nacional del Este. Allí se protegen playas de arena blanca, palmeras, aguas turquesa y manglares. Se llega en barco desde el pueblo de Bayahibe.",
+          intro: "¡Rumbo al sureste, hacia la isla Saona! Aquí todo está protegido: es el Parque Nacional del Este. Se llega en barco desde el pequeño pueblo de Bayahibe. ¡Vamos, pisemos tierra!",
+          facts: [["Protección", "parque nacional"], ["Acceso", "barco desde Bayahibe"]],
+          photos: [
+            { f: "File:SAONA PLAYA.jpg", cap: "Playa de la isla Saona", say: "Miren esta playa: la arena clara, las palmeras que se inclinan sobre el agua, el mar turquesa." },
+            { f: "File:Saona Island Beach.jpg", cap: "Arena blanca y aguas turquesa", say: "Tumbonas, un mar tranquilo y cálido: ¡el decorado ideal para no hacer nada!" },
+            { f: "File:Saona Beach (60473824).jpeg", cap: "Palmeras junto a la playa", say: "Y por todas partes, cocoteros hasta donde alcanza la vista. ¡Una postal, sin ningún retoque!" }],
+          center: [-68.7, 18.15], zoom: 11.3, pitch: 58, bearing: 35, orbit: 50, fly: 8000 },
+        { title: "Punta Cana", place: "Costa este", pin: true,
+          text: "En la costa este, Punta Cana alinea decenas de kilómetros de playas bordeadas de cocoteros, entre el mar Caribe y el océano Atlántico. Es el primer destino turístico del país, con su propio aeropuerto internacional.",
+          intro: "¡Y aquí está Punta Cana, en la costa este! Decenas de kilómetros de playas bordeadas de cocoteros, el mar Caribe a un lado, el océano Atlántico al otro. Es el primer destino turístico del país, con su propio aeropuerto internacional.",
+          facts: [["Playas", "arena blanca, cocoteros"], ["Aeropuerto", "internacional"]],
+          photos: [
+            { f: "File:Playa Bavaro 142.jpg", cap: "La playa de Bávaro", say: "En la playa de Bávaro se ven pasar los veleros que salen de excursión por el mar." },
+            { f: "File:Bavaro Beach 045.jpg", cap: "Cocoteros y cabañas en Bávaro", say: "Cocoteros, cabañas, arena fina: todo está hecho para relajarse." },
+            { f: "File:2024 - Bávaro Beach - 44.jpg", cap: "Las aguas turquesa de Bávaro", say: "Y esta agua turquesa... ¿Dan ganas de dejar las maletas aquí, verdad?" }],
+          center: [-68.4, 18.57], zoom: 12.1, pitch: 60, bearing: -40, orbit: -55, fly: 7500 },
+        { title: "La península de Samaná", place: "Noreste", pin: true,
+          text: "Al noreste, la península de Samaná está cubierta de colinas, cocotales y cascadas como el Salto El Limón. De enero a marzo, numerosas ballenas jorobadas llegan a reproducirse en su bahía.",
+          intro: "¡Rumbo al noreste, la península de Samaná! Colinas verdes, cocotales y, de enero a marzo, ¡numerosas ballenas jorobadas que vienen a reproducirse en la bahía!",
+          facts: [["Ballenas jorobadas", "enero – marzo"], ["Cascada", "Salto El Limón"]],
+          photos: [
+            { f: "File:El Limon.JPG", cap: "La cascada del Salto El Limón", say: "Esta es la cascada del Salto El Limón, que cae en una poza en el corazón del bosque." },
+            { f: "File:Salto el Limón (14503942108).jpg", cap: "En el sendero del Salto El Limón", say: "Se llega a caballo o a pie, por un sendero que atraviesa la vegetación." },
+            { f: "File:DOM Las Terrenas, Playa Las Terrenas 0054.jpg", cap: "La playa de Las Terrenas", say: "Y para terminar, la playa de Las Terrenas, con sus barcas de pescadores varadas en la arena." }],
+          center: [-69.45, 19.22], zoom: 10.4, pitch: 58, bearing: 20, orbit: 55, fly: 8000 },
+        { title: "Cabarete y la costa norte", place: "Puerto Plata", pin: true,
+          text: "En la costa norte, el viento constante convierte a Cabarete en una de las capitales mundiales del kitesurf. Más al oeste, un teleférico sube de Puerto Plata al monte Isabel de Torres, a unos 800 metros, con vistas a toda la bahía.",
+          intro: "¡En la costa norte, aquí está Cabarete! El viento es constante, y eso la convierte en una de las capitales mundiales del kitesurf y del windsurf. Un poco más al oeste, un teleférico sube de Puerto Plata hasta el monte Isabel de Torres, a unos ochocientos metros.",
+          facts: [["Deporte", "kitesurf, windsurf"], ["Isabel de Torres", "≈ 800 m"]],
+          photos: [
+            { f: "File:The Surfboards (8422914814).jpg", cap: "Tablas de surf en Cabarete", say: "Tablas de surf alineadas: aquí se vive al ritmo del viento y de las olas." },
+            { f: "File:Cabarete, Dominican Republic (8644953576).jpg", cap: "La playa de Cabarete", say: "La playa de Cabarete, con sus palmeras y su mar de un azul transparente." },
+            { f: "File:Доминиканская Республика - panoramio (4).jpg", cap: "Una cabaña en la playa de la costa norte", say: "Y una cabaña a la orilla del agua, para descansar entre dos sesiones." }],
+          center: [-70.41, 19.755], zoom: 12.3, pitch: 62, bearing: 150, orbit: -50, fly: 8000 },
+        { title: "El Pico Duarte", place: "Cordillera Central", pin: true,
+          text: "En el corazón del país, la Cordillera Central culmina en el Pico Duarte, a 3 098 metros: la cumbre más alta del Caribe. Bosques de pinos, cascadas y valles frescos contrastan con el calor del litoral, alrededor de Jarabacoa y Constanza.",
+          intro: "¡Ahora subimos al corazón del país, a la Cordillera Central! Este es el Pico Duarte: ¡tres mil noventa y ocho metros, la cumbre más alta del Caribe! Bosques de pinos, cascadas, valles frescos, alrededor de Jarabacoa y Constanza.",
+          facts: [["Altitud", "3 098 m"], ["Récord", "la cumbre más alta del Caribe"]],
+          photos: [
+            { f: "File:Pinus occidentalis on Pico Duarte.jpg", cap: "Pinos en las laderas del Pico Duarte", say: "Miren estos pinos: estamos muy lejos del calor del litoral." },
+            { f: "File:Compartición 2010 - panoramio.jpg", cap: "El bosque de pinos de Compartición, en el sendero del Pico Duarte", say: "Esta es Compartición, en el sendero que lleva a la cumbre, en medio del bosque de pinos." },
+            { f: "File:Celestus marcanoi habitat.jpg", cap: "Paisaje de montaña en la Cordillera Central", say: "Y más lejos, grandes praderas de altura, donde el aire es fresco y la calma es total." }],
+          center: [-70.9986, 19.0236], zoom: 10.3, pitch: 62, bearing: 200, orbit: 60, fly: 8500 },
+        { title: "El lago Enriquillo", place: "Suroeste", pin: true,
+          text: "En el suroeste, el lago Enriquillo es un lago salado situado bajo el nivel del mar: el punto más bajo del Caribe. Alberga cocodrilos americanos, flamencos y la isla Cabritos, en medio de un paisaje semidesértico.",
+          intro: "¡Última gran escala, en el suroeste: el lago Enriquillo! Un lago salado situado bajo el nivel del mar, a unos cuarenta metros por debajo: ¡el punto más bajo del Caribe!",
+          facts: [["Altitud", "≈ −40 m"], ["Fauna", "cocodrilos, flamencos"]],
+          photos: [
+            { f: "File:Lago Enriquillo.jpg", cap: "El lago Enriquillo al final del día", say: "El lago al caer la tarde: la luz sobre el agua y las montañas al fondo." },
+            { f: "File:Mirador Lago Enriquillo.jpg", cap: "El mirador del lago Enriquillo", say: "Desde este mirador, la vista se pierde en el horizonte, en un paisaje casi desértico." },
+            { f: "File:Cabritos 2011 12 13Feb 221.JPG", cap: "Una iguana en la isla Cabritos", say: "Y en la isla Cabritos, en medio del lago, viven iguanas, cocodrilos americanos y flamencos. Un mundo aparte." }],
+          center: [-71.58, 18.47], zoom: 10.2, pitch: 56, bearing: 60, orbit: 55, fly: 8000 },
+        { title: "Fin de la visita", place: "Vista general", pin: false,
+          text: "Del litoral a las cumbres, se pasa del mar Caribe a más de 3 000 metros de altitud en unas pocas horas de carretera. Ahora puedes explorar el mapa libremente, repetir la visita o volver al globo.",
+          say: "¡Y así termina nuestro vuelo! En pocos minutos pasamos del mar Caribe a más de tres mil metros de altitud, de las calles coloniales a las playas y los lagos salados. Ahora pueden explorar el mapa libremente, repetir la visita o volver al globo. ¡Gracias por viajar con nosotros!",
+          facts: [],
+          center: [-70.25, 18.95], zoom: 7.4, pitch: 22, bearing: 0, orbit: 0, fly: 8000, dwell: 9000 },
+      ],
+    },
+  };
+
   const ICON = {
     back: '<path d="m15 18-6-6 6-6"/>', next: '<path d="m9 18 6-6-6-6"/>',
     play: '<polygon points="7 4 20 12 7 20 7 4" fill="currentColor" stroke="none"/>',
@@ -171,8 +255,26 @@
   }
 
   // ---------- Voix : choix de la meilleure voix française, rythme vivant, réglages ----------
+  let LANG = 'fr';
+  const ES = {
+    'Quitter la visite': 'Salir de la visita', 'Étape précédente (←)': 'Etapa anterior (←)', 'Étape précédente': 'Etapa anterior',
+    'Étape suivante (→)': 'Etapa siguiente (→)', 'Étape suivante': 'Etapa siguiente', 'Réglages de la voix': 'Ajustes de la voz',
+    'Narration vocale (V)': 'Narración de voz (V)', 'Voix': 'Voz', 'Rythme': 'Ritmo', 'Écouter un extrait': 'Escuchar un fragmento',
+    'Glissez pour explorer · molette pour zoomer · Espace : pause · Échap : quitter': 'Arrastra para explorar · rueda para hacer zoom · Espacio: pausa · Esc: salir',
+    'Chargement de l’imagerie satellite': 'Cargando las imágenes de satélite', 'Retour au globe': 'Volver al globo',
+    'Voici le ton de la visite. Prêt à décoller ?': 'Este es el tono de la visita. ¿Listos para despegar?',
+    'Aucune voix française trouvée': 'No se encontró ninguna voz en español', 'recommandée': 'recomendada',
+    'Voir la photo sur Wikimedia Commons': 'Ver la foto en Wikimedia Commons', 'Photo : ': 'Foto: ', 'Auteur inconnu': 'Autor desconocido', 'Licence libre': 'Licencia libre',
+    'Étape': 'Etapa', 'Rejouer': 'Repetir', 'Pause': 'Pausa', 'Lecture': 'Reproducir',
+    'Rejouer la visite': 'Repetir la visita', 'Mettre la visite en pause': 'Pausar la visita', 'Reprendre la visite': 'Reanudar la visita',
+    'Couper la narration vocale': 'Silenciar la narración', 'Activer la narration vocale': 'Activar la narración',
+    "Aller à l'étape": 'Ir a la etapa', 'Impossible de charger la carte 3D. Vérifiez la connexion.': 'No se pudo cargar el mapa 3D. Comprueba la conexión.',
+    'Votre navigateur ne gère pas la carte 3D (WebGL requis).': 'Tu navegador no admite el mapa 3D (se requiere WebGL).',
+    'Visite guidée': 'Visita guiada',
+  };
+  const tr = (t) => (LANG === 'es' && ES[t]) || t;
   const canSpeak = 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
-  const frVoices = () => (canSpeak ? speechSynthesis.getVoices().filter((v) => /^fr/i.test(v.lang)) : []);
+  const frVoices = () => (canSpeak ? speechSynthesis.getVoices().filter((v) => new RegExp('^' + LANG, 'i').test(v.lang)) : []);
   // les voix « naturelles » (Edge, Chrome, macOS premium) sont bien plus expressives que les voix locales de base
   const voiceScore = (v) => {
     let s = 0; const n = v.name;
@@ -181,6 +283,7 @@
     if (/premium|enhanced|améliorée|siri/i.test(n)) s += 55;
     if (/denise|henri|eloise|vivienne|remy|brigitte|thomas|amélie|audrey|aurélie|marie|julie/i.test(n)) s += 20;
     if (/^fr[-_]FR/i.test(v.lang)) s += 10;
+    if (LANG === 'es') { if (/es[-_]DO/i.test(v.lang)) s += 14; else if (/es[-_](MX|US|419)/i.test(v.lang)) s += 9; else if (/es[-_]ES/i.test(v.lang)) s += 6; if (/paola|dalia|jorge|elvira|alvaro|sabina|helena|laura|monica|paulina|diego|juan|alex/i.test(n)) s += 20; }
     if (v.localService === false) s += 5;
     return s;
   };
@@ -222,6 +325,9 @@
   async function start(code, opts = {}) {
     if (active) return;
     let tour = opts.planet ? (window.PLANET_TOURS || {})[code] : TOURS[code];
+    const hasEs = !opts.planet && !!(TOURS_ES[code] && TOURS[code]); // visite proposée en deux langues
+    if (hasEs && store.get('veille.tourLang', 'fr') === 'es') tour = TOURS_ES[code];
+    LANG = (tour && tour.lang) || 'fr';
     if (!tour && !(opts.country && window.TourGen)) return;
     active = true;
     document.body.classList.add(tour && tour.planet ? 'planeting' : 'immersed');
@@ -233,7 +339,7 @@
     currentTour = tour;
     const stops = tour.stops, last = stops.length - 1;
     let map = null, cur = -1, seq = 0, playing = true, finished = false, timer = null, safety = null, began = false;
-    let voiceOn = canSpeak && store.get('veille.voiceOn', true), rate = store.get('veille.rate', 1.08), voiceName = store.get('veille.voice', null);
+    let voiceOn = canSpeak && store.get('veille.voiceOn', true), rate = store.get('veille.rate', 1.08), voiceName = store.get(LANG === 'es' ? 'veille.voice.es' : 'veille.voice', null);
     let speechToken = 0, gapTimer = null, fieldTimer = null;
     const markers = [];
 
@@ -242,27 +348,30 @@
     const root = el('div', 'imm' + (isPlanet ? ' planet' : '')); root.setAttribute('role', 'dialog'); root.setAttribute('aria-label', `${tour.tag} — ${tour.name}`);
     const mapEl = el('div', 'imm-map');
     const top = el('div', 'imm-top');
-    const back = el('button', 'imm-back', `${svg('back')}<span>Quitter la visite</span>`); back.type = 'button';
+    const back = el('button', 'imm-back', `${svg('back')}<span>${tr('Quitter la visite')}</span>`); back.type = 'button';
     top.append(back, el('div', 'imm-tag', `<i></i>${esc(tour.tag)} · ${esc(tour.name)}`));
     const card = el('div', 'imm-card'); card.setAttribute('aria-live', 'polite');
     const step = el('div', 'imm-step'), title = el('h3'), text = el('p'), facts = el('ul', 'imm-facts');
-    const prog = el('div', 'imm-prog'); const segs = stops.map((s, i) => { const b = el('button', null, '<i></i>'); b.type = 'button'; b.title = `${i + 1}. ${s.title}`; b.setAttribute('aria-label', `Étape ${i + 1} : ${s.title}`); b.onclick = () => goTo(i); prog.append(b); return b; });
+    const prog = el('div', 'imm-prog'); const segs = stops.map((s, i) => { const b = el('button', null, '<i></i>'); b.type = 'button'; b.title = `${i + 1}. ${s.title}`; b.setAttribute('aria-label', `${tr('Étape')} ${i + 1} : ${s.title}`); b.onclick = () => goTo(i); prog.append(b); return b; });
     const ctl = el('div', 'imm-ctl');
-    const bPrev = el('button', 'imm-btn', svg('back')); bPrev.type = 'button'; bPrev.title = 'Étape précédente (←)'; bPrev.setAttribute('aria-label', 'Étape précédente');
+    const bPrev = el('button', 'imm-btn', svg('back')); bPrev.type = 'button'; bPrev.title = tr('Étape précédente (←)'); bPrev.setAttribute('aria-label', tr('Étape précédente'));
     const bPlay = el('button', 'imm-btn main'); bPlay.type = 'button';
-    const bNext = el('button', 'imm-btn', svg('next')); bNext.type = 'button'; bNext.title = 'Étape suivante (→)'; bNext.setAttribute('aria-label', 'Étape suivante');
-    const bSet = el('button', 'imm-btn', svg('sliders')); bSet.type = 'button'; bSet.title = 'Réglages de la voix'; bSet.setAttribute('aria-label', 'Réglages de la voix'); bSet.setAttribute('aria-expanded', 'false');
-    const bVoice = el('button', 'imm-btn', svg('mute')); bVoice.type = 'button'; bVoice.title = 'Narration vocale (V)';
+    const bNext = el('button', 'imm-btn', svg('next')); bNext.type = 'button'; bNext.title = tr('Étape suivante (→)'); bNext.setAttribute('aria-label', tr('Étape suivante'));
+    const bSet = el('button', 'imm-btn', svg('sliders')); bSet.type = 'button'; bSet.title = tr('Réglages de la voix'); bSet.setAttribute('aria-label', tr('Réglages de la voix')); bSet.setAttribute('aria-expanded', 'false');
+    const bVoice = el('button', 'imm-btn', svg('mute')); bVoice.type = 'button'; bVoice.title = tr('Narration vocale (V)');
+    const bLang = el('button', 'imm-btn lang', LANG === 'es' ? 'FR' : 'ES'); bLang.type = 'button';
+    bLang.title = LANG === 'es' ? 'Voir la visite en français' : 'Ver la visita en español'; bLang.setAttribute('aria-label', bLang.title);
     ctl.append(bPrev, bPlay, bNext, el('span', 'sp'));
+    if (hasEs) ctl.append(bLang);
     if (canSpeak) ctl.append(bSet, bVoice);
-    const hint = el('div', 'imm-hint', 'Glissez pour explorer · molette pour zoomer · Espace : pause · Échap : quitter');
+    const hint = el('div', 'imm-hint', tr('Glissez pour explorer · molette pour zoomer · Espace : pause · Échap : quitter'));
 
     // réglages de la voix
     const pop = el('div', 'imm-pop'); pop.hidden = true;
-    const selVoice = el('select'); selVoice.setAttribute('aria-label', 'Voix');
-    const rngRate = el('input'); rngRate.type = 'range'; rngRate.min = '.9'; rngRate.max = '1.35'; rngRate.step = '.05'; rngRate.setAttribute('aria-label', 'Rythme de la voix');
-    const rateOut = el('output'); const bTest = el('button', 'imm-btn small', 'Écouter un extrait'); bTest.type = 'button';
-    pop.append(el('label', null, 'Voix'), selVoice, el('label', null, 'Rythme'), el('div', 'row'), bTest);
+    const selVoice = el('select'); selVoice.setAttribute('aria-label', tr('Voix'));
+    const rngRate = el('input'); rngRate.type = 'range'; rngRate.min = '.9'; rngRate.max = '1.35'; rngRate.step = '.05'; rngRate.setAttribute('aria-label', tr('Rythme'));
+    const rateOut = el('output'); const bTest = el('button', 'imm-btn small', tr('Écouter un extrait')); bTest.type = 'button';
+    pop.append(el('label', null, tr('Voix')), selVoice, el('label', null, tr('Rythme')), el('div', 'row'), bTest);
     pop.querySelector('.row').append(rngRate, rateOut);
     const srcEl = el('a', 'imm-src'); srcEl.target = '_blank'; srcEl.rel = 'noopener noreferrer'; srcEl.hidden = true; // source du texte (visites générées)
     card.append(step, title, text, srcEl, facts, prog, ctl, hint, pop);
@@ -271,7 +380,7 @@
     const field = el('div', 'imm-photos');
 
     const intro = el('div', 'imm-intro', `<span>${esc(tour.tag)}</span><h2>${esc(tour.name)}</h2>`);
-    const load = el('div', 'imm-load', '<div class="bar"></div><div class="msg">Chargement de l’imagerie satellite</div>');
+    const load = el('div', 'imm-load', `<div class="bar"></div><div class="msg">${tr('Chargement de l’imagerie satellite')}</div>`);
     root.append(mapEl, field, top, load);
     document.body.append(root);
     back.focus({ preventScroll: true });
@@ -279,7 +388,7 @@
     const setLoad = (msg, err) => { load.querySelector('.msg').textContent = msg; load.classList.toggle('err', !!err); };
     const fail = (msg) => {
       setLoad(msg, true);
-      const b = el('button', 'imm-btn main', 'Retour au globe'); b.type = 'button'; b.onclick = quit; load.append(b);
+      const b = el('button', 'imm-btn main', tr('Retour au globe')); b.type = 'button'; b.onclick = () => quit(); load.append(b);
     };
 
     // les photos se chargent en parallèle de la carte ; une panne ne bloque jamais la visite
@@ -296,7 +405,7 @@
         if (my !== speechToken) return;
         if (i >= parts.length) return onEnd && onEnd();
         const p = parts[i], excl = /!/.test(p), ques = /\?/.test(p), first = i === 0, u = new SpeechSynthesisUtterance(p);
-        u.lang = v ? v.lang : 'fr-FR'; if (v) u.voice = v;
+        u.lang = v ? v.lang : LANG === 'es' ? 'es-ES' : 'fr-FR'; if (v) u.voice = v;
         u.rate = Math.max(.7, Math.min(1.6, rate * (excl ? 1.04 : 1) * (first ? 1.03 : 1)));
         u.pitch = Math.max(.6, Math.min(1.8, 1.04 + (excl ? .14 : 0) + (ques ? .1 : 0) + (first ? .06 : 0) + (i % 2 ? -.02 : .03)));
         u.onend = () => { if (my !== speechToken) return; i++; gapTimer = setTimeout(next, excl || ques ? 150 : 260); };
@@ -315,16 +424,16 @@
     function fillVoiceList() {
       const list = rankedVoices(), cur = pickVoice();
       selVoice.innerHTML = '';
-      if (!list.length) { selVoice.append(new Option('Aucune voix française trouvée', '')); selVoice.disabled = true; return; }
+      if (!list.length) { selVoice.append(new Option(tr('Aucune voix française trouvée'), '')); selVoice.disabled = true; return; }
       selVoice.disabled = false;
-      list.forEach((v, i) => selVoice.append(new Option(`${v.name}${i === 0 ? ' · recommandée' : ''}`, v.name)));
+      list.forEach((v, i) => selVoice.append(new Option(`${v.name}${i === 0 ? ' · ' + tr('recommandée') : ''}`, v.name)));
       if (cur) selVoice.value = cur.name;
     }
     if (canSpeak) { fillVoiceList(); speechSynthesis.onvoiceschanged = fillVoiceList; }
     rngRate.value = String(rate); rateOut.textContent = `× ${rate.toFixed(2).replace('.', ',')}`;
-    selVoice.onchange = () => { voiceName = selVoice.value || null; store.set('veille.voice', voiceName); };
+    selVoice.onchange = () => { voiceName = selVoice.value || null; store.set(LANG === 'es' ? 'veille.voice.es' : 'veille.voice', voiceName); };
     rngRate.oninput = () => { rate = +rngRate.value; rateOut.textContent = `× ${rate.toFixed(2).replace('.', ',')}`; store.set('veille.rate', rate); };
-    bTest.onclick = () => speak("Voici le ton de la visite. Prêt à décoller ?", null, null);
+    bTest.onclick = () => speak(tr('Voici le ton de la visite. Prêt à décoller ?'), null, null);
     bSet.onclick = () => { pop.hidden = !pop.hidden; bSet.setAttribute('aria-expanded', String(!pop.hidden)); bSet.classList.toggle('on', !pop.hidden); };
 
     // ----- photos : éparpillées aux quatre coins ; celle dont parle la voix vient en grand au centre, puis retourne à sa place
@@ -340,9 +449,9 @@
       clearField(false);
       (s.shots || []).slice(0, 4).forEach((p, i) => {
         const a = el('a', `imm-ph slot${i}`); a.target = '_blank'; a.rel = 'noopener noreferrer';
-        a.href = p.page || '#'; a.title = 'Voir la photo sur Wikimedia Commons';
+        a.href = p.page || '#'; a.title = tr('Voir la photo sur Wikimedia Commons');
         const im = el('img'); im.alt = p.cap; im.decoding = 'async'; im.src = p.url;
-        const cp = el('div', 'cp'); const b = el('b'); b.textContent = p.cap; const sm = el('small'); sm.textContent = `Photo : ${p.by} · ${p.lic}`; cp.append(b, sm);
+        const cp = el('div', 'cp'); const b = el('b'); b.textContent = p.cap; const sm = el('small'); sm.textContent = `${tr('Photo : ')}${p.by} · ${p.lic}`; cp.append(b, sm);
         a.append(im, cp); field.append(a); phEls.push(a);
         setTimeout(() => a.classList.add('in'), 250 + i * 320); // elles arrivent l'une après l'autre
       });
@@ -378,11 +487,11 @@
       renderPlay();
     }
     function renderPlay() {
-      bPlay.innerHTML = finished ? `${svg('replay')}<span>Rejouer</span>` : playing ? `${svg('pause')}<span>Pause</span>` : `${svg('play')}<span>Lecture</span>`;
-      bPlay.setAttribute('aria-label', finished ? 'Rejouer la visite' : playing ? 'Mettre la visite en pause' : 'Reprendre la visite');
+      bPlay.innerHTML = finished ? `${svg('replay')}<span>${tr('Rejouer')}</span>` : playing ? `${svg('pause')}<span>${tr('Pause')}</span>` : `${svg('play')}<span>${tr('Lecture')}</span>`;
+      bPlay.setAttribute('aria-label', tr(finished ? 'Rejouer la visite' : playing ? 'Mettre la visite en pause' : 'Reprendre la visite'));
       root.classList.toggle('paused', !playing);
       bVoice.innerHTML = svg(voiceOn ? 'volume' : 'mute'); bVoice.classList.toggle('on', voiceOn);
-      bVoice.setAttribute('aria-label', voiceOn ? 'Couper la narration vocale' : 'Activer la narration vocale');
+      bVoice.setAttribute('aria-label', tr(voiceOn ? 'Couper la narration vocale' : 'Activer la narration vocale'));
     }
     const startFill = (ms) => {
       const b = segs[cur]; b.classList.remove('on'); void b.offsetWidth; b.style.setProperty('--d', ms + 'ms'); b.classList.add('on');
@@ -460,7 +569,8 @@
       if (playing && cur >= 0 && !finished) { clearTimer(); phEls.forEach((_, i) => unfocusPhoto(i)); setTimeout(() => dwell(seq), 120); }
     }
 
-    bPlay.onclick = togglePlay; bNext.onclick = () => goTo(cur + 1); bPrev.onclick = () => goTo(cur - 1); bVoice.onclick = toggleVoice; back.onclick = quit;
+    bLang.onclick = () => { store.set('veille.tourLang', LANG === 'es' ? 'fr' : 'es'); quit(() => start(code, opts)); };
+    bPlay.onclick = togglePlay; bNext.onclick = () => goTo(cur + 1); bPrev.onclick = () => goTo(cur - 1); bVoice.onclick = toggleVoice; back.onclick = () => quit();
 
     const onKey = (e) => {
       e.stopPropagation(); // le globe et la page n'écoutent plus le clavier pendant la visite
@@ -470,7 +580,7 @@
     };
     window.addEventListener('keydown', onKey, true);
 
-    function quit() {
+    function quit(then) {
       if (!root.isConnected || root.classList.contains('out')) return;
       seq++; clearTimer(); stopSpeech(); clearField(false); window.removeEventListener('keydown', onKey, true);
       if (canSpeak) speechSynthesis.onvoiceschanged = null;
@@ -478,7 +588,7 @@
       setTimeout(() => {
         try { markers.forEach((m) => m.mk.remove()); if (map) map.remove(); } catch (e) {}
         root.remove(); document.body.classList.remove('immersed', 'planeting'); active = false; currentMap = null;
-        if (opts.onExit) opts.onExit();
+        if (typeof then === 'function') then(); else if (opts.onExit) opts.onExit();
       }, 320);
     }
 
@@ -493,7 +603,7 @@
     }
 
     // ----- carte
-    try { await loadMapLibre(); } catch (e) { return fail('Impossible de charger la carte 3D. Vérifiez la connexion.'); }
+    try { await loadMapLibre(); } catch (e) { return fail(tr('Impossible de charger la carte 3D. Vérifiez la connexion.')); }
     if (!root.isConnected) return;
     const maplibregl = window.maplibregl;
     try {
@@ -514,7 +624,7 @@
           ],
         },
       });
-    } catch (e) { return fail('Votre navigateur ne gère pas la carte 3D (WebGL requis).'); }
+    } catch (e) { return fail(tr('Votre navigateur ne gère pas la carte 3D (WebGL requis).')); }
     map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
     map.addControl(new maplibregl.NavigationControl({ visualizePitch: true, showZoom: false }), 'top-right');
     currentMap = map;
@@ -548,7 +658,7 @@
       // repères numérotés
       stops.forEach((s, i) => {
         if (!s.pin) return;
-        const pin = el('div', 'imm-pin', `${i}<span class="l">${esc(s.title)}</span>`); pin.setAttribute('role', 'button'); pin.setAttribute('aria-label', `Aller à l'étape ${i + 1} : ${s.title}`); pin.tabIndex = 0;
+        const pin = el('div', 'imm-pin', `${i}<span class="l">${esc(s.title)}</span>`); pin.setAttribute('role', 'button'); pin.setAttribute('aria-label', `${tr("Aller à l'étape")} ${i + 1} : ${s.title}`); pin.tabIndex = 0;
         pin.onclick = (ev) => { ev.stopPropagation(); goTo(i); };
         pin.onkeydown = (ev) => { if (ev.key === 'Enter') { ev.stopPropagation(); goTo(i); } };
         markers.push({ i, el: pin, mk: new maplibregl.Marker({ element: pin, anchor: 'center' }).setLngLat(s.center).addTo(map) });

@@ -49,3 +49,5 @@ npx vercel --prod
 Cliquer sur un pays du globe (ou sur « Visite » dans son panneau) lance une visite aérienne par satellite avec voix. La République dominicaine a une visite rédigée à la main ; les autres pays sont générés à la volée (`public/tourgen.js`) à partir de Wikidata et Wikipédia (textes sous CC BY-SA, source citée), avec des photos libres de Wikimedia Commons (auteur et licence indiqués). La qualité des textes varie selon le pays.
 
 Les huit astres (Mercure, Vénus, Lune, Mars, Jupiter, Saturne, Uranus, Neptune) ont une visite rédigée à la main (`public/planettours.js`), avec des photos de la NASA/ESA hébergées sur Wikimedia Commons. La visite d'un pays ou d'une planète ne démarre qu'avec le bouton « Visite ».
+
+La visite de la République dominicaine existe en français et en espagnol (bouton FR / ES dans la visite, choix mémorisé) : textes, interface et voix changent de langue.
