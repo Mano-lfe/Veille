@@ -74,9 +74,12 @@
   function loadMapLibre() {
     if (window.maplibregl) return Promise.resolve();
     if (mlPromise) return mlPromise;
+    const fail = (rej) => () => { mlPromise = null; rej(new Error('maplibre')); };
     return (mlPromise = new Promise((res, rej) => {
-      const css = el('link'); css.rel = 'stylesheet'; css.href = MAPLIBRE + '.css'; document.head.append(css);
-      const s = el('script'); s.src = MAPLIBRE + '.js'; s.onload = res; s.onerror = () => { mlPromise = null; rej(new Error('maplibre')); }; document.head.append(s);
+      // on attend la feuille de style ET le script : la carte mesure son conteneur à sa création
+      let n = 0; const one = () => { if (++n === 2) res(); };
+      const css = el('link'); css.rel = 'stylesheet'; css.href = MAPLIBRE + '.css'; css.onload = one; css.onerror = fail(rej); document.head.append(css);
+      const s = el('script'); s.src = MAPLIBRE + '.js'; s.onload = one; s.onerror = fail(rej); document.head.append(s);
     }));
   }
 
@@ -95,7 +98,7 @@
   }
 
   // ---------- Visite ----------
-  let active = false;
+  let active = false, currentMap = null;
 
   async function start(code, opts = {}) {
     const tour = TOURS[code];
@@ -263,7 +266,15 @@
     } catch (e) { return fail('Votre navigateur ne gère pas la carte 3D (WebGL requis).'); }
     map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
     map.addControl(new maplibregl.NavigationControl({ visualizePitch: true, showZoom: false }), 'top-right');
-    map.on('error', () => {}); // une tuile manquante ne doit pas interrompre la visite
+    currentMap = map;
+    // une tuile manquante ne doit pas interrompre la visite ; mais si AUCUNE image satellite n'arrive, on le dit clairement
+    let satOk = 0, satErr = 0;
+    map.on('data', (e) => { if (e.sourceId === 'sat' && e.tile) satOk++; });
+    map.on('error', (e) => { if (e && e.sourceId === 'sat') satErr++; });
+    setTimeout(() => {
+      if (!root.isConnected || satOk > 0 || !satErr) return;
+      root.append(el('div', 'imm-warn', "L'imagerie satellite n'a pas pu être chargée. Vérifiez la connexion, un bloqueur de contenu ou un pare-feu qui bloquerait server.arcgisonline.com."));
+    }, 10000);
 
     // l'utilisateur prend la main : la visite se met en pause
     // (MapLibre émet aussi ces événements pour nos propres vols : seul un geste réel, qui porte un originalEvent, compte)
@@ -305,5 +316,5 @@
     });
   }
 
-  window.Immersion = { has: (code) => !!TOURS[code], start };
+  window.Immersion = { has: (code) => !!TOURS[code], start, map: () => currentMap }; // map() : utile pour diagnostiquer
 })();

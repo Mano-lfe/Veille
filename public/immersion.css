@@ -5,7 +5,8 @@ body.immersed { overflow:hidden; }
 @keyframes imm-in { from { opacity:0; } to { opacity:1; } }
 @keyframes imm-out { to { opacity:0; } }
 .imm *, .imm *::before, .imm *::after { box-sizing:border-box; }
-.imm-map { position:absolute; inset:0; }
+/* La feuille de style de MapLibre impose « position:relative » à son conteneur : sans cette règle plus précise, il tombe à 0 px de haut et la carte se rabat sur 300 px */
+.imm .imm-map, .imm .imm-map.maplibregl-map { position:absolute; inset:0; width:100%; height:100%; }
 .imm-map .maplibregl-canvas { outline:none; }
 .imm button { font:inherit; color:inherit; cursor:pointer; }
 .imm :focus-visible { outline:2px solid #ff4e00; outline-offset:2px; }
@@ -64,6 +65,8 @@ body.immersed { overflow:hidden; }
 .imm-load .bar::after { content:''; display:block; width:40%; height:100%; background:#ff4e00; animation:imm-slide 1.1s ease-in-out infinite; }
 @keyframes imm-slide { from { transform:translateX(-100%); } to { transform:translateX(260%); } }
 .imm-load.err .bar { display:none; }
+
+.imm-warn { position:absolute; left:50%; top:72px; transform:translateX(-50%); z-index:7; width:min(560px, calc(100% - 32px)); padding:14px 16px; border:1px solid #ff4e00; border-radius:3px; background:rgba(10,10,10,.95); font:500 12px/20px var(--mono, 'IBM Plex Mono', monospace); letter-spacing:.04em; color:#faf9f6; }
 
 /* Contrôles de la carte : sous le bouton de retour, à droite */
 .imm .maplibregl-ctrl-top-right { top:8px; right:8px; }
