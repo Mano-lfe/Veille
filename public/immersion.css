@@ -9,11 +9,6 @@ body.immersed { overflow:hidden; }
 .imm .imm-map, .imm .imm-map.maplibregl-map { position:absolute; inset:0; width:100%; height:100%; }
 .imm-map .maplibregl-canvas { outline:none; }
 
-/* Street View : fondu par-dessus la carte ; la carte de narration remonte pour laisser voir le logo et les mentions de Google en bas */
-.imm-sv { position:absolute; inset:0; z-index:2; background:#000; opacity:0; visibility:hidden; transition:opacity 800ms ease, visibility 0s linear 800ms; }
-.imm-sv.on { opacity:1; visibility:visible; transition:opacity 800ms ease; }
-.imm.street .imm-card { bottom:64px; }
-.imm.street .imm-photo { display:none; }
 .imm button { font:inherit; color:inherit; cursor:pointer; }
 .imm :focus-visible { outline:2px solid #ff4e00; outline-offset:2px; }
 
@@ -56,29 +51,32 @@ body.immersed { overflow:hidden; }
 .imm-btn.main { width:auto; padding:0 18px; gap:10px; border-color:#ff4e00; background:#ff4e00; color:#0a0a0a; font:700 12px/1 var(--mono, 'IBM Plex Mono', monospace); letter-spacing:.1em; text-transform:uppercase; display:inline-flex; align-items:center; }
 .imm-btn.main:hover { background:#ff6a2b; }
 .imm-btn.on { background:rgba(255,78,0,.22); border-color:#ff4e00; }
-.imm-btn.street { width:auto; padding:0 12px; white-space:nowrap; flex:none; display:inline-flex; align-items:center; gap:8px; text-decoration:none; color:#faf9f6; font:500 11px/1 var(--mono, 'IBM Plex Mono', monospace); letter-spacing:.08em; text-transform:uppercase; }
 .imm-btn.small { width:auto; padding:0 14px; height:36px; font:500 11px/1 var(--mono, 'IBM Plex Mono', monospace); letter-spacing:.08em; text-transform:uppercase; }
 
 /* Réglages de la voix */
 .imm-pop { position:absolute; left:24px; right:24px; bottom:84px; z-index:2; display:grid; gap:8px; padding:16px; background:#141414; border:1px solid rgba(255,255,255,.22); border-radius:3px; }
-.imm-pop[hidden], .imm-photo[hidden] { display:none; }
+.imm-pop[hidden] { display:none; }
 .imm-pop label { font:500 10px/16px var(--mono, 'IBM Plex Mono', monospace); letter-spacing:.1em; text-transform:uppercase; color:#8c8c8c; }
 .imm-pop select { width:100%; height:40px; padding:0 10px; border:1px solid rgba(255,255,255,.22); border-radius:3px; background:#0a0a0a; color:#faf9f6; font:inherit; font-size:13px; }
 .imm-pop .row { display:flex; align-items:center; gap:12px; }
 .imm-pop input[type=range] { flex:1; accent-color:#ff4e00; }
 .imm-pop output { min-width:54px; text-align:right; font:500 12px/16px var(--mono, 'IBM Plex Mono', monospace); color:#d6d3cd; }
 
-/* Photos réelles du lieu, pendant la narration */
-.imm-photo { position:absolute; right:24px; bottom:56px; z-index:5; width:min(380px, calc(100% - 540px)); background:rgba(10,10,10,.92); border:1px solid rgba(255,255,255,.16); border-radius:3px; opacity:0; transform:translateY(12px); transition:opacity 450ms cubic-bezier(.22,1,.36,1), transform 450ms cubic-bezier(.22,1,.36,1); }
-.imm-photo.show { opacity:1; transform:none; }
-.ph-img { display:block; aspect-ratio:16 / 10; overflow:hidden; background:#111; border-radius:2px 2px 0 0; }
-.ph-img img { display:block; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 350ms ease; }
-.ph-img img.in { opacity:1; }
-.ph-cap { padding:12px 14px 0; font:600 14px/20px var(--sans, 'Manrope', sans-serif); color:#faf9f6; }
-.ph-by { padding:4px 14px 0; font:500 10px/16px var(--mono, 'IBM Plex Mono', monospace); letter-spacing:.06em; text-transform:uppercase; color:#8c8c8c; }
-.ph-dots { display:flex; gap:4px; padding:10px 14px 14px; }
-.ph-dots i { flex:0 0 18px; height:3px; background:rgba(255,255,255,.25); }
-.ph-dots i.on { background:#ff4e00; }
+/* Photos réelles : éparpillées sur l'écran ; celle dont parle la voix vient en grand au centre, puis retourne à sa place */
+.imm-photos { position:absolute; inset:0; z-index:4; pointer-events:none; }
+.imm-photos.has-focus { z-index:6; }
+.imm-ph { position:absolute; display:block; width:clamp(250px, 24vw, 440px); aspect-ratio:16 / 10; overflow:hidden; background:#111; border:1px solid rgba(255,255,255,.28); border-radius:3px; box-shadow:0 14px 44px rgba(0,0,0,.5); text-decoration:none; color:#fff; pointer-events:auto; will-change:transform; opacity:0; transform:translateY(18px) rotate(var(--r, 0deg)) scale(.94); transition:transform 850ms cubic-bezier(.22,1,.36,1), opacity 500ms ease, filter 500ms ease; }
+.imm-ph.in { opacity:1; transform:var(--tf, rotate(var(--r, 0deg))); }
+.imm-ph.focus { z-index:2; border-color:rgba(255,255,255,.45); box-shadow:0 30px 90px rgba(0,0,0,.65); }
+.imm-photos.has-focus .imm-ph:not(.focus) { opacity:.3; filter:saturate(.55); }
+.imm-ph img { display:block; width:100%; height:100%; object-fit:cover; }
+.imm-ph .cp { position:absolute; left:0; right:0; bottom:0; padding:24px 10px 8px; background:linear-gradient(transparent, rgba(0,0,0,.84)); }
+.imm-ph .cp b { display:block; font:600 11px/15px var(--sans, 'Manrope', sans-serif); }
+.imm-ph .cp small { display:block; margin-top:2px; font:500 8px/12px var(--mono, 'IBM Plex Mono', monospace); letter-spacing:.04em; text-transform:uppercase; color:#cfcfcf; }
+.slot0 { left:2vw; top:76px; --r:-2.5deg; }
+.slot1 { right:2.2vw; top:84px; --r:2deg; }
+.slot2 { right:3vw; bottom:64px; --r:-1.8deg; }
+.slot3 { left:max(520px, 49vw); bottom:78px; --r:2.6deg; }
 .imm-hint { margin:10px 0 0; font:500 10px/16px var(--mono, 'IBM Plex Mono', monospace); letter-spacing:.08em; text-transform:uppercase; color:#8c8c8c; }
 
 /* Titre d'entrée */
@@ -102,18 +100,15 @@ body.immersed { overflow:hidden; }
 .imm .maplibregl-ctrl-attrib { background:rgba(10,10,10,.72); color:#b5b5b5; }
 .imm .maplibregl-ctrl-attrib a { color:#d6d3cd; }
 
-@media (max-width: 1100px) {
-  /* fenêtre moyenne : la photo passe en haut à droite, sous les contrôles de la carte */
-  .imm-photo { top:64px; bottom:auto; right:16px; width:min(300px, 42vw); }
-  .ph-cap { font-size:13px; line-height:18px; padding-top:10px; }
-}
 @media (max-width: 880px) {
-  .imm-photo { top:56px; right:8px; width:min(210px, 46vw); }
-  .ph-by, .ph-dots { display:none; }
-  .ph-cap { padding-bottom:10px; font-size:12px; line-height:16px; }
+  .imm-ph { width:42vw; }
+  .slot0 { left:8px; top:56px; }
+  .slot1 { right:8px; top:60px; }
+  .slot2 { left:8px; right:auto; bottom:auto; top:calc(56px + 26.5vw + 14px); }
+  .slot3 { left:auto; right:8px; bottom:auto; top:calc(60px + 26.5vw + 14px); }
+  .imm-ph .cp { padding-top:16px; }
+  .imm-ph .cp b { font-size:10px; line-height:13px; }
   .imm-pop { left:8px; right:8px; bottom:76px; }
-  .imm-btn.street { width:40px; padding:0; justify-content:center; }
-  .imm-btn.street span, .imm-btn.street svg + span + svg { display:none; }
   .imm-top { left:8px; top:8px; right:56px; }
   .imm-tag { display:none; }
   .imm-card { left:8px; right:8px; bottom:8px; width:auto; padding:16px 16px 8px; max-height:58vh; overflow-y:auto; }

@@ -28,13 +28,11 @@ Ajouter une entrée `{ name, url }` dans l'objet `SOURCES` de `lib/server.js`.
 
 Un clic sur la République dominicaine, dans le globe, lance une visite en vol au-dessus du pays : imagerie satellite sur relief 3D, neuf étapes commentées, lecture automatique, pause, étape suivante ou précédente, exploration libre à la souris.
 
-Pendant que la voix explique chaque lieu, des **photos réelles au sol** (rues, plages, sentiers) défilent, avec leur auteur et leur licence, et un bouton **Dans la rue** ouvre Google Street View au bon endroit pour les lieux qui ont une rue.
+Les **photos réelles** de chaque lieu (rues, plages, sentiers) sont éparpillées aux coins de l'écran, avec leur auteur et leur licence. Quand la voix parle de l'une d'elles, elle vient en grand au centre, puis retourne à sa place pendant que la suivante prend le relais.
 
 **La voix** est celle du navigateur : le module choisit automatiquement la meilleure voix française disponible (les voix « Natural » d'Edge, « Google français » dans Chrome, les voix premium de macOS). Le rythme varie selon les phrases et les textes parlés sont écrits pour l'oral. Un réglage permet de changer de voix et de vitesse.
 
-Pour ajouter un pays : une entrée dans `TOURS` de `public/immersion.js` (code ISO à deux lettres, identifiant numérique du pays dans world-atlas, étapes avec coordonnées, texte affiché, texte parlé, photos Wikimedia Commons et caméra), puis son code dans `IMMERSION_CODES` de `public/index.html`.
-
-**Street View (facultatif)** : avec une clé Google Maps, la visite descend dans la rue à chaque lieu qui a un panorama et marche toute seule le long des liens (ou fait le tour à 360° pour une photosphère) pendant que la voix commente. Sans clé, ou si Google la refuse, elle continue avec les photos. La clé se met dans `public/config.js` (copier `public/config.example.js`). Ce fichier n'est pas versionné : il est déployé directement sur Vercel (`npx vercel --prod`). La clé doit être restreinte dans la console Google Cloud : sites autorisés (votre domaine, `http://localhost:3000/*` pour les essais) et « Maps JavaScript API » seulement.
+Pour ajouter un pays : une entrée dans `TOURS` de `public/immersion.js` (code ISO à deux lettres, identifiant numérique du pays dans world-atlas, étapes avec coordonnées, texte affiché, accroche parlée, photos Wikimedia Commons avec leur phrase de narration, et caméra), puis son code dans `IMMERSION_CODES` de `public/index.html`.
 
 Sources : imagerie © Esri, Maxar, Earthstar Geographics (World Imagery) ; relief Mapzen / AWS Terrain Tiles ; photos Wikimedia Commons (licences libres, crédits affichés) ; carte MapLibre GL JS. Les fonds Esri sont utilisables gratuitement avec leur mention, dans un cadre non commercial et à trafic modéré : pour un usage commercial, prévoir une licence ou un autre fournisseur.
 

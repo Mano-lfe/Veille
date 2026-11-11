@@ -4,6 +4,3 @@ node_modules/
 .DS_Store
 
 .vercel
-
-# Clé Google Street View : jamais sur GitHub (déployée directement sur Vercel)
-public/config.js
