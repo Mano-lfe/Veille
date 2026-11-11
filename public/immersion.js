@@ -221,10 +221,10 @@
 
   async function start(code, opts = {}) {
     if (active) return;
-    let tour = TOURS[code];
+    let tour = opts.planet ? (window.PLANET_TOURS || {})[code] : TOURS[code];
     if (!tour && !(opts.country && window.TourGen)) return;
     active = true;
-    document.body.classList.add('immersed');
+    document.body.classList.add(tour && tour.planet ? 'planeting' : 'immersed');
     if (!tour) {
       tour = await prepare(code, opts);
       if (!tour) { document.body.classList.remove('immersed'); active = false; if (opts.onExit) opts.onExit(); return; }
@@ -238,7 +238,8 @@
     const markers = [];
 
     // ----- interface
-    const root = el('div', 'imm'); root.setAttribute('role', 'dialog'); root.setAttribute('aria-label', `${tour.tag} — ${tour.name}`);
+    const isPlanet = !!tour.planet;
+    const root = el('div', 'imm' + (isPlanet ? ' planet' : '')); root.setAttribute('role', 'dialog'); root.setAttribute('aria-label', `${tour.tag} — ${tour.name}`);
     const mapEl = el('div', 'imm-map');
     const top = el('div', 'imm-top');
     const back = el('button', 'imm-back', `${svg('back')}<span>Quitter la visite</span>`); back.type = 'button';
@@ -365,7 +366,7 @@
     // ----- affichage de l'étape courante
     function renderCard() {
       const s = stops[cur];
-      step.innerHTML = `<span><b>${pad(cur + 1)}</b> / ${pad(stops.length)} · ${esc(s.place)}</span><span>${Math.abs(s.center[1]).toFixed(2)}° N · ${Math.abs(s.center[0]).toFixed(2)}° O</span>`;
+      step.innerHTML = `<span><b>${pad(cur + 1)}</b> / ${pad(stops.length)} · ${esc(s.place)}</span>` + (isPlanet ? '' : `<span>${Math.abs(s.center[1]).toFixed(2)}° N · ${Math.abs(s.center[0]).toFixed(2)}° O</span>`);
       title.textContent = s.title; text.textContent = s.text;
       if (s.source && /^https:\/\/fr\.wikipedia\.org\//.test(s.source.url)) { srcEl.hidden = false; srcEl.href = s.source.url; srcEl.textContent = `Texte : ${s.source.label} (CC BY-SA)`; } else srcEl.hidden = true;
       facts.innerHTML = s.facts.map(([k, v]) => `<li><b>${esc(k)}</b> ${esc(v)}</li>`).join('');
@@ -392,7 +393,7 @@
     const clearTimer = () => { if (timer) { clearTimeout(timer); timer = null; } if (safety) { clearTimeout(safety); safety = null; } };
 
     function goTo(i) {
-      if (!map) return;
+      if (!map && !isPlanet) return;
       cur = Math.max(0, Math.min(last, i)); finished = false; clearTimer(); stopSpeech(); clearField(true);
       const my = ++seq, s = stops[cur];
       renderCard();
@@ -404,7 +405,8 @@
         if (map.areTilesLoaded()) return begin();
         map.once('idle', begin); setTimeout(begin, 5000);
       };
-      if (REDUCED) { map.jumpTo(cam(s)); arrived(); }
+      if (isPlanet) setTimeout(begin, 500);
+      else if (REDUCED) { map.jumpTo(cam(s)); arrived(); }
       else { map.flyTo({ ...cam(s), duration: s.fly || 7000, curve: 1.5, essential: true }); map.once('moveend', arrived); }
     }
 
@@ -475,9 +477,19 @@
       root.classList.add('out');
       setTimeout(() => {
         try { markers.forEach((m) => m.mk.remove()); if (map) map.remove(); } catch (e) {}
-        root.remove(); document.body.classList.remove('immersed'); active = false; currentMap = null;
+        root.remove(); document.body.classList.remove('immersed', 'planeting'); active = false; currentMap = null;
         if (opts.onExit) opts.onExit();
       }, 320);
+    }
+
+    // ----- planète : pas de carte, la planète du globe reste visible derrière la visite
+    if (isPlanet) {
+      mapEl.remove(); load.remove(); hint.textContent = 'Espace : pause · Échap : quitter';
+      root.append(card);
+      await Promise.race([photosReady, new Promise((r) => setTimeout(r, 3500))]);
+      playing = !REDUCED;
+      setTimeout(() => goTo(0), REDUCED ? 0 : 600);
+      return;
     }
 
     // ----- carte

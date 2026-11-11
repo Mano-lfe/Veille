@@ -234,6 +234,7 @@
   .ptab { height:40px; padding:0 12px; border:0; border-bottom:2px solid transparent; background:none; color:var(--muted); font-weight:500; font-size:14px; transition:color 150ms var(--ease), border-color 150ms var(--ease); }
   .ptab:hover { color:var(--text); }
   .ptab.on { color:var(--text); border-bottom-color:var(--accent); }
+  .ppanel .visit { margin:12px 24px 0; cursor:pointer; border:0; background:none; text-align:left; font:inherit; color:var(--accent); font-weight:600; }
   .ptab.visit { color:var(--accent); font-weight:600; }
   .ptab.visit:hover { color:var(--text); }
   .pbody { flex:1; overflow-y:auto; margin:0 -20px; padding:0 20px 20px; }
@@ -1081,7 +1082,12 @@ function createGlobe(mount, opts) {
     const stats = el('div', 'stats'); for (const [k, v] of I.top) { const s = el('div'); s.append(el('small', null, k), el('b', null, v)); stats.append(s); }
     const dl = el('dl'); for (const [k, v] of I.rows) dd(dl, k, v);
     const body = el('div', 'pbody'); body.append(dl, el('h3', null, 'À savoir'), el('p', 'pfact', I.fact), el('div', 'note', 'Glisser pour faire tourner et pencher · molette pour zoomer · Échap pour revenir'));
-    pp.append(x, head, stats, body);
+    const vb = el('button', 'wiki visit', 'Visite guidée de ' + (b.p.n === 'Lune' ? 'la Lune' : b.p.n)); vb.type = 'button';
+    vb.onclick = () => enterPlanetTour(b);
+    pp.append(x, head, stats, vb, body);
+  }
+  function enterPlanetTour(b) {
+    loadImmersion().then(() => window.Immersion.start(b.p.n, { planet: true })).catch(() => {});
   }
   function selectPlanet(b) {
     if (S.sel) { S.sel = null; mount.classList.remove('has-panel'); drawChips(); }
@@ -1102,7 +1108,6 @@ function createGlobe(mount, opts) {
   }
   function select(c, o) {
     if (S.psel) closePlanet();
-    if (!(o && o.plain) && c.info) { enterImmersion(c); return; } // chaque pays a sa visite guidée (écrite à la main ou générée)
     S.sel = c; S.focus = { lon: c.lon * Math.PI / 180, lat: Math.max(-1.0, Math.min(1.0, c.lat * Math.PI / 180)) };
     mount.classList.add('has-panel'); showPanel(c); drawChips();
   }
@@ -1153,7 +1158,7 @@ function loadImmersion() {
   return (immersionPromise = new Promise((res, rej) => {
     const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = '/immersion.css'; document.head.append(css);
     const one = (src) => new Promise((ok, ko) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => ko(new Error(src)); document.head.append(s); });
-    Promise.all([one('/tourgen.js'), one('/immersion.js')]).then(res).catch((e) => { immersionPromise = null; rej(e); });
+    Promise.all([one('/tourgen.js'), one('/planettours.js'), one('/immersion.js')]).then(res).catch((e) => { immersionPromise = null; rej(e); });
   }));
 }
 

@@ -127,3 +127,8 @@ body.immersed { overflow:hidden; }
 .imm-src { display:block; margin-top:8px; font:500 10px/16px var(--mono, 'IBM Plex Mono', monospace); letter-spacing:.06em; text-transform:uppercase; color:#8c8c8c; text-decoration:none; }
 .imm-src[hidden] { display:none; }
 .imm-src:hover { color:#d6d3cd; text-decoration:underline; }
+
+/* visite d'une planète : la planète du globe reste visible derrière, la fiche latérale est masquée */
+.imm.planet { background:transparent; pointer-events:none; }
+.imm.planet .imm-card, .imm.planet .imm-top > *, .imm.planet .imm-ph { pointer-events:auto; }
+body.planeting .ppanel, body.planeting #planetPanel { display:none !important; }
