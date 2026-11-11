@@ -160,6 +160,7 @@
       titles.slice(i, i + 40).forEach((t) => { const ii = info[norm[t] || t]; if (ii) info[t] = ii; });
     }
     tour.stops.forEach((s) => {
+      if (s.shots) return; // visites générées : photos déjà choisies par le générateur
       s.shots = (s.photos || []).map((p) => {
         const ii = info[p.f]; if (!ii || !/^https:\/\/(upload|thumb)\.wikimedia\.org\//.test(ii.thumburl || '')) return null;
         const m = ii.extmetadata || {}, page = /^https:\/\/commons\.wikimedia\.org\//.test(ii.descriptionurl || '') ? ii.descriptionurl : null;
@@ -187,14 +188,49 @@
   const sentencesOf = (t) => (t.match(/[^.!?…]+[.!?…]+["»)]*\s*|[^.!?…]+$/g) || [t]).map((s) => s.trim()).filter(Boolean);
 
   // ---------- Visite ----------
-  let active = false, currentMap = null;
+  let active = false, currentMap = null, currentTour = null;
+
+  // Pays sans visite écrite à la main : on la génère à partir de Wikidata / Wikipédia / Commons (voir tourgen.js), avec un écran d'attente
+  async function prepare(code, opts) {
+    const c = opts.country, name = c.fr || c.name;
+    const pre = el('div', 'imm');
+    const box = el('div', 'imm-load', '<div class="bar"></div><div class="msg"></div>');
+    const stop = el('button', 'imm-btn main', 'Annuler'); stop.type = 'button'; box.append(stop); pre.append(box);
+    const msg = box.querySelector('.msg'); msg.textContent = `Préparation de la visite · ${name}`;
+    let cancelled = false; const cancel = () => { cancelled = true; };
+    stop.onclick = cancel;
+    const key = (e) => { e.stopPropagation(); if (e.key === 'Escape') { e.preventDefault(); cancel(); } };
+    window.addEventListener('keydown', key, true);
+    document.body.append(pre); stop.focus({ preventScroll: true });
+    const done = () => { window.removeEventListener('keydown', key, true); pre.remove(); };
+    try {
+      let polys = null; try { polys = await loadBoundary(c.id); } catch (e) {}
+      const tour = await Promise.race([
+        window.TourGen.build(c, { polys, fallbackCenter: opts.center, onProgress: (m) => { msg.textContent = `${m} · ${name}`; } }),
+        new Promise((_, rej) => { const t = setInterval(() => { if (cancelled) { clearInterval(t); rej(new Error('annulé')); } }, 200); }),
+      ]);
+      if (cancelled) { done(); return null; }
+      done(); return tour;
+    } catch (e) {
+      if (cancelled) { done(); return null; }
+      msg.textContent = `Impossible de préparer la visite de ${name}. Vérifiez la connexion.`; box.classList.add('err'); stop.textContent = 'Retour au globe';
+      await new Promise((res) => { stop.onclick = res; const k2 = (ev) => { if (ev.key === 'Escape') res(); }; window.addEventListener('keydown', k2, true); });
+      done(); return null;
+    }
+  }
 
   async function start(code, opts = {}) {
-    const tour = TOURS[code];
-    if (!tour || active) return;
+    if (active) return;
+    let tour = TOURS[code];
+    if (!tour && !(opts.country && window.TourGen)) return;
     active = true;
     document.body.classList.add('immersed');
+    if (!tour) {
+      tour = await prepare(code, opts);
+      if (!tour) { document.body.classList.remove('immersed'); active = false; if (opts.onExit) opts.onExit(); return; }
+    }
 
+    currentTour = tour;
     const stops = tour.stops, last = stops.length - 1;
     let map = null, cur = -1, seq = 0, playing = true, finished = false, timer = null, safety = null, began = false;
     let voiceOn = canSpeak && store.get('veille.voiceOn', true), rate = store.get('veille.rate', 1.08), voiceName = store.get('veille.voice', null);
@@ -227,7 +263,8 @@
     const rateOut = el('output'); const bTest = el('button', 'imm-btn small', 'Écouter un extrait'); bTest.type = 'button';
     pop.append(el('label', null, 'Voix'), selVoice, el('label', null, 'Rythme'), el('div', 'row'), bTest);
     pop.querySelector('.row').append(rngRate, rateOut);
-    card.append(step, title, text, facts, prog, ctl, hint, pop);
+    const srcEl = el('a', 'imm-src'); srcEl.target = '_blank'; srcEl.rel = 'noopener noreferrer'; srcEl.hidden = true; // source du texte (visites générées)
+    card.append(step, title, text, srcEl, facts, prog, ctl, hint, pop);
 
     // les photos éparpillées sur l'écran
     const field = el('div', 'imm-photos');
@@ -330,6 +367,7 @@
       const s = stops[cur];
       step.innerHTML = `<span><b>${pad(cur + 1)}</b> / ${pad(stops.length)} · ${esc(s.place)}</span><span>${Math.abs(s.center[1]).toFixed(2)}° N · ${Math.abs(s.center[0]).toFixed(2)}° O</span>`;
       title.textContent = s.title; text.textContent = s.text;
+      if (s.source && /^https:\/\/fr\.wikipedia\.org\//.test(s.source.url)) { srcEl.hidden = false; srcEl.href = s.source.url; srcEl.textContent = `Texte : ${s.source.label} (CC BY-SA)`; } else srcEl.hidden = true;
       facts.innerHTML = s.facts.map(([k, v]) => `<li><b>${esc(k)}</b> ${esc(v)}</li>`).join('');
       facts.style.display = s.facts.length ? '' : 'none';
       segs.forEach((b, i) => { b.classList.toggle('done', i < cur); b.classList.remove('on'); });
@@ -487,6 +525,14 @@
       // sans cela, avec le relief activé, MapLibre rappelle la caméra vers le sol pendant les vols (le zoom et l'inclinaison restent bloqués)
       if (map.setCenterClampedToGround) map.setCenterClampedToGround(false);
       try { if (map.setSky) map.setSky({ 'sky-color': '#4f86c6', 'sky-horizon-blend': .6, 'horizon-color': '#d6e4f3', 'horizon-fog-blend': .7, 'fog-color': '#c3d4e8', 'fog-ground-blend': .25, 'atmosphere-blend': ['interpolate', ['linear'], ['zoom'], 0, 1, 11, 0] }); } catch (e) {}
+      // cadrage automatique du pays pour les visites générées (la carte de narration occupe la gauche, ou le bas sur téléphone)
+      stops.forEach((s) => {
+        if (!s.bounds) return;
+        try {
+          const small = innerWidth < 880, cf = map.cameraForBounds(s.bounds, { padding: small ? { top: 70, left: 16, right: 16, bottom: innerHeight * .62 } : { top: 80, left: 520, right: 70, bottom: 70 }, maxZoom: 9.5 });
+          if (cf) { s.center = [cf.center.lng, cf.center.lat]; s.zoom = Math.max(2.5, cf.zoom); }
+        } catch (e) {}
+      });
       // repères numérotés
       stops.forEach((s, i) => {
         if (!s.pin) return;
@@ -518,5 +564,5 @@
     });
   }
 
-  window.Immersion = { has: (code) => !!TOURS[code], start, map: () => currentMap }; // map() : utile pour diagnostiquer
+  window.Immersion = { has: (code) => !!TOURS[code], start, map: () => currentMap, tour: () => currentTour }; // map() : utile pour diagnostiquer
 })();

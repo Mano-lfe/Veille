@@ -234,6 +234,8 @@
   .ptab { height:40px; padding:0 12px; border:0; border-bottom:2px solid transparent; background:none; color:var(--muted); font-weight:500; font-size:14px; transition:color 150ms var(--ease), border-color 150ms var(--ease); }
   .ptab:hover { color:var(--text); }
   .ptab.on { color:var(--text); border-bottom-color:var(--accent); }
+  .ptab.visit { color:var(--accent); font-weight:600; }
+  .ptab.visit:hover { color:var(--text); }
   .pbody { flex:1; overflow-y:auto; margin:0 -20px; padding:0 20px 20px; }
   .pbody h3 { margin:20px 0 4px; font:500 12px/16px var(--mono); color:var(--muted); }
   .nitem { display:block; padding:14px 0; border-top:1px solid var(--line); text-decoration:none; color:inherit; }
@@ -1056,8 +1058,14 @@ function createGlobe(mount, opts) {
     };
     for (const [k, label] of defs) {
       const b = el('button', 'ptab' + (k === tab ? ' on' : ''), label);
-      b.onclick = () => { tab = k; [...tabs.children].forEach((t, i) => t.classList.toggle('on', defs[i][0] === k)); draw(cur); body.scrollTop = 0; };
+      b.onclick = () => { tab = k; [...tabs.children].forEach((t, i) => t.classList.toggle('on', defs[i]?.[0] === k)); draw(cur); body.scrollTop = 0; };
       tabs.append(b);
+    }
+    if (info) {
+      const v = el('button', 'ptab visit', 'Visite');
+      v.title = 'Visite guidée immersive du pays';
+      v.onclick = () => enterImmersion(c);
+      tabs.append(v);
     }
     let cur;
     draw(undefined);
@@ -1090,11 +1098,11 @@ function createGlobe(mount, opts) {
     zoomTo(3.6);
     const back = () => { zoomTo(1); select(c, { plain: true }); }; // au retour : fiche du pays comme avant
     Promise.all([loadImmersion(), new Promise((r) => setTimeout(r, REDUCED ? 0 : 1100))])
-      .then(() => window.Immersion.start(c.info.a2, { onExit: back })).catch(back);
+      .then(() => window.Immersion.start(c.info.a2, { country: c.info, center: [c.lon, c.lat], onExit: back })).catch(back);
   }
   function select(c, o) {
     if (S.psel) closePlanet();
-    if (!(o && o.plain) && c.info && IMMERSION_CODES.includes(c.info.a2)) { enterImmersion(c); return; }
+    if (!(o && o.plain) && c.info) { enterImmersion(c); return; } // chaque pays a sa visite guidée (écrite à la main ou générée)
     S.sel = c; S.focus = { lon: c.lon * Math.PI / 180, lat: Math.max(-1.0, Math.min(1.0, c.lat * Math.PI / 180)) };
     mount.classList.add('has-panel'); showPanel(c); drawChips();
   }
@@ -1138,14 +1146,14 @@ function loop(t) {
 }
 
 // Visites aériennes guidées (module chargé à la demande : carte 3D, imagerie satellite, relief)
-const IMMERSION_CODES = ['DO']; // République dominicaine
 let immersionPromise = null;
 function loadImmersion() {
   if (window.Immersion) return Promise.resolve();
   if (immersionPromise) return immersionPromise;
   return (immersionPromise = new Promise((res, rej) => {
     const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = '/immersion.css'; document.head.append(css);
-    const s = document.createElement('script'); s.src = '/immersion.js'; s.onload = res; s.onerror = () => { immersionPromise = null; rej(new Error('immersion')); }; document.head.append(s);
+    const one = (src) => new Promise((ok, ko) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => ko(new Error(src)); document.head.append(s); });
+    Promise.all([one('/tourgen.js'), one('/immersion.js')]).then(res).catch((e) => { immersionPromise = null; rej(e); });
   }));
 }
 

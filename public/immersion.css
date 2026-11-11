@@ -122,3 +122,8 @@ body.immersed { overflow:hidden; }
   .imm, .imm.out, .imm-intro, .imm-load .bar::after { animation:none !important; }
   .imm-intro { display:none; }
 }
+
+/* Source du texte (visites générées) */
+.imm-src { display:block; margin-top:8px; font:500 10px/16px var(--mono, 'IBM Plex Mono', monospace); letter-spacing:.06em; text-transform:uppercase; color:#8c8c8c; text-decoration:none; }
+.imm-src[hidden] { display:none; }
+.imm-src:hover { color:#d6d3cd; text-decoration:underline; }

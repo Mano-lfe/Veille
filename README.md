@@ -43,3 +43,7 @@ Le dépôt est prêt pour Vercel : l'interface est dans `public/`, les routes `/
 ```bash
 npx vercel --prod
 ```
+
+## Visites guidées
+
+Cliquer sur un pays du globe (ou sur « Visite » dans son panneau) lance une visite aérienne par satellite avec voix. La République dominicaine a une visite rédigée à la main ; les autres pays sont générés à la volée (`public/tourgen.js`) à partir de Wikidata et Wikipédia (textes sous CC BY-SA, source citée), avec des photos libres de Wikimedia Commons (auteur et licence indiqués). La qualité des textes varie selon le pays.
