@@ -1145,7 +1145,9 @@ function loadImmersion() {
   if (immersionPromise) return immersionPromise;
   return (immersionPromise = new Promise((res, rej) => {
     const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = '/immersion.css'; document.head.append(css);
-    const s = document.createElement('script'); s.src = '/immersion.js'; s.onload = res; s.onerror = () => { immersionPromise = null; rej(new Error('immersion')); }; document.head.append(s);
+    const load = (src) => new Promise((ok, ko) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => ko(new Error(src)); document.head.append(s); });
+    // /config.js (clé Google Street View) est facultatif : sans lui, la visite se fait avec les photos
+    load('/config.js').catch(() => {}).then(() => load('/immersion.js')).then(res).catch((e) => { immersionPromise = null; rej(e); });
   }));
 }
 

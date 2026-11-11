@@ -27,71 +27,81 @@
           center: [-70.25, 18.95], zoom: 7.2, pitch: 35, bearing: 15, orbit: 25, fly: 6500 },
         { title: 'Saint-Domingue, la Zone coloniale', place: 'Côte sud', pin: true,
           text: "Fondée en 1496 par Bartolomé Colomb, Saint-Domingue est la plus ancienne ville européenne permanente des Amériques. Sa Zone coloniale, inscrite à l'UNESCO depuis 1990, aligne rues pavées, forteresses, la première cathédrale et les premiers hôpitaux et couvents du Nouveau Monde.",
-          say: "Première escale : Saint-Domingue ! Fondée en quatorze cent quatre-vingt-seize par Bartolomé Colomb, c'est la plus ancienne ville européenne des Amériques. Posons-nous au sol, en plein cœur de la Zone coloniale, classée à l'UNESCO depuis mille neuf cent quatre-vingt-dix. Imaginez la Calle El Conde, sa grande rue piétonne, ses terrasses, ses boutiques, ses façades colorées. Quelques pas plus loin, la Calle Las Damas, puis la cathédrale primada, la première cathédrale des Amériques. Ici, c'est l'histoire du Nouveau Monde qui se raconte, pierre après pierre.",
+          say: "Première escale : Saint-Domingue ! Fondée en quatorze cent quatre-vingt-seize par Bartolomé Colomb, c'est la plus ancienne ville européenne des Amériques. Regardez : le fleuve Ozama, le port, et au cœur de la ville, la Zone coloniale, classée à l'UNESCO depuis mille neuf cent quatre-vingt-dix. Posons-nous au sol !",
+          ground: "Nous voici sur le parvis de la cathédrale primada, la première cathédrale des Amériques. Avançons dans la Calle El Conde, la grande rue piétonne : regardez les façades coloniales, les terrasses, les boutiques. À deux pas, la Calle Las Damas, l'une des plus anciennes rues du Nouveau Monde. Ici, l'histoire des Amériques s'est écrite pierre après pierre.",
           facts: [['Fondée en', '1496'], ['UNESCO depuis', '1990']],
           photos: [
             { f: 'File:Calle El Conde CCSD 03 2019 5088.jpg', cap: 'Calle El Conde, la grande rue piétonne de la Zone coloniale' },
             { f: 'File:DOM Santo Domingo, Ciudad Colonial, Calle El Conde 0037.jpg', cap: 'Les boutiques de la Calle El Conde' },
             { f: 'File:Calle las Damas, Santo Domingo, Zona Colonial.jpg', cap: 'Calle Las Damas, rue historique de la Zone coloniale' },
             { f: 'File:Catedral Primada CCSD 09 2018 1234.jpg', cap: "La cathédrale primada de América" }],
-          street: { lat: 18.47299, lng: -69.88391, heading: 270, label: 'Parque Colón, au bout de la Calle El Conde' },
+          street: { lat: 18.473, lng: -69.88389, radius: 60, heading: 270, label: 'Parque Colón, au bout de la Calle El Conde' },
           center: [-69.883, 18.473], zoom: 14.2, pitch: 62, bearing: -25, orbit: 55, fly: 8500 },
         { title: "L'île Saona", place: 'Parc national de l’Est', pin: true,
           text: "Au sud-est, l'île Saona fait partie du parc national de l'Est. Plages de sable blanc, palmiers, eaux turquoise et mangroves y sont protégées. On l'atteint en bateau, depuis le village de Bayahibe.",
-          say: "Cap sur le sud-est, direction l'île Saona ! Ici, tout est protégé : c'est le parc national de l'Est. Du sable blanc, des palmiers qui se penchent sur l'eau, des eaux turquoise, des mangroves... On y arrive en bateau, depuis le petit village de Bayahibe. Imaginez : les pieds dans l'eau chaude, et rien d'autre à faire que profiter !",
+          say: "Cap sur le sud-est, direction l'île Saona ! Ici, tout est protégé : c'est le parc national de l'Est. Du sable blanc, des palmiers qui se penchent sur l'eau, des eaux turquoise, des mangroves... On y arrive en bateau, depuis le petit village de Bayahibe. Venez, on pose pied à terre !",
+          ground: "Regardez autour de vous : la vue est à trois cent soixante degrés. C'est l'île comme si vous y étiez : la végétation, la lumière, le calme des îles. Imaginez : les pieds dans l'eau chaude, et rien d'autre à faire que profiter !",
           facts: [['Protection', 'parc national'], ['Accès', 'bateau depuis Bayahibe']],
           photos: [
             { f: 'File:SAONA PLAYA.jpg', cap: "Plage de l'île Saona" },
             { f: 'File:Saona Island Beach.jpg', cap: 'Sable blanc et eaux turquoise' },
             { f: 'File:Saona Beach (60473824).jpeg', cap: 'Palmiers au bord de la plage' }],
+          street: { lat: 18.15309, lng: -68.67973, radius: 300, label: 'Parc national Cotubanamá, île Saona' },
           center: [-68.7, 18.15], zoom: 11.3, pitch: 58, bearing: 35, orbit: 50, fly: 8000 },
         { title: 'Punta Cana', place: 'Côte est', pin: true,
           text: "Sur la côte est, Punta Cana aligne des dizaines de kilomètres de plages bordées de cocotiers, entre mer des Caraïbes et océan Atlantique. C'est la première destination touristique du pays, avec son propre aéroport international.",
-          say: "Et voici Punta Cana, sur la côte est ! Des dizaines de kilomètres de plages bordées de cocotiers, la mer des Caraïbes d'un côté, l'océan Atlantique de l'autre. C'est la première destination touristique du pays, avec son propre aéroport international. Regardez ces eaux turquoise, ce sable clair : ça donne envie de poser ses valises, non ?",
+          say: "Et voici Punta Cana, sur la côte est ! Des dizaines de kilomètres de plages bordées de cocotiers, la mer des Caraïbes d'un côté, l'océan Atlantique de l'autre. C'est la première destination touristique du pays, avec son propre aéroport international. Descendons dans la rue !",
+          ground: "Nous marchons maintenant dans Punta Cana Village, un quartier pensé pour les visiteurs, à quelques minutes seulement des plages. Regardez la végétation tropicale, les commerces, les terrasses. Alors, ça donne envie de poser ses valises, non ?",
           facts: [['Plages', 'sable blanc, cocotiers'], ['Aéroport', 'international']],
           photos: [
             { f: 'File:Playa Bavaro 142.jpg', cap: 'La plage de Bávaro' },
             { f: 'File:Bavaro Beach 045.jpg', cap: 'Cocotiers et paillotes à Bávaro' },
             { f: 'File:2024 - Bávaro Beach - 44.jpg', cap: 'Les eaux turquoise de Bávaro' }],
-          street: { lat: 18.56, lng: -68.372, heading: 0, label: 'Punta Cana' },
+          street: { lat: 18.55932, lng: -68.37184, radius: 150, label: 'Punta Cana Village' },
           center: [-68.4, 18.57], zoom: 12.1, pitch: 60, bearing: -40, orbit: -55, fly: 7500 },
         { title: 'La péninsule de Samaná', place: 'Nord-est', pin: true,
           text: "Au nord-est, la péninsule de Samaná est couverte de collines, de cocoteraies et de cascades comme le Salto El Limón. De janvier à mars, de nombreuses baleines à bosse viennent se reproduire dans sa baie.",
-          say: "Direction le nord-est, la péninsule de Samaná ! Des collines vertes, des cocoteraies, des cascades comme le Salto El Limón, que l'on rejoint à cheval ou à pied par un sentier. Et de janvier à mars, c'est le grand spectacle : de nombreuses baleines à bosse viennent se reproduire dans la baie de Samaná !",
+          say: "Direction le nord-est, la péninsule de Samaná ! Des collines vertes, des cocoteraies, des cascades comme le Salto El Limón. Et de janvier à mars, c'est le grand spectacle : de nombreuses baleines à bosse viennent se reproduire dans la baie de Samaná ! Rejoignons le bord de mer !",
+          ground: "Voici le Malecón de Samaná, la promenade du bord de mer. C'est tout près d'ici que partent les excursions pour observer les baleines. Marchons un peu le long de la baie : l'ambiance est paisible, avec la mer d'un côté et la ville de l'autre.",
           facts: [['Baleines à bosse', 'janvier – mars'], ['Cascade', 'Salto El Limón']],
           photos: [
             { f: 'File:El Limon.JPG', cap: 'La cascade du Salto El Limón' },
             { f: 'File:Salto el Limón (14503942108).jpg', cap: 'Sur le sentier du Salto El Limón' },
             { f: 'File:DOM Las Terrenas, Playa Las Terrenas 0054.jpg', cap: 'La plage de Las Terrenas' }],
-          street: { lat: 19.20284, lng: -69.33548, heading: 0, label: 'Le Malecón de Samaná' },
+          street: { lat: 19.203, lng: -69.33558, radius: 150, label: 'Le Malecón de Samaná' },
           center: [-69.45, 19.22], zoom: 10.4, pitch: 58, bearing: 20, orbit: 55, fly: 8000 },
         { title: 'Cabarete et la côte nord', place: 'Puerto Plata', pin: true,
           text: "Sur la côte nord, le vent régulier fait de Cabarete l'une des capitales mondiales du kitesurf. Plus à l'ouest, un téléphérique mène de Puerto Plata au mont Isabel de Torres, à environ 800 mètres, pour une vue sur toute la baie.",
-          say: "Sur la côte nord, voici Cabarete ! Le vent y est régulier, ce qui en fait l'une des capitales mondiales du kitesurf et de la planche à voile. Les planches alignées sur le sable, l'ambiance décontractée... Et un peu plus à l'ouest, un téléphérique monte de Puerto Plata jusqu'au mont Isabel de Torres, à environ huit cents mètres, pour une vue superbe sur toute la baie.",
+          say: "Sur la côte nord, voici Cabarete ! Le vent y est régulier, ce qui en fait l'une des capitales mondiales du kitesurf et de la planche à voile. Un peu plus à l'ouest, un téléphérique monte de Puerto Plata jusqu'au mont Isabel de Torres, à environ huit cents mètres. Mais d'abord, posons-nous sur place !",
+          ground: "Nous sommes à Cabarete, au bord de la route qui longe la plage. Ici, on vient surtout pour la mer, le vent et l'ambiance décontractée : les écoles de kitesurf, les planches de surf alignées sur le sable... Un petit village qui vit au rythme du vent.",
           facts: [['Sport', 'kitesurf, planche à voile'], ['Isabel de Torres', '≈ 800 m']],
           photos: [
             { f: 'File:The Surfboards (8422914814).jpg', cap: 'Planches de surf à Cabarete' },
             { f: 'File:Cabarete, Dominican Republic (8644953576).jpg', cap: 'La plage de Cabarete' },
             { f: 'File:Доминиканская Республика - panoramio (4).jpg', cap: 'Une paillote sur la plage de la côte nord' }],
-          street: { lat: 19.7519, lng: -70.4103, heading: 0, label: 'Cabarete' },
+          street: { lat: 19.75131, lng: -70.41016, radius: 150, label: 'Cabarete' },
           center: [-70.41, 19.755], zoom: 12.3, pitch: 62, bearing: 150, orbit: -50, fly: 8000 },
         { title: 'Le pic Duarte', place: 'Cordillère centrale', pin: true,
           text: "Au cœur du pays, la Cordillère centrale culmine au pic Duarte, à 3 098 mètres : le plus haut sommet des Caraïbes. Forêts de pins, cascades et vallées fraîches y contrastent avec la chaleur du littoral, autour de Jarabacoa et de Constanza.",
-          say: "On grimpe maintenant au cœur du pays, dans la Cordillère centrale ! Voici le pic Duarte : trois mille quatre-vingt-dix-huit mètres, le plus haut sommet des Caraïbes ! Ici, des forêts de pins, des cascades, des vallées fraîches, autour de Jarabacoa et de Constanza. Un tout autre visage de la République dominicaine : l'air frais de la montagne, à deux pas de la chaleur du littoral.",
+          say: "On grimpe maintenant au cœur du pays, dans la Cordillère centrale ! Voici le pic Duarte : trois mille quatre-vingt-dix-huit mètres, le plus haut sommet des Caraïbes ! Des forêts de pins, des cascades, des vallées fraîches. Et au pied de ces montagnes, la petite ville de Jarabacoa : allons y faire un tour !",
+          ground: "Voici Jarabacoa, l'une des portes d'entrée de la Cordillère centrale. Ici, l'air est plus frais que sur la côte, et c'est le point de départ de nombreuses excursions en montagne, en rivière et vers les cascades. Un tout autre visage de la République dominicaine.",
           facts: [['Altitude', '3 098 m'], ['Record', 'plus haut sommet des Caraïbes']],
           photos: [
             { f: 'File:Pinus occidentalis on Pico Duarte.jpg', cap: 'Pins sur les pentes du pic Duarte' },
             { f: 'File:Compartición 2010 - panoramio.jpg', cap: 'La forêt de pins de Compartición, sur le sentier du pic Duarte' },
             { f: 'File:Celestus marcanoi habitat.jpg', cap: 'Paysage de montagne dans la Cordillère centrale' }],
+          street: { lat: 19.11802, lng: -70.63518, radius: 150, label: 'Jarabacoa' },
           center: [-70.9986, 19.0236], zoom: 10.3, pitch: 62, bearing: 200, orbit: 60, fly: 8500 },
         { title: 'Le lac Enriquillo', place: 'Sud-ouest', pin: true,
           text: "Dans le sud-ouest, le lac Enriquillo est un lac salé situé sous le niveau de la mer : le point le plus bas des Caraïbes. Il abrite des crocodiles américains, des flamants roses et l'île Cabritos, au milieu d'un paysage semi-désertique.",
-          say: "Dernière grande escale, dans le sud-ouest : le lac Enriquillo ! Un lac salé situé sous le niveau de la mer, à environ quarante mètres en dessous : c'est le point le plus bas des Caraïbes ! Sur l'île Cabritos, au milieu du lac, vivent des crocodiles américains, des iguanes et des flamants roses, dans un paysage presque désertique. Un monde à part.",
+          say: "Dernière grande escale, dans le sud-ouest : le lac Enriquillo ! Un lac salé situé sous le niveau de la mer, à environ quarante mètres en dessous : c'est le point le plus bas des Caraïbes ! Venez, on s'approche du rivage.",
+          ground: "Regardez autour de vous : le lac s'étend à perte de vue, dans un paysage presque désertique. Au milieu, l'île Cabritos, où vivent des crocodiles américains, des iguanes et des flamants roses. Un monde à part.",
           facts: [['Altitude', '≈ −40 m'], ['Faune', 'crocodiles, flamants']],
           photos: [
             { f: 'File:Lago Enriquillo.jpg', cap: 'Le lac Enriquillo en fin de journée' },
             { f: 'File:Mirador Lago Enriquillo.jpg', cap: 'Le mirador du lac Enriquillo' },
             { f: 'File:Cabritos 2011 12 13Feb 221.JPG', cap: "Un iguane sur l'île Cabritos" }],
+          street: { lat: 18.4788, lng: -71.59613, radius: 300, label: 'Lac Enriquillo' },
           center: [-71.58, 18.47], zoom: 10.2, pitch: 56, bearing: 60, orbit: 55, fly: 8000 },
         { title: 'Fin de la visite', place: "Vue d'ensemble", pin: false,
           text: "Du littoral aux sommets, on passe de la mer des Caraïbes à plus de 3 000 mètres d'altitude en quelques heures de route. Vous pouvez maintenant explorer la carte librement, rejouer la visite ou revenir au globe.",
@@ -133,6 +143,30 @@
       let n = 0; const one = () => { if (++n === 2) res(); };
       const css = el('link'); css.rel = 'stylesheet'; css.href = MAPLIBRE + '.css'; css.onload = one; css.onerror = fail(rej); document.head.append(css);
       const s = el('script'); s.src = MAPLIBRE + '.js'; s.onload = one; s.onerror = fail(rej); document.head.append(s);
+    }));
+  }
+
+  // ---------- Google Street View (clé de navigateur restreinte à ce site, lue dans /config.js) ----------
+  let gmPromise = null, svOk = true, onAuthFail = null;
+  window.gm_authFailure = () => { svOk = false; if (onAuthFail) onAuthFail(); }; // appelée par Google si la clé est refusée pour ce site
+  function loadGoogle() {
+    const key = window.VEILLE_CONFIG && window.VEILLE_CONFIG.googleMapsKey;
+    if (!key) return Promise.reject(new Error('pas de clé'));
+    if (window.google && window.google.maps && window.google.maps.StreetViewPanorama) return Promise.resolve();
+    if (gmPromise) return gmPromise;
+    return (gmPromise = new Promise((res, rej) => {
+      window.__gmReady = res;
+      const s = el('script'); s.async = true; s.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(key) + '&v=weekly&callback=__gmReady';
+      s.onerror = () => { gmPromise = null; rej(new Error('google')); }; document.head.append(s);
+      setTimeout(() => rej(new Error('délai')), 15000);
+    }));
+  }
+  // cherche le panorama le plus proche d'un point (extérieur seulement)
+  function findPano(svc, st) {
+    return new Promise((res) => svc.getPanorama({ location: { lat: st.lat, lng: st.lng }, radius: st.radius || 100, preference: google.maps.StreetViewPreference.NEAREST, source: google.maps.StreetViewSource.OUTDOOR }, (d, status) => {
+      if (status !== 'OK' || !d || !d.location) return res(null);
+      const l = d.links || [];
+      res({ pano: d.location.pano, n: l.length, link0: l.length ? l[0].heading : 0 });
     }));
   }
 
@@ -191,7 +225,7 @@
   const sentencesOf = (t) => (t.match(/[^.!?…]+[.!?…]+["»)]*\s*|[^.!?…]+$/g) || [t]).map((s) => s.trim()).filter(Boolean);
 
   // ---------- Visite ----------
-  let active = false, currentMap = null;
+  let active = false, currentMap = null, currentPano = null;
 
   async function start(code, opts = {}) {
     const tour = TOURS[code];
@@ -243,7 +277,8 @@
 
     const intro = el('div', 'imm-intro', `<span>${esc(tour.tag)}</span><h2>${esc(tour.name)}</h2>`);
     const load = el('div', 'imm-load', '<div class="bar"></div><div class="msg">Chargement de l’imagerie satellite</div>');
-    root.append(mapEl, top, load);
+    const svBox = el('div', 'imm-sv'); // Street View : par-dessus la carte, sous l'interface
+    root.append(mapEl, svBox, top, load);
     document.body.append(root);
     back.focus({ preventScroll: true });
 
@@ -324,6 +359,47 @@
       }
     }
 
+    // ----- Street View : on marche le long de la rue (liens du panorama) ou, pour une vue à 360°, on regarde autour de soi
+    let panorama = null, walk = null, svNotice = false;
+    const angDiff = (a, b) => Math.abs(((a - b + 540) % 360) - 180);
+    onAuthFail = () => {
+      hideStreet(); stops.forEach((s) => { s.pano = null; });
+      if (!svNotice && root.isConnected) { svNotice = true; root.append(el('div', 'imm-warn', "Street View n'est pas autorisé pour ce site : la clé Google doit accepter cette adresse. La visite continue avec les photos.")); }
+    };
+    // on repère à l'avance le panorama de chaque lieu, en parallèle de la carte
+    const streetsReady = (async () => {
+      await loadGoogle();
+      const svc = new google.maps.StreetViewService();
+      for (const s of stops) if (s.street && s.pano === undefined) s.pano = await findPano(svc, s.street);
+    })().catch(() => {});
+    function stopWalk() { if (walk) { clearInterval(walk.step); clearInterval(walk.look); walk = null; } }
+    function hideStreet() { stopWalk(); svBox.classList.remove('on'); root.classList.remove('street'); }
+    function enterStreet(s) {
+      if (!svOk || !s.pano || !(window.google && google.maps && google.maps.StreetViewPanorama)) return false;
+      try {
+        const h0 = s.street.heading != null ? s.street.heading : s.pano.link0 || 0;
+        if (!panorama) panorama = new google.maps.StreetViewPanorama(svBox, { pano: s.pano.pano, visible: true, addressControl: false, fullscreenControl: false, zoomControl: false, panControl: false, motionTracking: false, motionTrackingControl: false, enableCloseButton: false, linksControl: true, clickToGo: true, showRoadLabels: true });
+        currentPano = panorama; panorama.setPano(s.pano.pano); panorama.setPov({ heading: h0, pitch: 2 }); panorama.setVisible(true);
+        stopWalk(); hidePhotos(); svBox.classList.add('on'); root.classList.add('street');
+        const w = walk = { t0: performance.now(), h0, travel: h0, prev: null, sphere: !s.pano.n };
+        // le regard flotte doucement ; sur une photosphère (sans lien) il fait lentement le tour
+        w.look = setInterval(() => {
+          if (walk !== w) return; const t = (performance.now() - w.t0) / 1000;
+          panorama.setPov({ heading: w.sphere ? w.h0 + t * 11 : w.travel + 16 * Math.sin(t / 2.4), pitch: 2 + 3 * Math.sin(t / 3.3) });
+        }, 50);
+        // toutes les ~4 s, un pas en avant vers le lien le plus proche de la direction de marche (sans faire demi-tour)
+        if (!w.sphere) w.step = setInterval(() => {
+          if (walk !== w) return;
+          let best = null, bd = 999;
+          for (const l of panorama.getLinks() || []) { if (l.pano === w.prev) continue; const d = angDiff(l.heading, w.travel); if (d < bd) { bd = d; best = l; } }
+          if (best && bd <= 80) { w.prev = panorama.getPano(); w.travel = best.heading; panorama.setPano(best.pano); }
+        }, 3800);
+        return true;
+      } catch (e) { return false; }
+    }
+    // dès que l'utilisateur touche au panorama, la visite se met en pause et il explore librement
+    ['pointerdown', 'wheel', 'touchstart'].forEach((ev) => svBox.addEventListener(ev, () => { if (playing && cur >= 0) pause(); }, { passive: true }));
+
     // ----- affichage de l'étape courante
     function renderCard() {
       const s = stops[cur];
@@ -360,7 +436,7 @@
 
     function goTo(i) {
       if (!map) return;
-      cur = Math.max(0, Math.min(last, i)); finished = false; clearTimer(); stopSpeech(); hidePhotos();
+      cur = Math.max(0, Math.min(last, i)); finished = false; clearTimer(); stopSpeech(); hidePhotos(); hideStreet();
       const my = ++seq, s = stops[cur];
       renderCard();
       // la narration ne démarre que lorsque l'imagerie du lieu est affichée (au plus 5 s d'attente, pour ne jamais bloquer la visite)
@@ -374,22 +450,38 @@
       if (REDUCED) { map.jumpTo(cam(s)); arrived(); }
       else { map.flyTo({ ...cam(s), duration: s.fly || 7000, curve: 1.5, essential: true }); map.once('moveend', arrived); }
     }
+    // Déroulé d'une étape. Deux temps quand le lieu a un panorama Street View : d'abord le vol (orbite + photos + première partie du texte),
+    // puis on « se pose » et on marche dans la rue pendant la seconde partie. Tout se cale sur la durée de la lecture quand la voix est active.
     function dwell(my) {
       if (!playing || my !== seq) return;
-      const s = stops[cur], talk = voiceOn && s.say;
-      // avec la voix, tout (orbite, photos, barre de progression) se cale sur la durée estimée de la lecture
-      const ms = s.dwell && !talk ? s.dwell : talk ? Math.min(60000, estSpeechMs(s.say)) : Math.min(19000, Math.max(9000, s.text.length * 52));
-      if (!REDUCED && s.orbit) map.easeTo({ bearing: s.bearing + s.orbit, duration: ms, easing: (t) => t, essential: true }); // l'orbite est lente et continue
-      startFill(ms); showPhotos(s, ms);
+      const s = stops[cur], talk = voiceOn && s.say, street = !!(s.street && s.pano && svOk && s.ground);
       const next = () => { if (my !== seq || !playing) return; cur < last ? goTo(cur + 1) : finish(); };
-      if (talk) {
-        const done = () => { clearTimer(); timer = setTimeout(next, 900); }; // petite respiration avant de repartir
-        speak(s.say, done, () => { voiceOn = false; renderPlay(); clearTimer(); timer = setTimeout(next, ms); });
-        timer = setTimeout(next, ms * 1.8 + 5000); // filet de sécurité si la voix se bloque
-      } else timer = setTimeout(next, ms);
+      const orbit = (ms) => { if (!REDUCED && s.orbit) map.easeTo({ bearing: s.bearing + s.orbit, duration: ms, easing: (t) => t, essential: true }); }; // l'orbite est lente et continue
+      const dive = () => { if (my === seq && playing) enterStreet(s); };
+      const rest = () => { clearTimer(); timer = setTimeout(next, 900); }; // petite respiration avant de repartir
+      if (street && talk) {
+        const air = estSpeechMs(s.say), ground = estSpeechMs(s.ground), total = air + ground + 900;
+        orbit(air); startFill(total); showPhotos(s, air);
+        const blocked = () => { voiceOn = false; renderPlay(); clearTimer(); timer = setTimeout(() => { dive(); timer = setTimeout(next, 13000); }, 5000); };
+        speak(s.say, () => { if (my !== seq) return; dive(); speak(s.ground, rest, blocked); }, blocked);
+        timer = setTimeout(next, total * 1.8 + 6000); // filet de sécurité si la voix se bloque
+      } else if (talk) {
+        const text = s.say + (s.ground ? ' ' + s.ground : ''), ms = Math.min(70000, estSpeechMs(text));
+        orbit(ms); startFill(ms); showPhotos(s, ms);
+        speak(text, rest, () => { voiceOn = false; renderPlay(); clearTimer(); timer = setTimeout(next, ms); });
+        timer = setTimeout(next, ms * 1.8 + 5000);
+      } else if (street) {
+        const air = 8000, ground = Math.min(19000, Math.max(11000, s.ground.length * 50));
+        orbit(air); startFill(air + ground); showPhotos(s, air);
+        timer = setTimeout(() => { dive(); timer = setTimeout(next, ground); }, air);
+      } else {
+        const ms = s.dwell || Math.min(19000, Math.max(9000, s.text.length * 52));
+        orbit(ms); startFill(ms); showPhotos(s, ms);
+        timer = setTimeout(next, ms);
+      }
     }
     function finish() { playing = false; finished = true; clearTimer(); stopSpeech(); renderPlay(); }
-    function pause() { playing = false; seq++; clearTimer(); stopSpeech(); if (map) map.stop(); renderPlay(); }
+    function pause() { playing = false; seq++; clearTimer(); stopSpeech(); stopWalk(); if (map) map.stop(); renderPlay(); } // la vue Street View reste affichée : on peut l'explorer à la main
     function togglePlay() {
       if (finished) { playing = true; goTo(0); return; }
       if (playing) pause(); else { playing = true; goTo(cur); }
@@ -412,7 +504,8 @@
 
     function quit() {
       if (!root.isConnected || root.classList.contains('out')) return;
-      seq++; clearTimer(); stopSpeech(); hidePhotos(); window.removeEventListener('keydown', onKey, true);
+      seq++; clearTimer(); stopSpeech(); hidePhotos(); hideStreet(); window.removeEventListener('keydown', onKey, true);
+      try { if (panorama) panorama.setVisible(false); } catch (e) {}
       if (canSpeak) speechSynthesis.onvoiceschanged = null;
       root.classList.add('out');
       setTimeout(() => {
@@ -490,7 +583,7 @@
         load.classList.add('hide'); setTimeout(() => load.remove(), 600);
         if (!REDUCED) { root.append(intro); setTimeout(() => intro.remove(), 3500); }
         root.append(card, photo);
-        await Promise.race([photosReady, new Promise((r) => setTimeout(r, 2500))]); // les photos sont en général prêtes depuis longtemps
+        await Promise.race([Promise.all([photosReady, streetsReady]), new Promise((r) => setTimeout(r, 3500))]); // photos et panoramas sont en général prêts depuis longtemps
         playing = !REDUCED; // pas de lecture automatique si l'utilisateur réduit les animations
         setTimeout(() => goTo(0), REDUCED ? 0 : 1500);
       };
@@ -498,5 +591,5 @@
     });
   }
 
-  window.Immersion = { has: (code) => !!TOURS[code], start, map: () => currentMap }; // map() : utile pour diagnostiquer
+  window.Immersion = { has: (code) => !!TOURS[code], start, map: () => currentMap, pano: () => currentPano }; // map() : utile pour diagnostiquer
 })();

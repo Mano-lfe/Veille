@@ -34,6 +34,8 @@ Pendant que la voix explique chaque lieu, des **photos réelles au sol** (rues, 
 
 Pour ajouter un pays : une entrée dans `TOURS` de `public/immersion.js` (code ISO à deux lettres, identifiant numérique du pays dans world-atlas, étapes avec coordonnées, texte affiché, texte parlé, photos Wikimedia Commons et caméra), puis son code dans `IMMERSION_CODES` de `public/index.html`.
 
+**Street View (facultatif)** : avec une clé Google Maps, la visite descend dans la rue à chaque lieu qui a un panorama et marche toute seule le long des liens (ou fait le tour à 360° pour une photosphère) pendant que la voix commente. Sans clé, ou si Google la refuse, elle continue avec les photos. La clé se met dans `public/config.js` (copier `public/config.example.js`). Ce fichier n'est pas versionné : il est déployé directement sur Vercel (`npx vercel --prod`). La clé doit être restreinte dans la console Google Cloud : sites autorisés (votre domaine, `http://localhost:3000/*` pour les essais) et « Maps JavaScript API » seulement.
+
 Sources : imagerie © Esri, Maxar, Earthstar Geographics (World Imagery) ; relief Mapzen / AWS Terrain Tiles ; photos Wikimedia Commons (licences libres, crédits affichés) ; carte MapLibre GL JS. Les fonds Esri sont utilisables gratuitement avec leur mention, dans un cadre non commercial et à trafic modéré : pour un usage commercial, prévoir une licence ou un autre fournisseur.
 
 ## Déployer sur Vercel

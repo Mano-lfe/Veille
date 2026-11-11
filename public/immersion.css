@@ -8,6 +8,12 @@ body.immersed { overflow:hidden; }
 /* La feuille de style de MapLibre impose « position:relative » à son conteneur : sans cette règle plus précise, il tombe à 0 px de haut et la carte se rabat sur 300 px */
 .imm .imm-map, .imm .imm-map.maplibregl-map { position:absolute; inset:0; width:100%; height:100%; }
 .imm-map .maplibregl-canvas { outline:none; }
+
+/* Street View : fondu par-dessus la carte ; la carte de narration remonte pour laisser voir le logo et les mentions de Google en bas */
+.imm-sv { position:absolute; inset:0; z-index:2; background:#000; opacity:0; visibility:hidden; transition:opacity 800ms ease, visibility 0s linear 800ms; }
+.imm-sv.on { opacity:1; visibility:visible; transition:opacity 800ms ease; }
+.imm.street .imm-card { bottom:64px; }
+.imm.street .imm-photo { display:none; }
 .imm button { font:inherit; color:inherit; cursor:pointer; }
 .imm :focus-visible { outline:2px solid #ff4e00; outline-offset:2px; }
 
