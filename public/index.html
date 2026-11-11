@@ -128,6 +128,11 @@
   .item:hover h3 { color:var(--accent-text); }
   .item p { margin:10px 0 0; max-width:68ch; color:var(--text2); font-size:15px; line-height:24px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
   .item .side { display:flex; flex-direction:column; align-items:flex-end; gap:8px; font:500 11px/16px var(--mono); letter-spacing:.08em; text-transform:uppercase; color:var(--muted); text-align:right; }
+  .fav { width:32px; height:32px; display:inline-grid; place-items:center; border:0; border-radius:3px; background:none; color:var(--muted); cursor:pointer; }
+  .fav:hover { color:var(--text); background:rgba(127,127,127,.16); }
+  .fav.on { color:var(--accent); }
+  .lead .fav { position:absolute; right:0; top:0; }
+  .lead { position:relative; }
   .item .go { color:var(--accent-text); opacity:0; transform:translate(-4px, 4px); transition:opacity 150ms var(--ease), transform 150ms var(--ease); }
   .item .go svg { width:20px; height:20px; }
   .item:hover .go, .item:focus-visible .go { opacity:1; transform:none; }
@@ -290,7 +295,7 @@
     </a>
     <label class="search">
       <svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-      <input id="q" type="search" placeholder="Rechercher dans la rubrique" aria-label="Rechercher dans la rubrique">
+      <input id="q" type="search" placeholder="Rechercher dans toutes les rubriques" aria-label="Rechercher dans toutes les rubriques">
       <kbd>/</kbd>
     </label>
     <div class="actions">
@@ -364,6 +369,7 @@ const SVG = {
   x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
   sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
   moon:'<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+  star:'<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9Z"/>',
   plus:'<path d="M5 12h14"/><path d="M12 5v14"/>',
   minus:'<path d="M5 12h14"/>',
 };
@@ -382,6 +388,22 @@ const PAGE = 30;
 let view = 'tech', srcFilter = '', shown = PAGE, listKey = '';
 let seen = new Set(JSON.parse(localStorage.getItem('seen') || '[]'));
 let freshIds = new Set();
+// Favoris : enregistrés dans ce navigateur (copie de l'article, il reste lisible même quand il sort du flux)
+let favs = []; try { favs = JSON.parse(localStorage.getItem('favs') || '[]'); } catch (e) {}
+const isFavId = (id) => favs.some((f) => f.id === id);
+function toggleFav(i) {
+  if (isFavId(i.id)) favs = favs.filter((f) => f.id !== i.id);
+  else favs.unshift({ id: i.id, title: i.title, link: i.link, source: i.source, category: i.category, time: i.time, summary: i.summary || '' });
+  try { localStorage.setItem('favs', JSON.stringify(favs.slice(0, 300))); } catch (e) {}
+  render();
+}
+function starBtn(i) {
+  const on = isFavId(i.id), b = el('button', 'fav' + (on ? ' on' : '')); b.type = 'button';
+  b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', on ? 'Retirer des favoris' : 'Ajouter aux favoris'); b.title = b.getAttribute('aria-label');
+  b.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="${on ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9Z"/></svg>`;
+  b.onclick = (e) => { e.preventDefault(); e.stopPropagation(); toggleFav(i); };
+  return b;
+}
 
 function icon(name) {
   const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -1243,17 +1265,22 @@ function render() {
   const gb = el('button', 'nav-link'); gb.type = 'button';
   gb.append(icon('globe'), el('span', 't', 'Globe 3D'));
   gb.onclick = () => { if (view !== 'globe') prevView = view; view = 'globe'; render(); window.scrollTo({ top:0 }); };
-  tabs.append(gb);
+  const fb = el('button', 'nav-link' + (view === 'favs' ? ' active' : '')); fb.type = 'button';
+  fb.append(icon('star'), el('span', 't', favs.length ? `Favoris · ${favs.length}` : 'Favoris'));
+  fb.onclick = () => { view = 'favs'; srcFilter = ''; $('q').value = ''; render(); window.scrollTo({ top:0 }); };
+  tabs.append(fb, gb);
 
   if (view === 'globe') { bigGlobe.refresh(); return; }
-  const cat = view, items = data.items[cat] || [];
-  const title = $('title'); title.textContent = CATS[cat]; title.append(el('span', 'p', '.'));
-  $('desc').textContent = DESC[cat];
+  const cat = view, isFav = view === 'favs', q = $('q').value.trim().toLowerCase();
+  // une recherche porte sur toutes les rubriques ; les favoris ont leur propre liste
+  const items = isFav ? favs : q ? Object.values(data.items).flat().sort((a, b) => b.time - a.time) : (data.items[cat] || []);
+  const title = $('title'); title.textContent = isFav ? 'Favoris' : CATS[cat]; title.append(el('span', 'p', '.'));
+  $('desc').textContent = isFav ? 'Les articles que vous avez mis de côté. Ils sont enregistrés dans ce navigateur.' : DESC[cat];
 
   // Sources : filtre sous forme de puces + liste dans le pied de page
   const counts = {};
   items.forEach(i => counts[i.source] = (counts[i.source] || 0) + 1);
-  const names = Object.keys(data.status).filter(n => SRC_CAT[n] === cat || counts[n]);
+  const names = Object.keys(data.status).filter(n => (!isFav && !q && SRC_CAT[n] === cat) || counts[n]);
   const sl = $('sources'); sl.textContent = '';
   const all = el('button', 'chip-f' + (!srcFilter ? ' on' : '')); all.type = 'button'; all.setAttribute('aria-pressed', !srcFilter ? 'true' : 'false');
   all.append('Toutes', el('span', 'n', items.length)); all.onclick = () => { srcFilter = ''; render(); }; sl.append(all);
@@ -1282,7 +1309,6 @@ function render() {
   });
   $('pulsecap').textContent = `${buckets.reduce((a, b) => a + b, 0)} en 24 h`;
 
-  const q = $('q').value.trim().toLowerCase();
   const filtered = items.filter(i =>
     (!srcFilter || i.source === srcFilter) &&
     (!q || (i.title + ' ' + i.summary).toLowerCase().includes(q)));
@@ -1300,13 +1326,14 @@ function render() {
     return;
   }
   list.removeAttribute('aria-busy');
-  if (!filtered.length) { $('leadlab').textContent = '01 / À la une'; list.append(el('div', 'empty', q ? `Aucun résultat pour « ${$('q').value.trim()} »` : 'Aucun article')); return; }
+  if (!filtered.length) { $('leadlab').textContent = isFav ? '01 / Favoris' : '01 / À la une'; list.append(el('div', 'empty', isFav && !q ? 'Aucun favori pour le moment : touchez l’étoile d’un article pour le garder ici' : q ? `Aucun résultat pour « ${$('q').value.trim()} »` : 'Aucun article')); return; }
 
   const key = view + '|' + srcFilter + '|' + q;
   if (key !== listKey) { listKey = key; shown = PAGE; }
   const filtering = !!(q || srcFilter);
-  $('leadlab').textContent = filtering ? '01 / Le plus récent' : '01 / À la une';
-  if (filtering) count.textContent = `${filtered.length} article${filtered.length > 1 ? 's' : ''} correspondant${filtered.length > 1 ? 's' : ''}`;
+  $('leadlab').textContent = isFav ? '01 / Favoris' : filtering ? '01 / Le plus récent' : '01 / À la une';
+  if (filtering) count.textContent = `${filtered.length} article${filtered.length > 1 ? 's' : ''} correspondant${filtered.length > 1 ? 's' : ''}${q && !isFav ? ' dans toutes les rubriques' : ''}`;
+  const where = (i) => (q || isFav) && CATS[i.category] ? ` · ${CATS[i.category]}` : '';
 
   const [top, ...restAll] = filtered;
   const rest = restAll.slice(0, shown - 1);
@@ -1315,21 +1342,21 @@ function render() {
   const a = el('a', 'lead' + (top.summary ? '' : ' solo')); a.href = top.link; a.target = '_blank'; a.rel = 'noopener noreferrer';
   const left = el('div'), mk = el('div', 'meta-l');
   if (freshIds.has(top.id)) mk.append(el('span', 'tagnew', 'Nouveau'));
-  mk.append(el('span', null, top.source), el('span', null, ago(top.time)));
+  mk.append(el('span', null, top.source + where(top)), el('span', null, ago(top.time)));
   left.append(mk, el('h2', null, top.title));
   const right = el('div'); if (top.summary) right.append(el('p', null, top.summary));
   const cta = el('span', 'cta', "Lire l'article"); cta.append(icon('go')); right.append(cta);
-  a.append(left, right); lead.append(a);
+  a.append(left, right, starBtn(top)); lead.append(a);
 
   // Fil numéroté
   rest.forEach((i, n) => {
     const row = el('a', 'item'); row.href = i.link; row.target = '_blank'; row.rel = 'noopener noreferrer';
-    const body = el('div'); body.append(el('div', 'eyebrow', i.source), el('h3', null, i.title));
+    const body = el('div'); body.append(el('div', 'eyebrow', i.source + where(i)), el('h3', null, i.title));
     if (i.summary) body.append(el('p', null, i.summary));
     const side = el('div', 'side');
     if (freshIds.has(i.id)) side.append(el('span', 'tagnew', 'Nouveau'));
     const w = el('span', null, ago(i.time)); w.title = new Date(i.time).toLocaleString('fr-FR'); side.append(w);
-    const go = el('span', 'go'); go.append(icon('go')); side.append(go);
+    const go = el('span', 'go'); go.append(icon('go')); side.append(starBtn(i), go);
     row.append(el('div', 'n', String(n + 1).padStart(2, '0')), body, side);
     list.append(row);
   });
