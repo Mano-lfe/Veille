@@ -990,6 +990,25 @@ function createGlobe(mount, opts) {
   function articlesFor(c) {
     return Object.values(data.items).flat().filter((i) => countriesIn(i).includes(c)).sort((a, b) => b.time - a.time);
   }
+  // dirigeants actuels (Wikidata : P35 chef de l'État, P6 chef du gouvernement ; on ignore les mandats terminés)
+  const leadersMem = new Map();
+  function leadersOf(info) {
+    if (leadersMem.has(info.a2)) return leadersMem.get(info.a2);
+    const WD = 'https://www.wikidata.org/w/api.php', j = (q) => fetch(`${WD}?${q}&format=json&origin=*`).then((r) => r.json());
+    const p = (async () => {
+      const q = (await j(`action=query&list=search&srsearch=${encodeURIComponent('haswbstatement:P297=' + info.a2)}&srlimit=1`)).query.search[0]?.title;
+      if (!q) return {};
+      const [a, b] = await Promise.all([j(`action=wbgetclaims&entity=${q}&property=P35`), j(`action=wbgetclaims&entity=${q}&property=P6`)]);
+      const cl = { ...(a.claims || {}), ...(b.claims || {}) };
+      const cur = (arr) => { const ok = (arr || []).filter((c) => c.rank !== 'deprecated' && !(c.qualifiers && c.qualifiers.P582) && c.mainsnak.datavalue); const pref = ok.filter((c) => c.rank === 'preferred'); return (pref.length ? pref : ok).slice(0, 2).map((c) => c.mainsnak.datavalue.value.id); };
+      const st = cur(cl.P35), gv = cur(cl.P6), ids = [...new Set([...st, ...gv])];
+      if (!ids.length) return {};
+      const ents = (await j(`action=wbgetentities&ids=${ids.join('|')}&props=labels&languages=fr|en`)).entities || {};
+      const nm = (id) => ents[id]?.labels?.fr?.value || ents[id]?.labels?.en?.value || '';
+      return { state: st.map(nm).filter(Boolean).join(' et '), gov: gv.map(nm).filter(Boolean).join(' et ') };
+    })().catch(() => ({}));
+    leadersMem.set(info.a2, p); return p;
+  }
   function dd(dl, k, v) { if (!v) return; dl.append(el('dt', null, k), el('dd', null, v)); }
   // Nouvelles du pays : Google Actualités via le serveur (cache local par pays)
   const newsMem = new Map(); let panelSeq = 0, tab = 'news';
@@ -1044,6 +1063,8 @@ function createGlobe(mount, opts) {
         const dl = el('dl');
         if (info) {
           dd(dl, 'Nom officiel', info.official);
+          const ls = el('div', 'none', 'Dirigeants : chargement'); dl.append(ls); // rempli dès que Wikidata répond
+          leadersOf(info).then((L) => { if (!ls.isConnected) return; const f = document.createDocumentFragment(); const t = document.createElement('div'); dd(t, "Chef de l'État", L.state); dd(t, 'Chef du gouvernement', L.gov && L.gov !== L.state ? L.gov : ''); if (L.state || L.gov) t.append(el('div', 'note', 'Dirigeants : Wikidata, mis à jour par des contributeurs (peut avoir du retard)')); ls.replaceWith(...t.childNodes); });
           dd(dl, 'Capitale', info.capital.join(', '));
           dd(dl, 'Population', info.population ? `${info.population.toLocaleString('fr-FR')} (${info.popYear})` : '');
           dd(dl, 'Superficie', info.area ? `${Math.round(info.area).toLocaleString('fr-FR')} km²` : '');
